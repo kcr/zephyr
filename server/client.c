@@ -17,7 +17,7 @@
 
 #if !defined (lint) && !defined (SABER)
 static const char rcsid_client_c[] =
-"$Id: client.c,v 1.33 1996-04-03 22:59:09 ghudson Exp $";
+"$Id: client.c,v 1.34 1996-06-06 05:55:14 ghudson Exp $";
 #endif
 
 /*
@@ -144,6 +144,7 @@ client_flush_host(host)
 		client_deregister(client, 1);
 	}
     }
+    uloc_hflush(host);
 }
 
 /*
