@@ -13,7 +13,7 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_xselect_c[] = "$Header: /srv/kcr/athena/zephyr/zwgc/xselect.c,v 1.3 1989-11-03 02:20:09 marc Exp $";
+static char rcsid_xselect_c[] = "$Id: xselect.c,v 1.4 1989-11-14 00:53:16 marc Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
