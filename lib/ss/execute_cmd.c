@@ -10,7 +10,7 @@
 
 #ifndef lint
 static char const rcsid[] =
-    "$Header: /srv/kcr/locker/zephyr/lib/ss/execute_cmd.c,v 1.2 1992-08-20 18:42:23 lwvanels Exp $";
+    "$Header: /srv/kcr/locker/zephyr/lib/ss/execute_cmd.c,v 1.3 1995-06-30 22:02:34 ghudson Exp $";
 #endif
 
 /*

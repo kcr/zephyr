@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const rcsid[] =
-    "$Header: /srv/kcr/locker/zephyr/lib/ss/invocation.c,v 1.1 1993-10-12 02:50:27 probe Exp $";
+    "$Header: /srv/kcr/locker/zephyr/lib/ss/invocation.c,v 1.2 1995-06-30 22:02:38 ghudson Exp $";
 #endif
 
 int ss_create_invocation(subsystem_name, version_string, info_ptr,

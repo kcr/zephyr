@@ -1,7 +1,7 @@
 /*
  * prompt.c: Routines for retrieving and setting a prompt.
  *
- * $Header: /srv/kcr/locker/zephyr/lib/ss/prompt.c,v 1.1 1993-10-12 02:50:32 probe Exp $
+ * $Header: /srv/kcr/locker/zephyr/lib/ss/prompt.c,v 1.2 1995-06-30 22:02:46 ghudson Exp $
  * $Locker:  $
  *
  * Copyright 1987, 1988 by MIT Student Information Processing Board
@@ -14,7 +14,7 @@
 #include "ss_internal.h"
 
 static const char rcsid[] =
-    "$Header: /srv/kcr/locker/zephyr/lib/ss/prompt.c,v 1.1 1993-10-12 02:50:32 probe Exp $";
+    "$Header: /srv/kcr/locker/zephyr/lib/ss/prompt.c,v 1.2 1995-06-30 22:02:46 ghudson Exp $";
 
 ss_set_prompt(sci_idx, new_prompt)
      int sci_idx;

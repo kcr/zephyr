@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const rcsid[] =
-    "$Header: /srv/kcr/locker/zephyr/lib/ss/parse.c,v 1.2 1993-04-10 17:18:22 epeisach Exp $";
+    "$Header: /srv/kcr/locker/zephyr/lib/ss/parse.c,v 1.3 1995-06-30 22:02:44 ghudson Exp $";
 #endif
 
 enum parse_mode { WHITESPACE, TOKEN, QUOTED_STRING };

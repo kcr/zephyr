@@ -2,15 +2,16 @@
  *------------------------------------------------------------------
  *
  * $Source: /srv/kcr/locker/zephyr/lib/ss/test.c,v $
- * $Revision: 1.1 $
- * $Date: 1993-10-12 02:50:52 $
+ * $Revision: 1.2 $
+ * $Date: 1995-06-30 22:02:50 $
  * $State: Exp $
- * $Author: probe $
+ * $Author: ghudson $
  * $Locker:  $
  *
  * $Log: test.c,v $
- * Revision 1.1  1993-10-12 02:50:52  probe
- * Initial revision
+ * Revision 1.2  1995-06-30 22:02:50  ghudson
+ * * Brought into Zephyr source tree
+ * * Portability changes for sysdep.h
  *
  * Revision 1.2  89/01/25  07:52:27  raeburn
  * *** empty log message ***
@@ -24,7 +25,7 @@
 
 #ifndef lint
 static char const rcsid_test_c[] =
-    "$Header: /srv/kcr/locker/zephyr/lib/ss/test.c,v 1.1 1993-10-12 02:50:52 probe Exp $";
+    "$Header: /srv/kcr/locker/zephyr/lib/ss/test.c,v 1.2 1995-06-30 22:02:50 ghudson Exp $";
 #endif /* lint */
 
 #include <stdio.h>
