@@ -15,7 +15,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_tty_filter_c[] = "$Id: tty_filter.c,v 1.17 1996-03-04 02:55:04 ghudson Exp $";
+static const char rcsid_tty_filter_c[] = "$Id: tty_filter.c,v 1.18 1997-05-19 04:37:36 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -437,11 +437,11 @@ string tty_filter(text, use_fonts)
     desctype *desc;
     int number_of_strs;
     int number_of_lines;
-    tty_str_info *info;
+    tty_str_info *info, *info_head;
     int max_line_width;
 
     desc = disp_get_cmds(text_copy, &number_of_strs, &number_of_lines);
-    info = convert_desc_to_tty_str_info(desc);
+    info_head = info = convert_desc_to_tty_str_info(desc);
     free_desc(desc);
 
 #ifdef DEBUG
@@ -540,7 +540,7 @@ string tty_filter(text, use_fonts)
 	}
     }
 
-    free_info(info);
+    free_info(info_head);
     free(text_copy);
     if (number_of_lines &&
 	(result_so_far[string_Length(result_so_far)-1] != '\n'))
