@@ -17,7 +17,7 @@
 
 #if !defined (lint) && !defined (SABER)
 static const char rcsid_client_c[] =
-"$Id: client.c,v 1.32 1996-03-04 03:16:01 ghudson Exp $";
+"$Id: client.c,v 1.33 1996-04-03 22:59:09 ghudson Exp $";
 #endif
 
 /*
@@ -96,6 +96,7 @@ client_register(notice, host, client_p, wantdefaults)
 	client->addr.sin_addr.s_addr = host->s_addr;
 	client->addr.sin_port = notice->z_port;
 	client->subs = NULL;
+	client->realm = NULL;
 	client->principal = make_string(notice->z_sender, 0);
 	LIST_INSERT(&client_bucket[INET_HASH(&client->addr.sin_addr,
 					     notice->z_port)], client);

@@ -17,7 +17,7 @@
 
 #ifndef lint
 #ifndef SABER
-static const char rcsid_server_c[] = "$Id: server.c,v 1.65 1996-03-04 03:29:43 ghudson Exp $";
+static const char rcsid_server_c[] = "$Id: server.c,v 1.66 1996-04-03 22:59:28 ghudson Exp $";
 #endif
 #endif
 
@@ -520,7 +520,9 @@ server_dispatch(notice, auth, who)
 
     notice_class = make_string(notice->z_class, 1);
 
-    if (class_is_admin(notice_class)) {
+    if (realm_which_realm(&newwho))
+	status = realm_dispatch(notice, auth, &newwho, server);
+    else if (class_is_admin(notice_class)) {
 	/* admins don't get acked, else we get a packet loop */
 	/* will return  requeue if bdump request and dumping */
 	i_s_admins.val++;

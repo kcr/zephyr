@@ -5,7 +5,7 @@
  *
  *	$Source: /srv/kcr/locker/zephyr/server/zsrv_conf.h,v $
  *	$Author: ghudson $
- *	$Header: /srv/kcr/locker/zephyr/server/zsrv_conf.h,v 1.10 1995-06-30 22:11:35 ghudson Exp $
+ *	$Header: /srv/kcr/locker/zephyr/server/zsrv_conf.h,v 1.11 1996-04-03 22:59:46 ghudson Exp $
  *
  *	Copyright (c) 1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -21,6 +21,7 @@
 #ifndef ZEPHYR_USES_HESIOD
 #define SERVER_LIST_FILE	"server.list"
 #endif
+#define REALM_LIST_FILE		"realm.list"
 #ifdef ZEPHYR_USES_KERBEROS
 #define ZEPHYR_SRVTAB		"srvtab"
 #define ZEPHYR_TKFILE		"ztkts"
@@ -30,6 +31,7 @@
 #define	DEFAULT_SUBS_FILE	"default.subscriptions"
 
 #define REXMIT_TIMES { 2, 2, 4, 4, 8, 8, 16, 16, 32, 32, -1 }
+#define NUM_REXMIT_TIMES 10
 
 /* hostmanager defines */
 #define	LOSE_TIMO	(60)		/* time during which a losing host
