@@ -11,13 +11,13 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZRetSubs.c,v 1.26 1995-07-07 22:11:15 ghudson Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZRetSubs.c,v 1.27 1995-07-08 02:47:26 ghudson Exp $ */
 
 #include <internal.h>
 
 #ifndef lint
 static const char rcsid_ZRetrieveSubscriptions_c[] =
-    "$Id: ZRetSubs.c,v 1.26 1995-07-07 22:11:15 ghudson Exp $";
+    "$Id: ZRetSubs.c,v 1.27 1995-07-08 02:47:26 ghudson Exp $";
 #endif
 
 static Code_t Z_RetSubs ();
@@ -40,7 +40,7 @@ Code_t ZRetrieveSubscriptions(port,nsubs)
 
 	if ((retval = ZMakeAscii(asciiport,sizeof(asciiport),
 				 (unsigned char *)&port,
-				 sizeof(u_short))) != ZERR_NONE)
+				 sizeof(u_short), 2)) != ZERR_NONE)
 		return (retval);
 
 	(void) memset((char *)&notice, 0, sizeof(notice));

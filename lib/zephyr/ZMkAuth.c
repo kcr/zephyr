@@ -10,12 +10,12 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Id: ZMkAuth.c,v 1.18 1995-07-07 22:11:10 ghudson Exp $ */
+/* $Id: ZMkAuth.c,v 1.19 1995-07-08 02:47:20 ghudson Exp $ */
 
 #include <internal.h>
 
 #ifndef lint
-static const char rcsid_ZMakeAuthentication_c[] = "$Id: ZMkAuth.c,v 1.18 1995-07-07 22:11:10 ghudson Exp $";
+static const char rcsid_ZMakeAuthentication_c[] = "$Id: ZMkAuth.c,v 1.19 1995-07-08 02:47:20 ghudson Exp $";
 #endif
 
 #ifdef ZEPHYR_USES_KERBEROS
@@ -69,6 +69,7 @@ Code_t ZMakeAuthentication(notice, buffer, buffer_len, len)
     if ((result = ZMakeAscii(notice->z_ascii_authent, 
 			     authent.length*3, 
 			     authent.dat, 
+			     authent.length,
 			     authent.length)) != ZERR_NONE) {
 	free(notice->z_ascii_authent);
 	return (result);
@@ -92,7 +93,7 @@ Code_t ZMakeAuthentication(notice, buffer, buffer_len, len)
     notice->z_checksum = checksum;
     checksum = htonl(checksum);
     ZMakeAscii(cstart, buffer + buffer_len - cstart,
-	       (unsigned char *) &checksum, sizeof(checksum));
+	       (unsigned char *) &checksum, sizeof(checksum), 4);
 
     return (ZERR_NONE);
 #else
