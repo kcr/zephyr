@@ -1,5 +1,5 @@
 /*
- * $Header: /srv/kcr/locker/zephyr/lib/et/init_et.c,v 1.1 1993-10-12 02:37:14 probe Exp $
+ * $Header: /srv/kcr/locker/zephyr/lib/et/init_et.c,v 1.2 1995-06-30 22:01:54 ghudson Exp $
  * $Source: /srv/kcr/locker/zephyr/lib/et/init_et.c,v $
  * $Locker:  $
  *
@@ -9,20 +9,14 @@
  * For copyright info, see mit-sipb-copyright.h.
  */
 
-#include <stdio.h>
+#include <sysdep.h>
 #include "error_table.h"
 #include "mit-sipb-copyright.h"
 
-#ifndef __STDC__
-#define const
-#endif
-
 #ifndef	lint
 static const char rcsid_init_et_c[] =
-    "$Header: /srv/kcr/locker/zephyr/lib/et/init_et.c,v 1.1 1993-10-12 02:37:14 probe Exp $";
+    "$Header: /srv/kcr/locker/zephyr/lib/et/init_et.c,v 1.2 1995-06-30 22:01:54 ghudson Exp $";
 #endif
-
-extern char *malloc(), *realloc();
 
 struct foobar {
     struct et_list etl;

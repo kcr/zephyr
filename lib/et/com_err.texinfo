@@ -1,6 +1,6 @@
 \input texinfo @c -*-texinfo-*-
 
-@c $Header: /srv/kcr/locker/zephyr/lib/et/com_err.texinfo,v 1.1 1993-10-12 02:37:25 probe Exp $
+@c $Header: /srv/kcr/locker/zephyr/lib/et/com_err.texinfo,v 1.2 1995-06-30 22:01:43 ghudson Exp $
 @c $Source: /srv/kcr/locker/zephyr/lib/et/com_err.texinfo,v $
 @c $Locker:  $
 

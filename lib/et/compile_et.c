@@ -7,24 +7,16 @@
  *
  */
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/file.h>
-#include <string.h>
-#include <sys/param.h>
+#include <sysdep.h>
 #include "mit-sipb-copyright.h"
 #include "compiler.h"
-
-#ifndef __STDC__
-#define const
-#endif
 
 #ifndef lint
 static const char copyright[] =
     "Copyright 1987,1988 by MIT Student Information Processing Board";
 
 static const char rcsid_compile_et_c[] =
-    "$Header: /srv/kcr/locker/zephyr/lib/et/compile_et.c,v 1.4 1991-06-10 01:57:57 probe Exp $";
+    "$Header: /srv/kcr/locker/zephyr/lib/et/compile_et.c,v 1.5 1995-06-30 22:01:46 ghudson Exp $";
 #endif
 
 extern char *gensym();
@@ -34,13 +26,9 @@ char buffer[BUFSIZ];
 char *table_name = (char *)NULL;
 FILE *hfile, *cfile;
 
-/* C library */
-extern char *malloc();
-extern int errno;
-
 /* lex stuff */
 extern FILE *yyin;
-extern int yylineno;
+extern int num_lines;
 
 char * xmalloc (size) unsigned int size; {
     char * p = malloc (size);
@@ -286,10 +274,10 @@ int main (argc, argv) int argc; char **argv; {
 int yyerror(s) char *s; {
     fputs(s, stderr);
     fprintf(stderr, "\nLine number %d; last token was '%s'\n",
-	    yylineno, current_token);
+	    num_lines+1, current_token);
 }
 
-#ifdef i386
+#if 0 /* previously "i386", which is wrong; add OS defines as appropriate. */
 /* Need strcasecmp for this machine */
 /*
  * Copyright (c) 1987 Regents of the University of California.

@@ -1,5 +1,5 @@
 /*
- * $Header: /srv/kcr/locker/zephyr/lib/et/error_message.c,v 1.2 1989-01-25 09:08:57 shanzer Exp $
+ * $Header: /srv/kcr/locker/zephyr/lib/et/error_message.c,v 1.3 1995-06-30 22:01:49 ghudson Exp $
  * $Source: /srv/kcr/locker/zephyr/lib/et/error_message.c,v $
  * $Locker:  $
  *
@@ -9,52 +9,57 @@
  * For copyright info, see "mit-sipb-copyright.h".
  */
 
-#include <stdio.h>
+#include <sysdep.h>
 #include "error_table.h"
 #include "mit-sipb-copyright.h"
-#include "internal.h"
+#include "com_err.h"
 
 static const char rcsid[] =
-    "$Header: /srv/kcr/locker/zephyr/lib/et/error_message.c,v 1.2 1989-01-25 09:08:57 shanzer Exp $";
+    "$Header: /srv/kcr/locker/zephyr/lib/et/error_message.c,v 1.3 1995-06-30 22:01:49 ghudson Exp $";
 static const char copyright[] =
     "Copyright 1986, 1987, 1988 by the Student Information Processing Board\nand the department of Information Systems\nof the Massachusetts Institute of Technology";
 
-static char buffer[25];
+char *error_table_name_r __P((int, char *));
 
 struct et_list * _et_list = (struct et_list *) NULL;
 
 const char * error_message (code)
 long	code;
 {
+    static char buf[COM_ERR_BUF_LEN];
+
+    return(error_message_r(code, buf));
+}
+
+const char * error_message_r (code, buf)
+long	code;
+char	*buf;
+{
     int offset;
     struct et_list *et;
     int table_num;
     int started = 0;
-    char *cp;
+    char *cp, namebuf[6];
 
     offset = code & ((1<<ERRCODE_RANGE)-1);
     table_num = code - offset;
-    if (!table_num) {
-	if (offset < sys_nerr)
-	    return(sys_errlist[offset]);
-	else
-	    goto oops;
-    }
+    if (!table_num)
+	return strerror(offset);
     for (et = _et_list; et; et = et->next) {
 	if (et->table->base == table_num) {
 	    /* This is the right table */
 	    if (et->table->n_msgs <= offset)
-		goto oops;
+		break;
 	    return(et->table->msgs[offset]);
 	}
     }
-oops:
-    strcpy (buffer, "Unknown code ");
+
+    strcpy (buf, "Unknown code ");
     if (table_num) {
-	strcat (buffer, error_table_name (table_num));
-	strcat (buffer, " ");
+	strcat (buf, error_table_name_r (table_num, namebuf));
+	strcat (buf, " ");
     }
-    for (cp = buffer; *cp; cp++)
+    for (cp = buf; *cp; cp++)
 	;
     if (offset >= 100) {
 	*cp++ = '0' + offset / 100;
@@ -67,5 +72,5 @@ oops:
     }
     *cp++ = '0' + offset;
     *cp = '\0';
-    return(buffer);
+    return(buf);
 }
