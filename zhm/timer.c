@@ -5,16 +5,17 @@
  *      Derived from timer_manager_ by Ken Raeburn
  *
  *      $Source: /srv/kcr/locker/zephyr/zhm/timer.c,v $
- *      $Author: ghudson $
+ *      $Author: marc $
  *
  */
 
-#include "zserver.h"
+#include "internal.h"
+#include "timer.h"
 
 #ifndef SABER
 #ifndef lint
 static const char rcsid[] =
-"$Id: timer.c,v 1.3 1996-06-10 22:53:51 ghudson Exp $";
+"$Id: timer.c,v 1.4 1996-06-10 23:03:08 marc Exp $";
 #endif /* lint */
 #endif /* SABER */
 
