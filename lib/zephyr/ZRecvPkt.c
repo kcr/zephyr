@@ -6,14 +6,14 @@
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZRecvPkt.c,v $
  *	$Author: jtkohl $
  *
- *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
+ *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZRecvPkt.c,v 1.11 1988-06-23 10:32:59 jtkohl Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZRecvPkt.c,v 1.12 1988-06-29 16:41:09 jtkohl Exp $ */
 
 #ifndef lint
-static char rcsid_ZReceivePacket_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZRecvPkt.c,v 1.11 1988-06-23 10:32:59 jtkohl Exp $";
+static char rcsid_ZReceivePacket_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZRecvPkt.c,v 1.12 1988-06-29 16:41:09 jtkohl Exp $";
 #endif lint
 
 #include <zephyr/mit-copyright.h>
@@ -42,7 +42,7 @@ Code_t ZReceivePacket(buffer, ret_len, from)
     if (from)
 	*from = nextq->from;
 	
-    (void) Z_RemQueue(nextq);
+    Z_RemQueue(nextq);
 
     return (ZERR_NONE);
 }
