@@ -12,8 +12,8 @@
 
 #ifndef	lint
 static char rcsid_debug_decl_c[] =
-    "$Id: debug_decl.c,v 1.1 1994-10-31 05:54:16 ghudson Exp $";
+    "$Id: debug_decl.c,v 1.2 1995-06-30 21:58:48 ghudson Exp $";
 #endif
 
-#include <mit-copyright.h>
+#include "mit-copyright.h"
 int	des_debug	= 0;

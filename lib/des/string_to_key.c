@@ -25,24 +25,22 @@
 
 #ifndef	lint
 static char rcsid_string_to_key_c[] =
-    "$Id: string_to_key.c,v 1.1 1994-10-31 05:54:16 ghudson Exp $";
+    "$Id: string_to_key.c,v 1.2 1995-06-30 21:59:09 ghudson Exp $";
 #endif
 
-#include <mit-copyright.h>
+#include "mit-copyright.h"
+#include "des.h"
 #include <stdio.h>
-#include <des.h>
 
 extern int des_debug;
-extern int des_debug_print();
-extern void des_fixup_key_parity();
 
 /*
  * convert an arbitrary length string to a DES key
  */
-int
+void
 des_string_to_key(str,key)
     char *str;
-    register des_cblock *key;
+    register des_cblock key;
 {
     register char *in_str;
     register unsigned temp,i;
@@ -53,7 +51,6 @@ des_string_to_key(str,key)
     register char *p_char;
     static char k_char[64];
     static des_key_schedule key_sked;
-    extern unsigned long des_cbc_cksum();
 
     in_str = str;
     forward = 1;
@@ -108,7 +105,7 @@ des_string_to_key(str,key)
 
     /* Now one-way encrypt it with the folded key */
     (void) des_key_sched(key,key_sked);
-    (void) des_cbc_cksum((des_cblock *)in_str,key,length,key_sked,key);
+    (void) des_cbc_cksum(in_str,key,length,key_sked,key);
     /* erase key_sked */
     memset((char *)key_sked, 0, sizeof(key_sked));
 
@@ -117,7 +114,7 @@ des_string_to_key(str,key)
 
     if (des_debug)
 	fprintf(stdout,
-		"\nResulting string_to_key = 0x%x 0x%x\n",
+		"\nResulting string_to_key = 0x%lx 0x%lx\n",
 		*((unsigned long *) key),
 		*((unsigned long *) key+1));
 }

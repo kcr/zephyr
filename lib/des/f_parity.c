@@ -10,7 +10,7 @@
 
 #ifndef	lint
 static char rcsid_f_parity_c[] =
-    "$Id: f_parity.c,v 1.1 1994-10-31 05:54:16 ghudson Exp $";
+    "$Id: f_parity.c,v 1.2 1995-06-30 21:58:56 ghudson Exp $";
 #endif
 
 #include "des.h"
@@ -32,7 +32,7 @@ des_fixup_key_parity(key)
     for (i=0; i<sizeof(des_cblock); i++) 
       {
 	key[i] &= 0xfe;
-	key[i] |= 1^parity_char(key[i]);
+	key[i] |= 1 ^ parity_char(key[i]);
       }
   
     return;
@@ -51,7 +51,7 @@ des_check_key_parity(key)
     
     for (i=0; i<sizeof(des_cblock); i++) 
       {
-	if((key[i] & 1) == parity_char(0xfe&key[i])) 
+	if((key[i] & 1) == parity_char(0xfe & key[i])) 
 	  {
 	    return 0;
 	  }

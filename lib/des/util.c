@@ -12,15 +12,15 @@
 
 #ifndef	lint
 static char rcsid_util_c[] =
-    "$Id: util.c,v 1.1 1994-10-31 05:54:16 ghudson Exp $";
+    "$Id: util.c,v 1.2 1995-06-30 21:59:10 ghudson Exp $";
 #endif
 
-#include <mit-copyright.h>
+#include "mit-copyright.h"
+#include "des.h"
 #include <stdio.h>
-#include <des.h>
 
-des_cblock_print_file(x, fp)
-    des_cblock *x;
+void des_cblock_print_file(x, fp)
+    des_cblock x;
     FILE *fp;
 {
     unsigned char *y = (unsigned char *) x;

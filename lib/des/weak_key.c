@@ -17,10 +17,10 @@
 
 #ifndef	lint
 static char rcsid_weak_key_c[] =
-    "$Id: weak_key.c,v 1.1 1994-10-31 05:54:16 ghudson Exp $";
+    "$Id: weak_key.c,v 1.2 1995-06-30 21:59:11 ghudson Exp $";
 #endif
 
-#include <des.h>
+#include "des.h"
 
 /*
  * The following are the weak DES keys:

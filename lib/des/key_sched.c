@@ -32,10 +32,9 @@
 
 #ifndef	lint
 static char rcsid_key_sched_c[] =
-    "$Id: key_sched.c,v 1.1 1994-10-31 05:54:16 ghudson Exp $";
+    "$Id: key_sched.c,v 1.2 1995-06-30 21:59:01 ghudson Exp $";
 #endif
 
-#include <mit-copyright.h>
 #include <stdio.h>
 #include "des.h"
 

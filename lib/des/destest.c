@@ -10,23 +10,23 @@
 
 #ifndef	lint
 static char rcsid_destest_c[] =
-    "$Id: destest.c,v 1.1 1994-10-31 05:54:16 ghudson Exp $";
+    "$Id: destest.c,v 1.2 1995-06-30 21:58:51 ghudson Exp $";
 #endif
 
-#include <mit-copyright.h>
+#include "mit-copyright.h"
+#include "des.h"
 #include <stdio.h>
-#include <des.h>
 
 char clear[] = "eight bytes";
 char cipher[8];
 char key[8];
-Key_schedule schedule;
+des_key_schedule schedule;
 
-main()
+int main()
 {
     int i;
-    string_to_key("good morning!", key);
-    i = key_sched(key, schedule);
+    des_string_to_key("good morning!", key);
+    i = des_key_sched(key, schedule);
     if (i) {
 	printf("bad schedule (%d)\n", i);
 	exit(1);
