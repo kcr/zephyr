@@ -15,7 +15,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_main_c[] = "$Id: main.c,v 1.31 1995-07-07 21:59:44 ghudson Exp $";
+static const char rcsid_main_c[] = "$Id: main.c,v 1.32 1995-07-18 20:24:03 ghudson Exp $";
 #endif
 
 #include <sys/resource.h>
@@ -47,7 +47,7 @@ static void setup_signals(), detach();
 int zwgc_debug = 0;
 #endif
 
-static char *zwgc_version_string = "0.4.7";
+static char *zwgc_version_string = "1.0";
 
 /*
  * description_filename_override - <<<>>>
