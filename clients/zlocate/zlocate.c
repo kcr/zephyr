@@ -16,7 +16,7 @@
 #include <sys/socket.h>
 
 #if !defined(lint) && !defined(SABER)
-static const char rcsid_zlocate_c[] = "$Id: zlocate.c,v 1.14 1995-07-07 21:55:59 ghudson Exp $";
+static const char rcsid_zlocate_c[] = "$Id: zlocate.c,v 1.15 1996-03-04 02:59:41 ghudson Exp $";
 #endif
 
 int numusers=0, numleft=0, parallel=0, oneline=0;
@@ -72,7 +72,7 @@ main(argc,argv)
 {
     char user[BUFSIZ],*whichuser;
     ZAsyncLocateData_t ald;
-    int retval,i,numlocs,loc,auth;
+    int retval,i,numlocs,numfound,loc,auth;
     ZNotice_t notice;
 #ifdef _POSIX_VERSION
     struct sigaction sa;
@@ -119,6 +119,7 @@ main(argc,argv)
     } 
 
     numleft = numusers;
+    numfound = 0;
 
     i = 0;
     for (loc = 0; loc < argc; loc++) {
@@ -142,6 +143,7 @@ main(argc,argv)
 		exit(1);
 	    }
 	    print_locs(user,numlocs);
+	    numfound += numlocs;
 	}
     }
 
@@ -168,9 +170,10 @@ main(argc,argv)
 	    if (numlocs >= 0) {
 		print_locs(whichuser,numlocs);
 		free(whichuser);
+		numfound += numlocs;
 	    }
 	    ZFreeNotice(&notice);
 	}
     }
-    return(0);
+    return((numfound > 0) ? 0 : 1);
 }
