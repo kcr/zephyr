@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: zmailnotify.c,v 1.27 1995-07-08 00:22:01 ghudson Exp $
+ *	$Id: zmailnotify.c,v 1.28 1996-03-04 03:00:29 ghudson Exp $
  *
  *	Copyright (c) 1987,1993 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -16,7 +16,7 @@
 
 #ifndef lint
 static const char rcsid_zmailnotify_c[] =
-    "$Id: zmailnotify.c,v 1.27 1995-07-08 00:22:01 ghudson Exp $";
+    "$Id: zmailnotify.c,v 1.28 1996-03-04 03:00:29 ghudson Exp $";
 #endif
 
 #include <sys/socket.h>
@@ -481,13 +481,19 @@ char *host;
     return(OK);
 }
 
-/*VARARGS1*/
-pop_command(fmt, a, b, c, d)
-char *fmt;
+#ifdef __STDC__
+pop_command(char *fmt, ...)
+#else
+pop_command(fmt, va_alist)
+    va_dcl
+#endif
 {
+    va_list args;
     char buf[4096];
 
-    (void) sprintf(buf, fmt, a, b, c, d);
+    VA_START(args, fmt);
+    (void) vsprintf(buf, fmt, args);
+    va_end(args);
 
     if (putline(buf, Errmsg, sfo) == NOTOK) return(NOTOK);
 
