@@ -15,7 +15,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_zephyr_c[] = "$Id: zephyr.c,v 1.9 1996-03-04 21:13:28 ghudson Exp $";
+static const char rcsid_zephyr_c[] = "$Id: zephyr.c,v 1.10 1996-04-05 00:29:59 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -42,37 +42,6 @@ static const char rcsid_zephyr_c[] = "$Id: zephyr.c,v 1.9 1996-03-04 21:13:28 gh
 #ifdef DEBUG
 extern int zwgc_debug;
 #endif /* DEBUG */
-
-/*
- *  Internal Routine:
- *
- *    char *parse_exposure_level(string text)
- *        Effects: Compares text to each of the standard zephyr
- *                 exposure levels ignoring case.  If it matches,
- *                 returns the corresponding magic constant for
- *                 use with ZSetLocation.  (i.e., returns EXPOSE_OPSTAFF
- *                 for "opstaff", etc.)  If it does not match, returns
- *                 NULL.
- */
-
-static char *parse_exposure_level(text)
-     string text;
-{
-    if (!strcasecmp(text, EXPOSE_NONE))
-      return (EXPOSE_NONE);
-    else if (!strcasecmp(text, EXPOSE_OPSTAFF))
-      return (EXPOSE_OPSTAFF);
-    else if (!strcasecmp(text, EXPOSE_REALMVIS))
-      return (EXPOSE_REALMVIS);
-    else if (!strcasecmp(text, EXPOSE_REALMANN))
-      return (EXPOSE_REALMANN);
-    else if (!strcasecmp(text, EXPOSE_NETVIS))
-      return (EXPOSE_NETVIS);
-    else if (!strcasecmp(text, EXPOSE_NETANN))
-      return (EXPOSE_NETANN);
-    else
-      return(NULL);
-}
 
 /*
  *  Internal Routine:
@@ -188,7 +157,7 @@ void zephyr_init(notice_handler)
      * EXPOSE_NONE.
      */
     if (temp = ZGetVariable("exposure")) {
-	if (!(exposure = parse_exposure_level(temp))) {
+	if (!(exposure = ZParseExposureLevel(temp))) {
 	    ERROR2("invalid exposure level %s, using exposure level none instead.\n", temp);
 	    exposure = EXPOSE_NONE;
 	}
