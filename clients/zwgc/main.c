@@ -15,7 +15,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_main_c[] = "$Id: main.c,v 1.34 1996-03-04 21:14:00 ghudson Exp $";
+static const char rcsid_main_c[] = "$Id: main.c,v 1.35 1996-04-03 22:49:20 ghudson Exp $";
 #endif
 
 #include <sys/resource.h>
@@ -413,12 +413,6 @@ static void setup_signals(dofork)
 
     sa.sa_handler = signal_child;
     sigaction(SIGCHLD, &sa, (struct sigaction *)0);
-
-#ifdef _AIX
-    sa.sa_flags = SA_FULLDUMP;
-    sa.sa_handler = SIG_DFL;
-    sigaction(SIGSEGV, &sa, (struct sigaction *)0);
-#endif
 
 #else /* !POSIX */
     if (dofork) {
