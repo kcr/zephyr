@@ -6,11 +6,11 @@
  *	$Source: /srv/kcr/locker/zephyr/h/zephyr/Attic/zephyr_internal.h,v $
  *	$Author: jtkohl $
  *
- *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
+ *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/h/zephyr/Attic/zephyr_internal.h,v 1.12 1988-06-22 17:05:48 jtkohl Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/h/zephyr/Attic/zephyr_internal.h,v 1.13 1988-06-29 16:33:14 jtkohl Exp $ */
 
 #ifndef __ZINTERNAL_H__
 #define __ZINTERNAL_H__
@@ -89,5 +89,6 @@ extern long random();
 extern struct _Z_InputQ *Z_GetFirstComplete();
 extern struct _Z_InputQ *Z_GetNextComplete();
 extern Code_t Z_XmitFragment();
+extern void Z_RemQueue();
 
 #endif !__ZINTERNAL_H__
