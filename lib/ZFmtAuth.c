@@ -10,15 +10,15 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZFmtAuth.c,v 1.18 1997-09-14 21:52:31 ghudson Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZFmtAuth.c,v 1.19 1997-10-25 21:47:19 ghudson Exp $ */
 
 #ifndef lint
-static char rcsid_ZFormatAuthenticNotice_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZFmtAuth.c,v 1.18 1997-09-14 21:52:31 ghudson Exp $";
+static char rcsid_ZFormatAuthenticNotice_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZFmtAuth.c,v 1.19 1997-10-25 21:47:19 ghudson Exp $";
 #endif
 
 #include <internal.h>
 
-#ifdef ZEPHYR_USES_KERBEROS
+#ifdef HAVE_KRB4
 Code_t ZFormatAuthenticNotice(notice, buffer, buffer_len, len, session)
     ZNotice_t *notice;
     register char *buffer;
