@@ -10,7 +10,7 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZSendNot.c,v 1.3 1987-06-12 18:46:33 rfrench Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZSendNot.c,v 1.4 1987-06-20 19:21:54 rfrench Exp $ */
 
 #include <zephyr/mit-copyright.h>
 
@@ -25,7 +25,7 @@ Code_t ZSendNotice(notice)
 
 	buffer = (char *)malloc(Z_MAXPKTLEN);
 	if (!buffer)
-		return (ZERR_NOMEM);
+		return (ENOMEM);
 
 	if ((retval = ZFormatNotice(notice,buffer,Z_MAXPKTLEN,&len)) !=
 	    ZERR_NONE) {
