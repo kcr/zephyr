@@ -4,13 +4,13 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/h/zephyr/Attic/zephyr_internal.h,v $
- *	$Author: raeburn $
+ *	$Author: jfc $
  *
  *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/h/zephyr/Attic/zephyr_internal.h,v 1.16 1990-11-14 23:45:05 raeburn Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/h/zephyr/Attic/zephyr_internal.h,v 1.17 1990-12-12 02:04:02 jfc Exp $ */
 
 #ifndef __ZINTERNAL_H__
 #define __ZINTERNAL_H__
@@ -103,4 +103,4 @@ extern "C" {
 }
 #endif
 
-#endif !__ZINTERNAL_H__
+#endif /* !__ZINTERNAL_H__ */
