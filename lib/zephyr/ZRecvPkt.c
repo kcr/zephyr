@@ -4,17 +4,17 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZRecvPkt.c,v $
- *	$Author: jtkohl $
+ *	$Author: lwvanels $
  *
  *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZRecvPkt.c,v 1.12 1988-06-29 16:41:09 jtkohl Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZRecvPkt.c,v 1.13 1991-12-04 13:48:16 lwvanels Exp $ */
 
 #ifndef lint
-static char rcsid_ZReceivePacket_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZRecvPkt.c,v 1.12 1988-06-29 16:41:09 jtkohl Exp $";
-#endif lint
+static char rcsid_ZReceivePacket_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZRecvPkt.c,v 1.13 1991-12-04 13:48:16 lwvanels Exp $";
+#endif
 
 #include <zephyr/mit-copyright.h>
 

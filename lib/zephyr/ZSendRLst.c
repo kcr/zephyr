@@ -4,17 +4,17 @@
  *	Created by:	John T. Kohl
  *
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZSendRLst.c,v $
- *	$Author: jtkohl $
+ *	$Author: lwvanels $
  *
  *	Copyright (c) 1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZSendRLst.c,v 1.1 1988-06-15 21:06:54 jtkohl Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZSendRLst.c,v 1.2 1991-12-04 13:51:09 lwvanels Exp $ */
 
 #ifndef lint
-static char rcsid_ZSendRawList_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZSendRLst.c,v 1.1 1988-06-15 21:06:54 jtkohl Exp $";
-#endif lint
+static char rcsid_ZSendRawList_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZSendRLst.c,v 1.2 1991-12-04 13:51:09 lwvanels Exp $";
+#endif
 
 #include <zephyr/mit-copyright.h>
 

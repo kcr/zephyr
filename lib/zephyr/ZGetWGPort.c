@@ -4,17 +4,17 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZGetWGPort.c,v $
- *	$Author: jtkohl $
+ *	$Author: lwvanels $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZGetWGPort.c,v 1.7 1988-07-26 16:41:02 jtkohl Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZGetWGPort.c,v 1.8 1991-12-04 13:51:01 lwvanels Exp $ */
 
 #ifndef lint
-static char rcsid_ZGetWGPort_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZGetWGPort.c,v 1.7 1988-07-26 16:41:02 jtkohl Exp $";
-#endif lint
+static char rcsid_ZGetWGPort_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZGetWGPort.c,v 1.8 1991-12-04 13:51:01 lwvanels Exp $";
+#endif
 
 #include <zephyr/mit-copyright.h>
 
