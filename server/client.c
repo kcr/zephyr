@@ -17,7 +17,7 @@
 
 #if !defined (lint) && !defined (SABER)
 static const char rcsid_client_c[] =
-"$Id: client.c,v 1.34 1996-06-06 05:55:14 ghudson Exp $";
+"$Id: client.c,v 1.35 1997-07-12 05:04:17 ghudson Exp $";
 #endif
 
 /*
@@ -168,8 +168,13 @@ client_send_clients()
 
     for (i = 0; i < HASHSIZE; i++) {
 	/* Allow packets to be processed between rows of the hash table. */
-	if (packets_waiting())
+	if (packets_waiting()) {
+	    bdumping = 0;
+	    bdump_concurrent = 1;
 	    handle_packet();
+	    bdump_concurrent = 0;
+	    bdumping = 1;
+	}
 	for (client = client_bucket[i]; client; client = client->next) {
 	    if (client->subs) {
 		retval = subscr_send_subs(client);
