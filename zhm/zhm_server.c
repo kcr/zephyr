@@ -4,7 +4,7 @@
  *      Created by:     David C. Jedlinsky
  *
  *      $Source: /srv/kcr/locker/zephyr/zhm/zhm_server.c,v $
- *      $Author: probe $
+ *      $Author: ghudson $
  *
  *      Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -15,9 +15,13 @@
 
 #ifndef lint
 #ifndef SABER
-static char rcsid_hm_server_c[] = "$Header: /srv/kcr/locker/zephyr/zhm/zhm_server.c,v 1.11 1993-11-19 15:12:21 probe Exp $";
+static char rcsid_hm_server_c[] = "$Header: /srv/kcr/locker/zephyr/zhm/zhm_server.c,v 1.12 1996-03-04 02:44:42 ghudson Exp $";
 #endif /* SABER */
 #endif /* lint */
+
+static void boot_timeout __P((void *));
+
+static Timer *boot_timer;
 
 int serv_loop = 0;
 extern u_short cli_port;
@@ -59,8 +63,7 @@ char *op;
 	  Zperr(ret);
 	  com_err("hm", ret, "sending startup notice");
      }
-     timeout_type = BOOTING;
-     (void)alarm(SERV_TIMEOUT);
+     boot_timer = timer_set_rel(SERV_TIMEOUT, boot_timeout, NULL);
 }
 
 /* Argument is whether we are detaching or really going down */
@@ -205,7 +208,7 @@ ZNotice_t *notice;
 		    (void)strcpy(suggested_server, hp->h_name);
 		    new_server(suggested_server);
 	       } else
-		    new_server((char *)NULL);
+		    new_server(NULL);
 	  }
 	  else
 	       new_server((char *)NULL);
@@ -282,4 +285,12 @@ char *sugg_serv;
 	  deactivated = 0;
      } else
 	  send_boot_notice(HM_ATTACH);
+     disable_queue_retransmits();
 }
+
+static void boot_timeout(arg)
+void *arg;
+{
+    new_server(NULL);
+}
+
