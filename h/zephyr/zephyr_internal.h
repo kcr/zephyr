@@ -10,7 +10,7 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/h/zephyr/Attic/zephyr_internal.h,v 1.15 1990-10-19 07:16:17 raeburn Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/h/zephyr/Attic/zephyr_internal.h,v 1.16 1990-11-14 23:45:05 raeburn Exp $ */
 
 #ifndef __ZINTERNAL_H__
 #define __ZINTERNAL_H__
@@ -86,7 +86,7 @@ extern int krb_err_base;
 extern "C" {
 #endif
 
-#if defined(__STDC__)
+#if defined(__STDC__) || defined(__cplusplus)
     extern void *malloc (unsigned);
 #else
     extern char *malloc();
@@ -103,4 +103,4 @@ extern "C" {
 }
 #endif
 
-#endif /* !__ZINTERNAL_H__ */
+#endif !__ZINTERNAL_H__
