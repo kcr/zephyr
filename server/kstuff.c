@@ -9,14 +9,14 @@
  */
 /*
  *	$Source: /srv/kcr/locker/zephyr/server/kstuff.c,v $
- *	$Header: /srv/kcr/locker/zephyr/server/kstuff.c,v 1.22 1995-07-08 02:48:51 ghudson Exp $
+ *	$Header: /srv/kcr/locker/zephyr/server/kstuff.c,v 1.23 1995-07-18 20:29:08 ghudson Exp $
  */
 
 #include "zserver.h"
 
 #ifndef lint
 #ifndef SABER
-static const char rcsid_kstuff_c[] = "$Id: kstuff.c,v 1.22 1995-07-08 02:48:51 ghudson Exp $";
+static const char rcsid_kstuff_c[] = "$Id: kstuff.c,v 1.23 1995-07-18 20:29:08 ghudson Exp $";
 #endif
 #endif
 
@@ -168,7 +168,6 @@ ZCheckAuthentication(notice, from)
     if (ZReadAscii(notice->z_ascii_authent, 
 		   strlen(notice->z_ascii_authent)+1, 
 		   (unsigned char *)authent.dat, 
-		   notice->z_authent_len,
 		   notice->z_authent_len) == ZERR_BADFIELD) {
 	return ZAUTH_FAILED;
     }
