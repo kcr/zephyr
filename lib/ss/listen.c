@@ -1,7 +1,7 @@
 /*
  * Listener loop for subsystem library libss.a.
  *
- *	$Header: /srv/kcr/locker/zephyr/lib/ss/listen.c,v 1.5 1995-06-30 22:02:40 ghudson Exp $
+ *	$Header: /srv/kcr/locker/zephyr/lib/ss/listen.c,v 1.6 1995-07-01 01:23:09 ghudson Exp $
  *	$Locker:  $
  * 
  * Copyright 1987, 1988 by MIT Student Information Processing Board
@@ -15,7 +15,7 @@
 
 #ifndef	lint
 static char const rcs_id[] =
-    "$Header: /srv/kcr/locker/zephyr/lib/ss/listen.c,v 1.5 1995-06-30 22:02:40 ghudson Exp $";
+    "$Header: /srv/kcr/locker/zephyr/lib/ss/listen.c,v 1.6 1995-07-01 01:23:09 ghudson Exp $";
 #endif
 
 static ss_data *current_info;
@@ -170,7 +170,7 @@ egress:
 }
 
 void ss_abort_subsystem(sci_idx, code)
-    int sci_idx;
+    int sci_idx, code;
 {
     ss_info(sci_idx)->abort = 1;
     ss_info(sci_idx)->exit_status = code;
