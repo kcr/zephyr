@@ -4,7 +4,7 @@
  *	Created by:	John T. Kohl
  *
  *	$Source: /srv/kcr/locker/zephyr/server/bdump.c,v $
- *	$Id: bdump.c,v 1.51 1995-07-08 00:23:25 ghudson Exp $
+ *	$Id: bdump.c,v 1.52 1995-07-08 02:48:43 ghudson Exp $
  *	$Author: ghudson $
  *
  *	Copyright (c) 1987,1988,1991 by the Massachusetts Institute of Technology.
@@ -18,7 +18,7 @@
 #include <com_err.h>
 
 #ifndef lint
-static const char rcsid_bdump_c[] = "$Id: bdump.c,v 1.51 1995-07-08 00:23:25 ghudson Exp $";
+static const char rcsid_bdump_c[] = "$Id: bdump.c,v 1.52 1995-07-08 02:48:43 ghudson Exp $";
 #endif /* lint */
 
 /*
@@ -847,7 +847,8 @@ bdump_recv_loop(server)
 	    if (*notice.z_class_inst) {
 		/* a C_Block is there */
 		cp = notice.z_message + strlen(notice.z_message) + 1;
-		retval = ZReadAscii(cp, strlen(cp), cblock, sizeof(C_Block));
+		retval = ZReadAscii(cp, strlen(cp), cblock, sizeof(C_Block),
+				    sizeof(C_Block));
 		if (retval != ZERR_NONE) {
 		    syslog(LOG_ERR,"brl bad cblk read: %s (%s)",
 			   error_message(retval), cp);

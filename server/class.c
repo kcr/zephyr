@@ -17,7 +17,7 @@
 
 #if !defined (lint) && !defined (SABER)
 static const char rcsid_class_c[] =
-"$Id: class.c,v 1.26 1995-07-07 22:11:50 ghudson Exp $";
+"$Id: class.c,v 1.27 1995-07-08 02:48:48 ghudson Exp $";
 #endif
 
 /*
@@ -310,7 +310,7 @@ insert_client(triplet, client)
 		return ZSRV_CLASSXISTS;
 	}
 
-	if (clientp - triplet->clients > triplet->clients_size) {
+	if (clientp + 1 - triplet->clients >= triplet->clients_size) {
 	    new_size = triplet->clients_size * 2 + ALLOC_OFFSET;
 	    newclients = (Client **) realloc(triplet->clients,
 					     new_size * sizeof(Client *));
