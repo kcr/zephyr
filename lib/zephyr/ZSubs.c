@@ -11,12 +11,12 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZSubs.c,v 1.22 1996-04-03 22:55:29 ghudson Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZSubs.c,v 1.23 1997-07-13 18:07:22 ghudson Exp $ */
 
 #include <internal.h>
 
 #ifndef lint
-static const char rcsid_ZSubscriptions_c[] = "$Id: ZSubs.c,v 1.22 1996-04-03 22:55:29 ghudson Exp $";
+static const char rcsid_ZSubscriptions_c[] = "$Id: ZSubs.c,v 1.23 1997-07-13 18:07:22 ghudson Exp $";
 #endif
 
 static Code_t Z_Subscriptions __P((register ZSubscription_t *sublist,
@@ -104,7 +104,7 @@ Z_Subscriptions(sublist, nitems, port, opcode, authit)
     retval = Z_FormatHeader(&notice, header, sizeof(header), &hdrlen, ZAUTH);
     if (retval != ZERR_NONE && !authit)
 	retval = Z_FormatHeader(&notice, header, sizeof(header),
-				&hdrlen, ZAUTH);
+				&hdrlen, ZNOAUTH);
     if (retval != ZERR_NONE) {
 	free((char *)list);
 	return(retval);
