@@ -4,19 +4,19 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZFmtNotice.c,v $
- *	$Author: probe $
+ *	$Author: ghudson $
  *
  *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZFmtNotice.c,v 1.15 1993-11-19 15:25:37 probe Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZFmtNotice.c,v 1.16 1995-06-30 22:04:03 ghudson Exp $ */
 
 #ifndef lint
-static char rcsid_ZFormatNotice_c[] = "$Id: ZFmtNotice.c,v 1.15 1993-11-19 15:25:37 probe Exp $";
+static char rcsid_ZFormatNotice_c[] = "$Id: ZFmtNotice.c,v 1.16 1995-06-30 22:04:03 ghudson Exp $";
 #endif
 
-#include <zephyr/zephyr_internal.h>
+#include <internal.h>
 
 Code_t ZFormatNotice(notice, buffer, ret_len, cert_routine)
     register ZNotice_t *notice;

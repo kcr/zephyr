@@ -4,27 +4,27 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZNewLocU.c,v $
- *	$Author: lwvanels $
+ *	$Author: ghudson $
  *
  *	Copyright (c) 1987,1988,1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZNewLocU.c,v 1.8 1992-08-10 19:13:15 lwvanels Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZNewLocU.c,v 1.9 1995-06-30 22:04:24 ghudson Exp $ */
 
 #ifndef lint
 static char rcsid_ZNewLocateUser_c[] =
-    "$Id: ZNewLocU.c,v 1.8 1992-08-10 19:13:15 lwvanels Exp $";
+    "$Id: ZNewLocU.c,v 1.9 1995-06-30 22:04:24 ghudson Exp $";
 #endif
 
-#include <zephyr/zephyr_internal.h>
+#include <internal.h>
 
 Code_t ZLocateUser(user, nlocs, auth)
     char *user;
     int *nlocs;
     Z_AuthProc auth;
 {
-    register int retval;
+    Code_t retval;
     ZNotice_t notice;
     ZAsyncLocateData_t zald;
 
@@ -34,8 +34,7 @@ Code_t ZLocateUser(user, nlocs, auth)
     if ((retval = ZRequestLocations(user, &zald, UNACKED, auth)) != ZERR_NONE)
 	return(retval);
 
-    retval = Z_WaitForNotice (&notice, ZCompareALDPred,
-			      (char *) &zald, SRV_TIMEOUT);
+    retval = Z_WaitForNotice (&notice, ZCompareALDPred, &zald, SRV_TIMEOUT);
     if (retval == ZERR_NONOTICE)
 	return ETIMEDOUT;
     if (retval != ZERR_NONE)

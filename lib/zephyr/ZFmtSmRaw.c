@@ -10,15 +10,13 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZFmtSmRaw.c,v 1.6 1994-11-01 17:51:59 ghudson Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZFmtSmRaw.c,v 1.7 1995-06-30 22:04:08 ghudson Exp $ */
 
 #ifndef lint
-static char rcsid_ZFormatRawNotice_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZFmtSmRaw.c,v 1.6 1994-11-01 17:51:59 ghudson Exp $";
+static char rcsid_ZFormatRawNotice_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZFmtSmRaw.c,v 1.7 1995-06-30 22:04:08 ghudson Exp $";
 #endif
 
-#include <zephyr/mit-copyright.h>
-
-#include <zephyr/zephyr_internal.h>
+#include <internal.h>
 
 Code_t ZFormatSmallRawNotice(notice, buffer, ret_len)
     ZNotice_t *notice;

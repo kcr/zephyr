@@ -4,19 +4,19 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZMakeAscii.c,v $
- *	$Author: jfc $
+ *	$Author: ghudson $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZMakeAscii.c,v 1.11 1991-06-20 14:25:50 jfc Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZMakeAscii.c,v 1.12 1995-06-30 22:04:22 ghudson Exp $ */
 
 #ifndef lint
-static char rcsid_ZMakeAscii_c[] = "$Id: ZMakeAscii.c,v 1.11 1991-06-20 14:25:50 jfc Exp $";
+static char rcsid_ZMakeAscii_c[] = "$Id: ZMakeAscii.c,v 1.12 1995-06-30 22:04:22 ghudson Exp $";
 #endif
 
-#include <zephyr/zephyr_internal.h>
+#include <internal.h>
 
 Code_t ZMakeAscii(ptr, len, field, num)
     register char *ptr;

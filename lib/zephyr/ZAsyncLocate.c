@@ -4,19 +4,19 @@
  *	Created by:	Marc Horowitz
  *
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZAsyncLocate.c,v $
- *	$Author: probe $
+ *	$Author: ghudson $
  *
  *	Copyright (c) 1990,1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZAsyncLocate.c,v 1.4 1993-11-19 15:22:56 probe Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZAsyncLocate.c,v 1.5 1995-06-30 22:03:52 ghudson Exp $ */
 
 #ifndef lint
-static char rcsid_ZAsyncLocate_c[] = "$Id: ZAsyncLocate.c,v 1.4 1993-11-19 15:22:56 probe Exp $";
+static char rcsid_ZAsyncLocate_c[] = "$Id: ZAsyncLocate.c,v 1.5 1995-06-30 22:03:52 ghudson Exp $";
 #endif
 
-#include <zephyr/zephyr_internal.h>
+#include <internal.h>
 
 Code_t ZRequestLocations(user, zald, kind, auth)
      char *user;
@@ -153,7 +153,7 @@ Code_t ZParseLocations(notice,zald,nlocs,user)
 
 int ZCompareALDPred(notice, zald)
      ZNotice_t *notice;
-     char *zald;
+     void *zald;
 {
     return(ZCompareUID(&(notice->z_multiuid),
 		       &(((ZAsyncLocateData_t *) zald)->uid)));

@@ -4,26 +4,19 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZReadAscii.c,v $
- *	$Author: raeburn $
+ *	$Author: ghudson $
  *
  *	Copyright (c) 1987, 1990 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZReadAscii.c,v 1.16 1990-12-14 03:07:40 raeburn Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZReadAscii.c,v 1.17 1995-06-30 22:04:33 ghudson Exp $ */
 
 #ifndef lint
-static
-#ifdef __STDC__
-    const
-#endif
-    char rcsid_ZReadAscii_c[] =
-    "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZReadAscii.c,v 1.16 1990-12-14 03:07:40 raeburn Exp $";
+static char rcsid_ZReadAscii_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZReadAscii.c,v 1.17 1995-06-30 22:04:33 ghudson Exp $";
 #endif /* lint */
 
-#include <zephyr/mit-copyright.h>
-
-#include <zephyr/zephyr_internal.h>
+#include <internal.h>
 
 #if 0
 static __inline__
@@ -42,7 +35,7 @@ Z_cnvt_xtoi (char c)
 
 #define Z_cnvt_xtoi(c)  ((temp=(c)-'0'),(temp<10)?temp:((temp-='A'-'9'-1),(temp<16)?temp:-1))
 
-int ZReadAscii(ptr, len, field, num)
+Code_t ZReadAscii(ptr, len, field, num)
     char *ptr;
     int len;
     unsigned char *field;
@@ -51,9 +44,7 @@ int ZReadAscii(ptr, len, field, num)
     int i;
     unsigned int hexbyte;
     register int c1, c2;
-#ifdef Z_cnvt_xtoi
     register unsigned int temp;
-#endif
 
     for (i=0;i<num;i++) {
 	if (*ptr == ' ') {

@@ -4,21 +4,19 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZSetSrv.c,v $
- *	$Author: lwvanels $
+ *	$Author: ghudson $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZSetSrv.c,v 1.3 1991-12-04 13:50:56 lwvanels Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZSetSrv.c,v 1.4 1995-06-30 22:04:48 ghudson Exp $ */
 
 #ifndef lint
-static char rcsid_ZSetServerState_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZSetSrv.c,v 1.3 1991-12-04 13:50:56 lwvanels Exp $";
+static char rcsid_ZSetServerState_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZSetSrv.c,v 1.4 1995-06-30 22:04:48 ghudson Exp $";
 #endif
 
-#include <zephyr/mit-copyright.h>
-
-#include <zephyr/zephyr_internal.h>
+#include <internal.h>
 
 Code_t ZSetServerState(state)
 	int	state;

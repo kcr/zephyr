@@ -4,25 +4,25 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZCkIfNot.c,v $
- *	$Author: probe $
+ *	$Author: ghudson $
  *
  *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZCkIfNot.c,v 1.13 1993-11-19 15:25:34 probe Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZCkIfNot.c,v 1.14 1995-06-30 22:03:54 ghudson Exp $ */
 
 #ifndef lint
-static char rcsid_ZCheckIfNotice_c[] = "$Id: ZCkIfNot.c,v 1.13 1993-11-19 15:25:34 probe Exp $";
+static char rcsid_ZCheckIfNotice_c[] = "$Id: ZCkIfNot.c,v 1.14 1995-06-30 22:03:54 ghudson Exp $";
 #endif
 
-#include <zephyr/zephyr_internal.h>
+#include <internal.h>
 
 Code_t ZCheckIfNotice(notice, from, predicate, args)
     ZNotice_t *notice;
     struct sockaddr_in *from;
-    register int (*predicate)();
-    char *args;
+    register int (*predicate) __P((ZNotice_t *, void *));
+    void *args;
 {
     ZNotice_t tmpnotice;
     Code_t retval;

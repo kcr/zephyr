@@ -5,26 +5,31 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZRetSubs.c,v $
- *	$Author: probe $
+ *	$Author: ghudson $
  *
  *	Copyright (c) 1987,1988,1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZRetSubs.c,v 1.24 1993-11-19 15:23:06 probe Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZRetSubs.c,v 1.25 1995-06-30 22:04:37 ghudson Exp $ */
 
 #ifndef lint
 static char rcsid_ZRetrieveSubscriptions_c[] =
-    "$Id: ZRetSubs.c,v 1.24 1993-11-19 15:23:06 probe Exp $";
+    "$Id: ZRetSubs.c,v 1.25 1995-06-30 22:04:37 ghudson Exp $";
 #endif
 
-#include <zephyr/zephyr_internal.h>
+#include <internal.h>
 
 static Code_t Z_RetSubs ();
 
+/* Need STDC definition when possible for unsigned short argument. */
+#ifdef __STDC__
+Code_t ZRetrieveSubscriptions(unsigned short port, int *nsubs)
+#else
 Code_t ZRetrieveSubscriptions(port,nsubs)
-	u_short port;
+	unsigned short port;
 	int *nsubs;
+#endif
 {
 	int retval;
 	ZNotice_t notice;
@@ -63,7 +68,7 @@ Code_t ZRetrieveDefaultSubscriptions(nsubs)
 static Code_t Z_RetSubs(notice, nsubs, auth_routine)
 	register ZNotice_t *notice;
 	int *nsubs;
-	int (*auth_routine)();
+	Z_AuthProc auth_routine;
 {
 	register int i;
 	int retval,nrecv,gimmeack;

@@ -4,21 +4,19 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZPending.c,v $
- *	$Author: lwvanels $
+ *	$Author: ghudson $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZPending.c,v 1.6 1991-12-04 13:48:12 lwvanels Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZPending.c,v 1.7 1995-06-30 22:04:32 ghudson Exp $ */
 
 #ifndef lint
-static char rcsid_ZPending_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZPending.c,v 1.6 1991-12-04 13:48:12 lwvanels Exp $";
+static char rcsid_ZPending_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZPending.c,v 1.7 1995-06-30 22:04:32 ghudson Exp $";
 #endif
 
-#include <zephyr/mit-copyright.h>
-
-#include <zephyr/zephyr_internal.h>
+#include <internal.h>
 
 int ZPending()
 {
