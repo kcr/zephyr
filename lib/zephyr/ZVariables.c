@@ -11,10 +11,10 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZVariables.c,v 1.14 1995-06-30 22:04:50 ghudson Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZVariables.c,v 1.15 1997-09-05 19:21:29 ghudson Exp $ */
 
 #ifndef lint
-static char rcsid_ZVariables_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZVariables.c,v 1.14 1995-06-30 22:04:50 ghudson Exp $";
+static char rcsid_ZVariables_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZVariables.c,v 1.15 1997-09-05 19:21:29 ghudson Exp $";
 #endif
 
 #include <internal.h>
@@ -123,7 +123,7 @@ static int get_localvarfile(bfr)
 	(void) strcpy(bfr, envptr);
     else {
 	if (!(pwd = getpwuid((int) getuid()))) {
-	    fprintf(stderr, "Zephyr internal failure: Can't find your entry in /etc/passwd\n");
+	    fprintf(stderr, "Zephyr internal failure: Can't determine your home directory.\n");
 	    return (1);
 	}
 	(void) strcpy(bfr, pwd->pw_dir);
