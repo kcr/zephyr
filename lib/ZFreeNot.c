@@ -4,16 +4,16 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/athena/zephyr/lib/ZFreeNot.c,v $
- *	$Author: rfrench $
+ *	$Author: jtkohl $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZFreeNot.c,v 1.1 1988-05-17 21:21:57 rfrench Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZFreeNot.c,v 1.2 1988-06-15 20:46:13 jtkohl Exp $ */
 
 #ifndef lint
-static char rcsid_ZSendPacket_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZFreeNot.c,v 1.1 1988-05-17 21:21:57 rfrench Exp $";
+static char rcsid_ZFreeNotice_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZFreeNot.c,v 1.2 1988-06-15 20:46:13 jtkohl Exp $";
 #endif lint
 
 #include <zephyr/mit-copyright.h>
