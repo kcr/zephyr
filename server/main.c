@@ -19,7 +19,7 @@
 #ifndef lint
 #ifndef SABER
 static const char rcsid_main_c[] =
-    "$Id: main.c,v 1.65 1995-07-07 22:12:12 ghudson Exp $";
+    "$Id: main.c,v 1.66 1995-07-21 19:27:01 ghudson Exp $";
 #endif
 #endif
 
@@ -380,8 +380,6 @@ initialize()
 	return(1);
 
     server_init();
-
-    nexttimo = 1L;	/* trigger the timerss when we hit the FOR loop */
 
 #ifdef ZEPHYR_USES_KERBEROS
     krb_set_tkt_string(tkt_file);
