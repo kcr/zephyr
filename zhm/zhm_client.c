@@ -4,7 +4,7 @@
  *      Created by:     David C. Jedlinsky
  *
  *      $Source: /srv/kcr/locker/zephyr/zhm/zhm_client.c,v $
- *      $Author: lwvanels $
+ *      $Author: ghudson $
  *
  *      Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -15,16 +15,16 @@
 
 #ifndef lint
 #ifndef SABER
-static char rcsid_hm_client_c[] = "$Header: /srv/kcr/locker/zephyr/zhm/zhm_client.c,v 1.7 1991-12-05 15:27:10 lwvanels Exp $";
+static char rcsid_hm_client_c[] = "$Header: /srv/kcr/locker/zephyr/zhm/zhm_client.c,v 1.8 1995-06-30 22:13:57 ghudson Exp $";
 #endif /* SABER */
 #endif /* lint */
 
 extern int no_server, timeout_type, nclt, deactivated;
 extern struct sockaddr_in cli_sin, serv_sin, from;
 
-transmission_tower(notice, packet, pak_len)
+void transmission_tower(notice, packet, pak_len)
      ZNotice_t *notice;
-     caddr_t packet;
+     char *packet;
      int pak_len;
 {
       ZNotice_t gack;
@@ -79,7 +79,7 @@ transmission_tower(notice, packet, pak_len)
 	      (void)alarm(tleft);
 	    else {
 		  timeout_type = NOTICES;
-		  (void)alarm(NOTICE_TIMEOUT);
+		  (void)alarm(rexmit_times[0]);
 	    }
       }
       (void)add_notice_to_queue(notice, packet, &gsin, pak_len);
