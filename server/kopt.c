@@ -22,7 +22,7 @@
 #ifndef lint
 #ifndef SABER
 static const char *rcsid_rd_req_c =
-    "$Id: kopt.c,v 1.16 1996-04-03 22:59:15 ghudson Exp $";
+    "$Id: kopt.c,v 1.17 1996-06-06 05:59:27 ghudson Exp $";
 #endif /* lint */
 #endif /* SABER */
 
@@ -560,7 +560,7 @@ decomp_ticket(tkt, flags, pname, pinstance, prealm, paddress, session,
 #ifndef NOENCRYPTION
     /* Do the decryption */
     pcbc_encrypt((C_Block *)tkt->dat,(C_Block *)tkt->dat,
-                 (long) tkt->length,key_s,(C_Block *) key,0);
+                 (long) tkt->length,key_s.s,(C_Block *) key,0);
 #endif /* ! NOENCRYPTION */
 
     *flags = *ptr;              /* get flags byte */
