@@ -19,7 +19,7 @@
 #ifndef lint
 #ifndef SABER
 static const char rcsid_main_c[] =
-    "$Id: main.c,v 1.67 1996-03-04 03:25:52 ghudson Exp $";
+    "$Id: main.c,v 1.68 1996-03-04 21:14:25 ghudson Exp $";
 #endif
 #endif
 
@@ -167,7 +167,7 @@ main(argc, argv)
 	  case 'n':
 	    nofork = 1;
 	    break;
-	  case 'r':
+	  case 'k':
 #ifdef ZEPHYR_USES_KERBEROS
 	    strncpy(my_realm, optarg, REALM_SZ);
 #endif
@@ -499,6 +499,7 @@ bye(sig)
     int sig;
 {
     server_shutdown();		/* tell other servers */
+    hostm_shutdown();		/* tell our hosts */
 #ifdef ZEPHYR_USES_KERBEROS
     dest_tkt();
 #endif
