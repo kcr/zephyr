@@ -4,16 +4,16 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/athena/zephyr/lib/ZSendRaw.c,v $
- *	$Author: lwvanels $
+ *	$Author: ghudson $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZSendRaw.c,v 1.5 1991-12-04 13:50:52 lwvanels Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZSendRaw.c,v 1.6 1994-11-01 17:51:59 ghudson Exp $ */
 
 #ifndef lint
-static char rcsid_ZSendRawNotice_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZSendRaw.c,v 1.5 1991-12-04 13:50:52 lwvanels Exp $";
+static char rcsid_ZSendRawNotice_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZSendRaw.c,v 1.6 1994-11-01 17:51:59 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -35,7 +35,7 @@ Code_t ZSendRawNotice(notice)
     if ((retval = ZParseNotice(buffer, len, &newnotice)) != ZERR_NONE)
 	return (retval);
     
-    retval = Z_SendFragmentedNotice(&newnotice, len, Z_XmitFragment);
+    retval = Z_SendFragmentedNotice(&newnotice, len, NULL, Z_XmitFragment);
 
     free(buffer);
 
