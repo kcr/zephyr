@@ -4,7 +4,7 @@
  *      Created by:     David C. Jedlinsky
  *
  *      $Source: /srv/kcr/locker/zephyr/zhm/zhm.c,v $
- *      $Author: marc $
+ *      $Author: ghudson $
  *
  *      Copyright (c) 1987,1991 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -13,10 +13,10 @@
 
 #include "zhm.h"
 
-static const char rcsid_hm_c[] = "$Id: zhm.c,v 1.61 1996-10-21 20:41:20 marc Exp $";
+static const char rcsid_hm_c[] = "$Id: zhm.c,v 1.62 1996-12-15 23:36:31 ghudson Exp $";
 
 #ifdef ZEPHYR_USES_HESIOD
-int ZEPHYR_USES_hesiod = 0;
+int use_hesiod = 0;
 #endif
 
 #ifdef macII
@@ -137,7 +137,7 @@ char *argv[];
     }
 #ifdef ZEPHYR_USES_HESIOD
     else
-	ZEPHYR_USES_hesiod = 1;
+	use_hesiod = 1;
 #endif
 
     choose_server();
@@ -241,7 +241,7 @@ static void choose_server()
     int i = 0;
 
 #ifdef ZEPHYR_USES_HESIOD
-    if (ZEPHYR_USES_hesiod) {
+    if (use_hesiod) {
 
 	/* Free up any previously used resources */
 	if (prim_serv[0]) 
