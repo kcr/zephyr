@@ -13,7 +13,7 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_exec_c[] = "$Header: /srv/kcr/locker/zephyr/clients/zwgc/exec.c,v 1.3 1989-11-08 14:59:30 jtkohl Exp $";
+static char rcsid_exec_c[] = "$Id: exec.c,v 1.4 1989-11-15 18:21:46 jtkohl Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
