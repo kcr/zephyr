@@ -16,7 +16,7 @@
 #include <zephyr/zephyr.h>
 
 #ifndef lint
-static char rcsid_zlocate_c[] = "$Header: /srv/kcr/locker/zephyr/clients/zleave/zleave.c,v 1.23 1995-06-30 21:48:51 ghudson Exp $";
+static char rcsid_zlocate_c[] = "$Header: /srv/kcr/locker/zephyr/clients/zleave/zleave.c,v 1.24 1997-09-05 19:13:42 ghudson Exp $";
 #endif /* lint */
 
 /*
@@ -85,7 +85,8 @@ char **argv;
 			sub.zsub_class = MESSAGE_CLASS;
 			sub.zsub_classinst = INSTANCE;
 			sub.zsub_recipient = ZGetSender();
-			if (ZSubscribeTo(&sub,1,(u_short)port) != ZERR_NONE) {
+			if (ZSubscribeToSansDefaults(&sub,1,(u_short)port)
+			    != ZERR_NONE) {
 				fprintf(stderr,
 					"Subscription error!  Writing to your terminal...\n");
 				use_zephyr = 0;
