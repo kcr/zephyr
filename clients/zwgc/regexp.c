@@ -15,7 +15,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_regexp_c[] = "$Id: regexp.c,v 1.8 1995-07-07 22:00:12 ghudson Exp $";
+static const char rcsid_regexp_c[] = "$Id: regexp.c,v 1.9 1995-07-23 06:29:13 ghudson Exp $";
 #endif
 
 #ifdef SOLARIS
@@ -35,7 +35,7 @@ int ed_regexp_match_p(test_string, pattern)
     int retval;
     char errbuf[512];
 
-    retval = regcomp(&RE, pattern, REG_EXTENDED|REG_NOSUB);
+    retval = regcomp(&RE, pattern, REG_NOSUB);
     if (retval != 0) {
 	regerror(retval, &RE, errbuf, sizeof(errbuf));
 	fprintf(stderr,"%s in regcomp %s\n",errbuf,pattern);
