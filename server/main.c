@@ -4,7 +4,7 @@
  *	Created by:	John T. Kohl
  *
  *	$Source: /srv/kcr/locker/zephyr/server/main.c,v $
- *	$Author: ghudson $
+ *	$Author: marc $
  *
  *	Copyright (c) 1987,1988,1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -19,7 +19,7 @@
 #ifndef lint
 #ifndef SABER
 static const char rcsid_main_c[] =
-    "$Id: main.c,v 1.69 1996-04-03 22:59:21 ghudson Exp $";
+    "$Id: main.c,v 1.70 1996-11-21 18:21:24 marc Exp $";
 #endif
 #endif
 
@@ -380,10 +380,10 @@ initialize()
 #endif
     realm_init();
 
+    ZSetServerState(1);
     ZInitialize();		/* set up the library */
     init_zsrv_err_tbl();	/* set up err table */
 
-    ZSetServerState(1);
     ZSetFD(srv_socket);		/* set up the socket as the input fildes */
 
     /* set up default strings */

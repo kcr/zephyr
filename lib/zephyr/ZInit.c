@@ -10,7 +10,7 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZInit.c,v 1.24 1996-06-12 04:44:08 marc Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZInit.c,v 1.25 1996-11-21 18:21:17 marc Exp $ */
 
 #ifndef lint
 static char rcsid_ZInitialize_c[] =
@@ -62,21 +62,30 @@ Code_t ZInitialize()
     __Q_Head = NULL;
     
 #ifdef ZEPHYR_USES_KERBEROS
-    if ((code = ZOpenPort(NULL)) != ZERR_NONE)
-       return(code);
 
-    if ((code = ZhmStat(NULL, &notice)) != ZERR_NONE)
-       return(code);
+    /* if the application is a server, there might not be a zhm.  The
+       code will fall back to something which might not be "right",
+       but this is is ok, since none of the servers call krb_rd_req. */
 
-    ZClosePort();
+    if (! __Zephyr_server) {
+       if ((code = ZOpenPort(NULL)) != ZERR_NONE)
+	  return(code);
 
-    /* the first field, which is NUL-terminated, is the server name.
-       If this code ever support a multiplexing zhm, this will have to
-       be made smarter, and probably per-message */
+       if ((code = ZhmStat(NULL, &notice)) != ZERR_NONE)
+	  return(code);
 
-    krealm = krb_realmofhost(notice.z_message);
+       ZClosePort();
 
-    ZFreeNotice(&notice);
+       /* the first field, which is NUL-terminated, is the server name.
+	  If this code ever support a multiplexing zhm, this will have to
+	  be made smarter, and probably per-message */
+
+       krealm = krb_realmofhost(notice.z_message);
+
+       ZFreeNotice(&notice);
+    } else {
+       krealm = NULL;
+    }
 
     if (krealm) {
 	strcpy(__Zephyr_realm, krealm);
