@@ -12,14 +12,15 @@
  *      "mit-copyright.h".
  */
 
+#include <sysdep.h>
+
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_formatter_c[] = "$Id: formatter.c,v 1.14 1995-06-30 21:52:39 ghudson Exp $";
+static const char rcsid_formatter_c[] = "$Id: formatter.c,v 1.15 1995-07-07 21:59:38 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
 #include <zephyr/zephyr.h>
 
-#include <sysdep.h>
 #include "new_memory.h"
 #include "char_stack.h"
 #include "string_dictionary.h"

@@ -4,7 +4,7 @@
  *
  *	Created by:	C. Anthony Della Fera
  *
- *	$Id: zshutdown_notify.c,v 1.14 1995-07-04 04:24:59 ghudson Exp $
+ *	$Id: zshutdown_notify.c,v 1.15 1995-07-07 21:56:34 ghudson Exp $
  *
  *	Copyright (c) 1987, 1993 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -19,8 +19,8 @@
 #include <netdb.h>
 
 #ifndef lint
-static char *rcsid_zshutdown_notify_c =
-    "$Id: zshutdown_notify.c,v 1.14 1995-07-04 04:24:59 ghudson Exp $";
+static const char *rcsid_zshutdown_notify_c =
+    "$Id: zshutdown_notify.c,v 1.15 1995-07-07 21:56:34 ghudson Exp $";
 #endif
 
 #define N_KIND		UNSAFE

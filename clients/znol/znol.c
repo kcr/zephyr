@@ -17,7 +17,7 @@
 #include <pwd.h>
 
 #ifndef lint
-static char rcsid_znol_c[] = "$Id: znol.c,v 1.13 1995-06-30 21:49:11 ghudson Exp $";
+static const char rcsid_znol_c[] = "$Id: znol.c,v 1.14 1995-07-07 21:56:18 ghudson Exp $";
 #endif 
 
 #define SUBSATONCE 7

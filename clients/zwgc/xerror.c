@@ -12,13 +12,13 @@
  *      "mit-copyright.h".
  */
 
+#include <sysdep.h>
+
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_xerror_c[] = "$Id: xerror.c,v 1.3 1995-06-30 21:53:12 ghudson Exp $";
+static const char rcsid_xerror_c[] = "$Id: xerror.c,v 1.4 1995-07-07 22:00:38 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
-
-#include <sysdep.h>
 
 #ifndef X_DISPLAY_MISSING
 

@@ -12,12 +12,13 @@
  *      "mit-copyright.h".
  */
 
+#include <sysdep.h>
+
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_text_operations_c[] = "$Id: text_operations.c,v 1.5 1995-06-30 21:53:06 ghudson Exp $";
+static const char rcsid_text_operations_c[] = "$Id: text_operations.c,v 1.6 1995-07-07 22:00:25 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
-#include <sysdep.h>
 
 #include "new_memory.h"
 #include "text_operations.h"

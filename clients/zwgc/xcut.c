@@ -12,8 +12,10 @@
  *      "mit-copyright.h".
  */
 
+#include <sysdep.h>
+
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_xcut_c[] = "$Id: xcut.c,v 1.10 1995-06-30 21:53:11 ghudson Exp $";
+static const char rcsid_xcut_c[] = "$Id: xcut.c,v 1.11 1995-07-07 22:00:35 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -23,8 +25,6 @@ static char rcsid_xcut_c[] = "$Id: xcut.c,v 1.10 1995-06-30 21:53:11 ghudson Exp
 /*                    Code to deal with handling X events:                  */
 /*                                                                          */
 /****************************************************************************/
-
-#include <sysdep.h>
 
 #ifndef X_DISPLAY_MISSING
 

@@ -18,7 +18,7 @@
 #include "zserver.h"
 
 #if !defined(lint) && !defined(SABER)
-static char rcsid_zstat_c[] = "$Id: zstat.c,v 1.19 1995-06-30 21:50:09 ghudson Exp $";
+static const char rcsid_zstat_c[] = "$Id: zstat.c,v 1.20 1995-07-07 21:58:12 ghudson Exp $";
 #endif
 
 const char *hm_head[] = {

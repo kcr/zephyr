@@ -12,8 +12,10 @@
  *      "mit-copyright.h".
  */
 
+#include <sysdep.h>
+
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_port_c[] = "$Id: port.c,v 1.10 1995-06-30 21:52:58 ghudson Exp $";
+static const char rcsid_port_c[] = "$Id: port.c,v 1.11 1995-07-07 22:00:07 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -24,7 +26,6 @@ static char rcsid_port_c[] = "$Id: port.c,v 1.10 1995-06-30 21:52:58 ghudson Exp
 /*                                                                          */
 /****************************************************************************/
 
-#include <sysdep.h>
 #include "new_string.h"
 #include "port_dictionary.h"
 #include "port.h"

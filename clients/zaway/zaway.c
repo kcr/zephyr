@@ -18,7 +18,7 @@
 #include <com_err.h>
 
 #ifndef lint
-static char rcsid_zaway_c[] = "$Id: zaway.c,v 1.11 1995-06-30 21:48:29 ghudson Exp $";
+static const char rcsid_zaway_c[] = "$Id: zaway.c,v 1.12 1995-07-07 21:55:32 ghudson Exp $";
 #endif
 
 #define MESSAGE_CLASS "MESSAGE"

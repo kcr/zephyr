@@ -12,8 +12,10 @@
  *      "mit-copyright.h".
  */
 
+#include <sysdep.h>
+
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_zephyr_c[] = "$Id: zephyr.c,v 1.6 1995-06-30 21:53:19 ghudson Exp $";
+static const char rcsid_zephyr_c[] = "$Id: zephyr.c,v 1.7 1995-07-07 22:00:53 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -24,7 +26,6 @@ static char rcsid_zephyr_c[] = "$Id: zephyr.c,v 1.6 1995-06-30 21:53:19 ghudson 
 /*                                                                          */
 /****************************************************************************/
 
-#include <sysdep.h>
 #include <zephyr/zephyr.h>
 #include <sys/socket.h>
 #include "new_string.h"

@@ -16,7 +16,7 @@
 #include <sys/socket.h>
 
 #if !defined(lint) && !defined(SABER)
-static char rcsid_zlocate_c[] = "$Id: zlocate.c,v 1.13 1995-06-30 21:48:57 ghudson Exp $";
+static const char rcsid_zlocate_c[] = "$Id: zlocate.c,v 1.14 1995-07-07 21:55:59 ghudson Exp $";
 #endif
 
 int numusers=0, numleft=0, parallel=0, oneline=0;

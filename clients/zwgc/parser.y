@@ -13,8 +13,10 @@
  *      "mit-copyright.h".
  */
 
+#include <sysdep.h>
+
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_parser_y[] = "$Id: parser.y,v 1.5 1995-06-30 21:52:56 ghudson Exp $";
+static const char rcsid_parser_y[] = "$Id: parser.y,v 1.6 1995-07-07 22:00:03 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>

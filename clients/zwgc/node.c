@@ -12,13 +12,14 @@
  *      "mit-copyright.h".
  */
 
+#include <sysdep.h>
+
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_node_c[] = "$Id: node.c,v 1.4 1995-06-30 21:52:53 ghudson Exp $";
+static const char rcsid_node_c[] = "$Id: node.c,v 1.5 1995-07-07 21:59:56 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
 
-#include <sysdep.h>
 #include "new_memory.h"
 #include "node.h"
 

@@ -12,15 +12,16 @@
  *      "mit-copyright.h".
  */
 
+#include <sysdep.h>
+
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_regexp_c[] = "$Id: regexp.c,v 1.7 1995-06-30 21:52:59 ghudson Exp $";
+static const char rcsid_regexp_c[] = "$Id: regexp.c,v 1.8 1995-07-07 22:00:12 ghudson Exp $";
 #endif
 
 #ifdef SOLARIS
 #include <libgen.h>
 #endif
 
-#include <sysdep.h>
 #include "regexp.h"
 
 #ifdef HAVE_REGCOMP
