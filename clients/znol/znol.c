@@ -11,13 +11,13 @@
  *	"mit-copyright.h". 
  */
 
+#include <sysdep.h>
 #include <zephyr/zephyr.h>
 
 #include <pwd.h>
-#include <string.h>
 
 #ifndef lint
-static char rcsid_znol_c[] = "$Id: znol.c,v 1.12 1995-05-31 17:19:24 ghudson Exp $";
+static char rcsid_znol_c[] = "$Id: znol.c,v 1.13 1995-06-30 21:49:11 ghudson Exp $";
 #endif 
 
 #define SUBSATONCE 7

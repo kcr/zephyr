@@ -11,16 +11,14 @@
  *	"mit-copyright.h". 
  */
 
+#include <sysdep.h>
 #include <zephyr/mit-copyright.h>
-
 #include <zephyr/zephyr.h>
-#include <string.h>
 #include <netdb.h>
 #include <pwd.h>
-#include <ctype.h>
 
 #ifndef lint
-static char rcsid_zwrite_c[] = "$Id: zwrite.c,v 1.45 1995-03-27 21:08:54 ghudson Exp $";
+static char rcsid_zwrite_c[] = "$Id: zwrite.c,v 1.46 1995-06-30 21:53:50 ghudson Exp $";
 #endif /* lint */
 
 #define DEFAULT_CLASS "MESSAGE"
@@ -33,7 +31,7 @@ static char rcsid_zwrite_c[] = "$Id: zwrite.c,v 1.45 1995-03-27 21:08:54 ghudson
 
 int nrecips, msgarg, verbose, quiet, nodot;
 char *whoami, *inst, *class, *opcode, *recips[MAXRECIPS];
-int (*auth)();
+Z_AuthProc auth;
 void un_tabify();
 
 char *fix_filsrv_inst();

@@ -3,32 +3,32 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: zmailnotify.c,v 1.23 1995-05-04 18:03:10 ghudson Exp $
+ *	$Id: zmailnotify.c,v 1.24 1995-06-30 21:49:03 ghudson Exp $
  *
  *	Copyright (c) 1987,1993 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
 
+#include <sysdep.h>
 #include <zephyr/mit-copyright.h>
 #include <zephyr/zephyr.h>
 
 #ifndef lint
 static char rcsid_zmailnotify_c[] =
-    "$Id: zmailnotify.c,v 1.23 1995-05-04 18:03:10 ghudson Exp $";
+    "$Id: zmailnotify.c,v 1.24 1995-06-30 21:49:03 ghudson Exp $";
 #endif
 
-#include <sys/uio.h>
 #include <sys/socket.h>
-#include <sys/file.h>
-#include <fcntl.h>
 #include <pwd.h>
-#include <errno.h>
 #include <netdb.h>
-#ifdef Z_HaveHesiod
+#ifdef ZEPHYR_USES_HESIOD
 #include <hesiod.h>
 #endif
-#include <string.h>
+
+#ifndef ZEPHYR_USES_KERBEROS
+#undef KPOP
+#endif
 
 #ifdef KPOP
 #include <krb.h>
@@ -71,7 +71,7 @@ main(argc, argv)
     int i,nbytes,retval,uselock;
     struct passwd *pwd;
     struct _mail mymail;
-#ifdef Z_HaveHesiod
+#ifdef ZEPHYR_USES_HESIOD
     struct hes_postoffice *p;
 #endif
 
@@ -103,7 +103,7 @@ main(argc, argv)
     (void) sprintf(lockfile,"%s/.maillock",dir);
 	
     host = (char *)getenv("MAILHOST");
-#ifdef Z_HaveHesiod
+#ifdef ZEPHYR_USES_HESIOD
     if (host == NULL) {
 	p = hes_getmailhost(user);
 	if (p != NULL && strcmp(p->po_type, "POP") == 0)
@@ -122,7 +122,7 @@ main(argc, argv)
     }
 
     lock = fopen(lockfile,"r+");
-#ifdef POSIX
+#ifdef _POSIX_VERSION
     if (lock) {
 	struct flock fl;
 
@@ -163,7 +163,7 @@ main(argc, argv)
 
     if (!nmsgs) {
 	if (lock) {
-#ifdef POSIX
+#ifdef _POSIX_VERSION
 	    struct flock fl;
 
 	    /* unlock the whole file */
@@ -204,7 +204,7 @@ main(argc, argv)
     }
     else {
 	lock = fopen(lockfile,"w");
-#ifdef POSIX
+#ifdef _POSIX_VERSION
 	if (lock) {
 	    struct flock fl;
 
@@ -241,7 +241,7 @@ main(argc, argv)
 	mail_notify(&maillist[nmsgs-i]);
     i--;
     if (lock) {
-#ifdef POSIX
+#ifdef _POSIX_VERSION
 	struct flock fl;
 
 	/* unlock the whole file */
@@ -395,7 +395,6 @@ char *host;
     long authopts;
     char *host_save;
 #endif
-    char *get_errmsg();
     char *svc_name;
 
     hp = gethostbyname(host);
@@ -429,12 +428,12 @@ char *host;
     s = rresvport(&lport);
 #endif
     if (s < 0) {
-	(void) sprintf(Errmsg, "error creating socket: %s", get_errmsg());
+	(void) sprintf(Errmsg, "error creating socket: %s", strerror(errno));
 	return(NOTOK);
     }
 
     if (connect(s, (struct sockaddr *)&sin, sizeof sin) < 0) {
-	(void) sprintf(Errmsg, "error during connect: %s", get_errmsg());
+	(void) sprintf(Errmsg, "error during connect: %s", strerror(errno));
 	(void) close(s);
 	return(NOTOK);
     }
@@ -474,7 +473,7 @@ char *host;
     sfi = fdopen(s, "r");
     sfo = fdopen(s, "w");
     if (sfi == NULL || sfo == NULL) {
-	(void) sprintf(Errmsg, "error in fdopen: %s", get_errmsg());
+	(void) sprintf(Errmsg, "error in fdopen: %s", strerror(errno));
 	(void) close(s);
 	return(NOTOK);
     }
@@ -604,20 +603,6 @@ FILE *f;
 	return DONE;
     }
     return(OK);
-}
-
-char *
-get_errmsg()
-{
-    extern int errno, sys_nerr;
-    extern char *sys_errlist[];
-    char *s;
-
-    if (errno < sys_nerr)
-      s = sys_errlist[errno];
-    else
-      s = "unknown error";
-    return(s);
 }
 
 putline(buf, err, f)

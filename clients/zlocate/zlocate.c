@@ -4,28 +4,25 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/clients/zlocate/zlocate.c,v $
- *	$Author: probe $
+ *	$Author: ghudson $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
 
-#include <zephyr/zephyr_internal.h>
-#include <signal.h>
+#include <sysdep.h>
+#include <zephyr/zephyr.h>
 #include <sys/socket.h>
 
 #if !defined(lint) && !defined(SABER)
-static char rcsid_zlocate_c[] = "$Id: zlocate.c,v 1.12 1993-11-19 15:28:44 probe Exp $";
+static char rcsid_zlocate_c[] = "$Id: zlocate.c,v 1.13 1995-06-30 21:48:57 ghudson Exp $";
 #endif
 
 int numusers=0, numleft=0, parallel=0, oneline=0;
 char *whoami;
 
-#ifdef POSIX
-void
-#endif
-timeout(sig)
+RETSIGTYPE timeout(sig)
 {
   fprintf (stderr, "%s: no response from server\n", whoami);
   exit(1);
@@ -77,7 +74,7 @@ main(argc,argv)
     ZAsyncLocateData_t ald;
     int retval,i,numlocs,loc,auth;
     ZNotice_t notice;
-#ifdef POSIX
+#ifdef _POSIX_VERSION
     struct sigaction sa;
 #endif
    
@@ -149,7 +146,7 @@ main(argc,argv)
     }
 
     if (parallel) {
-#ifdef POSIX
+#ifdef _POSIX_VERSION
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	sa.sa_handler = timeout;
