@@ -10,11 +10,11 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZGetSender.c,v 1.10 1993-11-21 03:18:13 probe Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZGetSender.c,v 1.11 1993-11-21 03:19:19 probe Exp $ */
 
 #ifndef lint
 static char rcsid_ZGetSender_c[] =
-    "$Zephyr: ZGetSender.c,v 1.7 88/05/13 15:05:07 rfrench Exp $";
+    "$Id: ZGetSender.c,v 1.11 1993-11-21 03:19:19 probe Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
