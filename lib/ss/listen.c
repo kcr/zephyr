@@ -1,7 +1,7 @@
 /*
  * Listener loop for subsystem library libss.a.
  *
- *	$Header: /srv/kcr/locker/zephyr/lib/ss/listen.c,v 1.6 1995-07-01 01:23:09 ghudson Exp $
+ *	$Header: /srv/kcr/locker/zephyr/lib/ss/listen.c,v 1.7 1995-07-07 22:10:09 ghudson Exp $
  *	$Locker:  $
  * 
  * Copyright 1987, 1988 by MIT Student Information Processing Board
@@ -15,7 +15,7 @@
 
 #ifndef	lint
 static char const rcs_id[] =
-    "$Header: /srv/kcr/locker/zephyr/lib/ss/listen.c,v 1.6 1995-07-01 01:23:09 ghudson Exp $";
+    "$Header: /srv/kcr/locker/zephyr/lib/ss/listen.c,v 1.7 1995-07-07 22:10:09 ghudson Exp $";
 #endif
 
 static ss_data *current_info;
@@ -66,7 +66,6 @@ int ss_listen (sci_idx)
     int code;
     jmp_buf old_jmpb;
     ss_data *old_info = current_info;
-    static RETSIGTYPE print_prompt();
 #ifdef _POSIX_VERSION
     struct sigaction isig, csig, nsig, osig;
     sigset_t nmask, omask;
