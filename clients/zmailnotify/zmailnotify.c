@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: zmailnotify.c,v 1.28 1996-03-04 03:00:29 ghudson Exp $
+ *	$Id: zmailnotify.c,v 1.29 1996-04-05 19:11:33 ghudson Exp $
  *
  *	Copyright (c) 1987,1993 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -16,7 +16,7 @@
 
 #ifndef lint
 static const char rcsid_zmailnotify_c[] =
-    "$Id: zmailnotify.c,v 1.28 1996-03-04 03:00:29 ghudson Exp $";
+    "$Id: zmailnotify.c,v 1.29 1996-04-05 19:11:33 ghudson Exp $";
 #endif
 
 #include <sys/socket.h>
@@ -47,6 +47,7 @@ char *PrincipalHostname();
 #endif
 
 void get_message(), pop_close(), mail_notify(), fatal_pop_err ();
+int pop_command __P((char *, ...));
 #define MAXMAIL 4
 
 struct _mail {
