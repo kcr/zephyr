@@ -4,17 +4,17 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/athena/zephyr/lib/ZSendRaw.c,v $
- *	$Author: jtkohl $
+ *	$Author: lwvanels $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZSendRaw.c,v 1.4 1988-06-15 20:49:15 jtkohl Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZSendRaw.c,v 1.5 1991-12-04 13:50:52 lwvanels Exp $ */
 
 #ifndef lint
-static char rcsid_ZSendRawNotice_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZSendRaw.c,v 1.4 1988-06-15 20:49:15 jtkohl Exp $";
-#endif lint
+static char rcsid_ZSendRawNotice_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZSendRaw.c,v 1.5 1991-12-04 13:50:52 lwvanels Exp $";
+#endif
 
 #include <zephyr/mit-copyright.h>
 

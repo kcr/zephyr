@@ -4,17 +4,17 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/athena/zephyr/lib/ZOpenPort.c,v $
- *	$Author: jtkohl $
+ *	$Author: lwvanels $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZOpenPort.c,v 1.11 1988-06-23 10:31:58 jtkohl Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZOpenPort.c,v 1.12 1991-12-04 13:47:30 lwvanels Exp $ */
 
 #ifndef lint
-static char rcsid_ZOpenPort_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZOpenPort.c,v 1.11 1988-06-23 10:31:58 jtkohl Exp $";
-#endif lint
+static char rcsid_ZOpenPort_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZOpenPort.c,v 1.12 1991-12-04 13:47:30 lwvanels Exp $";
+#endif
 
 #include <zephyr/mit-copyright.h>
 

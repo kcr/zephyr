@@ -4,17 +4,17 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/athena/zephyr/lib/ZGetLocs.c,v $
- *	$Author: rfrench $
+ *	$Author: lwvanels $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZGetLocs.c,v 1.4 1988-05-17 21:22:01 rfrench Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZGetLocs.c,v 1.5 1991-12-04 13:48:27 lwvanels Exp $ */
 
 #ifndef lint
-static char rcsid_ZGetLocations_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZGetLocs.c,v 1.4 1988-05-17 21:22:01 rfrench Exp $";
-#endif lint
+static char rcsid_ZGetLocations_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZGetLocs.c,v 1.5 1991-12-04 13:48:27 lwvanels Exp $";
+#endif
 
 #include <zephyr/mit-copyright.h>
 

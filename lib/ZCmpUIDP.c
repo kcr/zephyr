@@ -4,17 +4,17 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/athena/zephyr/lib/ZCmpUIDP.c,v $
- *	$Author: jtkohl $
+ *	$Author: lwvanels $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZCmpUIDP.c,v 1.4 1988-06-17 17:19:49 jtkohl Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZCmpUIDP.c,v 1.5 1991-12-04 13:50:57 lwvanels Exp $ */
 
 #ifndef lint
-static char rcsid_ZCompareUIDPred_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZCmpUIDP.c,v 1.4 1988-06-17 17:19:49 jtkohl Exp $";
-#endif lint
+static char rcsid_ZCompareUIDPred_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZCmpUIDP.c,v 1.5 1991-12-04 13:50:57 lwvanels Exp $";
+#endif
 
 #include <zephyr/mit-copyright.h>
 
