@@ -17,7 +17,7 @@
 
 #if !defined (lint) && !defined (SABER)
 static const char rcsid_access_c[] =
-    "$Id: access.c,v 1.19 1996-02-13 17:44:32 ghudson Exp $";
+    "$Id: access.c,v 1.20 1996-04-03 22:57:25 ghudson Exp $";
 #endif
 
 /*
@@ -90,7 +90,7 @@ access_check(sender, acl, accesstype)
 	syslog(LOG_ERR, "unknown access type %d", (int) accesstype);
 	return 0;
     }
-    if (!((acl->acl_types) & flag)) /* no acl ==> no restriction */
+    if (!(acl->acl_types & flag)) /* no acl ==> no restriction */
 	return 1;
     sprintf(buf, "%s/%s-%s.acl", acl_dir, prefix, acl->acl_filename);
     /*
