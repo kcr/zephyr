@@ -20,7 +20,7 @@
 #include <ctype.h>
 
 #ifndef lint
-static char rcsid_zwrite_c[] = "$Id: zwrite.c,v 1.44 1995-03-27 21:06:51 ghudson Exp $";
+static char rcsid_zwrite_c[] = "$Id: zwrite.c,v 1.45 1995-03-27 21:08:54 ghudson Exp $";
 #endif /* lint */
 
 #define DEFAULT_CLASS "MESSAGE"
@@ -406,7 +406,7 @@ usage(s)
     fprintf(stderr,
 	    "Usage: %s [-a] [-o] [-d] [-v] [-q] [-n] [-t] [-u] [-l]\n\
 \t[-c class] [-i inst] [-O opcode] [-f fsname] [-s signature]\n\
-\t[user ...] [-m message]\n", s);
+\t[user ...] [-F format] [-m message]\n", s);
     fprintf(stderr,"\t-f and -c are mutually exclusive\n\
 \t-f and -i are mutually exclusive\n\
 \trecipients must be specified unless -c or -f specifies a class\n\
