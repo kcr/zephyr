@@ -15,7 +15,7 @@
 
 #ifndef lint
 #ifndef SABER
-static char rcsid_queue_c[] = "$Header: /srv/kcr/locker/zephyr/zhm/queue.c,v 1.15 1995-06-30 22:13:52 ghudson Exp $";
+static char rcsid_queue_c[] = "$Header: /srv/kcr/locker/zephyr/zhm/queue.c,v 1.16 1995-07-02 05:51:53 ghudson Exp $";
 #endif /* SABER */
 #endif /* lint */
 
@@ -33,7 +33,7 @@ static Queue *hm_queue;
 static Queue *is_in_queue __P((ZNotice_t *notice));
 static Code_t dump_queue __P((void));
 
-int rexmit_times[] = { 2, 2, 4, 4, 8, 8, 16, 16, 32, 32, -1 };
+int rexmit_times[] = { 2, 2, 4, 4, 8, -1 };
 
 extern int timeout_type;
 

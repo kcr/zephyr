@@ -13,7 +13,7 @@
 
 #include "zhm.h"
 
-static char rcsid_hm_c[] = "$Id: zhm.c,v 1.56 1995-06-30 22:13:54 ghudson Exp $";
+static char rcsid_hm_c[] = "$Id: zhm.c,v 1.57 1995-07-02 05:52:01 ghudson Exp $";
 
 #ifdef ZEPHYR_USES_HESIOD
 int ZEPHYR_USES_hesiod = 0;
@@ -340,18 +340,6 @@ static void init_hm()
      loopback[2] = 0;
      loopback[3] = 1;
       
-     /* kill old hm if it exists */
-     fp = fopen(PidFile, "r");
-     if (fp != NULL) {
-	  (void)fscanf(fp, "%d\n", &oldpid);
-	  if (oldpid > 1) {
-	      while (!kill(oldpid, SIGTERM))
-		  sleep(1);
-	      syslog(LOG_INFO, "Killed old image.");
-	  }
-	  (void) fclose(fp);
-     }
-
      if (inetd) {
 	     (void) ZSetFD(0);		/* fd 0 is on the socket,
 					   thanks to inetd */
