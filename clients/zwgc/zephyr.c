@@ -15,7 +15,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_zephyr_c[] = "$Id: zephyr.c,v 1.7 1995-07-07 22:00:53 ghudson Exp $";
+static const char rcsid_zephyr_c[] = "$Id: zephyr.c,v 1.8 1996-03-04 02:51:40 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -35,6 +35,9 @@ static const char rcsid_zephyr_c[] = "$Id: zephyr.c,v 1.7 1995-07-07 22:00:53 gh
 #include "subscriptions.h"
 #include "variables.h"
 #include "pointer.h"
+#ifndef X_DISPLAY_MISSING
+#include "X_driver.h"
+#endif
 
 #ifdef DEBUG
 extern int zwgc_debug;
@@ -137,6 +140,7 @@ void zephyr_init(notice_handler)
     unsigned short port = 0;           /* Use any old port */
     char *temp;
     char *exposure;
+    char *tty = NULL;
     FILE *port_file;
 
     /*
@@ -159,6 +163,15 @@ void zephyr_init(notice_handler)
 	fprintf(stderr, "zwgc: error while opening %s for writing: ", temp);
 	perror("");
     }
+
+    /* Set hostname and tty for locations.  If we support X, use the
+     * display string for the tty name. */
+#ifndef X_DISPLAY_MISSING
+    if (dpy)
+	tty = DisplayString(dpy);
+#endif
+    error_code = ZInitLocationInfo(NULL, tty);
+    TRAP( error_code, "while initializing location information" );
 
     /*
      * Retrieve the user's desired exposure level (from the zephyr variable
