@@ -15,7 +15,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_tty_filter_c[] = "$Id: tty_filter.c,v 1.16 1995-07-07 22:00:28 ghudson Exp $";
+static const char rcsid_tty_filter_c[] = "$Id: tty_filter.c,v 1.17 1996-03-04 02:55:04 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -389,6 +389,8 @@ static int calc_max_line_width(info)
     int right = 0;
 
     for (; info; info=info->next) {
+	if (info->ignore)
+	    continue;
 	switch (info->alignment) {
 	  case 'l':
 	    left += info->len;
