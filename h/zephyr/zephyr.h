@@ -3,9 +3,9 @@
  *
  *	Created by:	Robert French
  *
- *	$Source: /srv/kcr/athena/zephyr/h/zephyr/Attic/zephyr.h.in,v $
+ *	$Source: /srv/kcr/athena/zephyr/h/zephyr/zephyr.h,v $
  *	$Author: ghudson $
- *	$Id: zephyr.h.in,v 1.2 1997-09-23 19:23:52 ghudson Exp $
+ *	$Id: zephyr.h,v 1.53 1997-09-25 00:15:28 ghudson Exp $
  *
  *	Copyright (c) 1987,1988,1991 by the Massachusetts Institute of
  *	Technology. For copying and distribution information, see the
