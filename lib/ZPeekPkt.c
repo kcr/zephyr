@@ -4,21 +4,19 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/athena/zephyr/lib/ZPeekPkt.c,v $
- *	$Author: probe $
+ *	$Author: ghudson $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZPeekPkt.c,v 1.11 1993-11-19 15:25:45 probe Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZPeekPkt.c,v 1.12 1997-09-14 21:52:48 ghudson Exp $ */
 
 #ifndef lint
-static char rcsid_ZPeekPacket_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZPeekPkt.c,v 1.11 1993-11-19 15:25:45 probe Exp $";
+static char rcsid_ZPeekPacket_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZPeekPkt.c,v 1.12 1997-09-14 21:52:48 ghudson Exp $";
 #endif
 
-#include <zephyr/mit-copyright.h>
-
-#include <zephyr/zephyr_internal.h>
+#include <internal.h>
 
 Code_t ZPeekPacket(buffer, ret_len, from)
     char **buffer;

@@ -4,21 +4,19 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/athena/zephyr/lib/ZLocateU.c,v $
- *	$Author: lwvanels $
+ *	$Author: ghudson $
  *
  *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZLocateU.c,v 1.22 1991-12-04 13:48:33 lwvanels Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZLocateU.c,v 1.23 1997-09-14 21:52:41 ghudson Exp $ */
 
 #ifndef lint
-static char rcsid_ZLocateUser_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZLocateU.c,v 1.22 1991-12-04 13:48:33 lwvanels Exp $";
+static char rcsid_ZLocateUser_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZLocateU.c,v 1.23 1997-09-14 21:52:41 ghudson Exp $";
 #endif
 
-#include <zephyr/mit-copyright.h>
-
-#include <zephyr/zephyr_internal.h>
+#include <internal.h>
 
 Code_t ZLocateUser(user, nlocs)
     char *user;
