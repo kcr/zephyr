@@ -4,7 +4,7 @@
  *	Created by:	John T. Kohl
  *
  *	$Source: /srv/kcr/locker/zephyr/server/main.c,v $
- *	$Author: marc $
+ *	$Author: ghudson $
  *
  *	Copyright (c) 1987,1988,1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -19,7 +19,7 @@
 #ifndef lint
 #ifndef SABER
 static const char rcsid_main_c[] =
-    "$Id: main.c,v 1.70 1996-11-21 18:21:24 marc Exp $";
+    "$Id: main.c,v 1.71 1997-09-05 19:28:05 ghudson Exp $";
 #endif
 #endif
 
@@ -429,6 +429,7 @@ do_net_setup()
     setservent(1);		/* keep file/connection open */
 
     memset(&srv_addr, 0, sizeof(srv_addr));
+    srv_addr.sin_family = AF_INET;
     sp = getservbyname(SERVER_SVCNAME, "udp");
     srv_addr.sin_port = (sp) ? sp->s_port : SERVER_SVC_FALLBACK;
 
