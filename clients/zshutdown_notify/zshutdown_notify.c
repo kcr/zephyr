@@ -3,13 +3,16 @@
  *	$Author: tony $
  *	$Locker:  $
  *	$Log: zshutdown_notify.c,v $
- *	Revision 1.1  1987-08-08 03:42:52  tony
- *	Initial revision
+ *	Revision 1.2  1987-08-08 04:48:42  tony
+ *	Moved the two warning fields into one warning field.
  *
+ * Revision 1.1  87/08/08  03:42:52  tony
+ * Initial revision
+ * 
  */
 
 #ifndef lint
-static char *rcsid_zshutdown_notify_c = "$Header: /srv/kcr/locker/zephyr/clients/zshutdown_notify/zshutdown_notify.c,v 1.1 1987-08-08 03:42:52 tony Exp $";
+static char *rcsid_zshutdown_notify_c = "$Header: /srv/kcr/locker/zephyr/clients/zshutdown_notify/zshutdown_notify.c,v 1.2 1987-08-08 04:48:42 tony Exp $";
 #endif	lint
 
 /* This file is part of the Project Athena Zephyr Notification System.
@@ -36,7 +39,7 @@ static char *rcsid_zshutdown_notify_c = "$Header: /srv/kcr/locker/zephyr/clients
 
 #ifndef lint
 #ifndef SABER
-static char rcsid_zlogin_c[] = "$Header: /srv/kcr/locker/zephyr/clients/zshutdown_notify/zshutdown_notify.c,v 1.1 1987-08-08 03:42:52 tony Exp $";
+static char rcsid_zlogin_c[] = "$Header: /srv/kcr/locker/zephyr/clients/zshutdown_notify/zshutdown_notify.c,v 1.2 1987-08-08 04:48:42 tony Exp $";
 #endif SABER
 #endif lint
 
@@ -44,16 +47,15 @@ static char rcsid_zlogin_c[] = "$Header: /srv/kcr/locker/zephyr/clients/zshutdow
 #define N_CLASS_ROOT	"FILSRV"
 #define N_CLASS_INST	"STATUS"
 #define N_OPCODE	"SHUTDOWN"
-#define N_DEF_FORMAT	"@bold(Shutdown message from $1 at $time)\n@center(System going down, message is:)\n\n$2\n\n@center(@bold($3))\n@center(@bold($4))"
-#define N_FIELD_CNT	4
+#define N_DEF_FORMAT	"@bold(Shutdown message from $1 at $time)\n@center(System going down, message is:)\n\n$2\n\n@center(@bold($3))"
+#define N_FIELD_CNT	3
 
 /*
  * Standard warning strings appended as extra fields to
  * the message body.
  */
 
-static char warn1[] = "Please detach any filesystems you may have";
-static char warn2[] = "attached from this host!";
+static char warning[] = "Please detach any filesystems you may have\nattached from this host!";
 
 main(argc,argv)
     int argc;
@@ -69,8 +71,7 @@ main(argc,argv)
 
     msg[0] = hostname;
     msg[1] = message;
-    msg[2] = warn1;
-    msg[3] = warn2;
+    msg[2] = warning;
 
     if ((retval = ZInitialize()) != ZERR_NONE) {
 	com_err(argv[0], retval, "while initializing");
