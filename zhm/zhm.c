@@ -13,7 +13,7 @@
 
 #include "zhm.h"
 
-static const char rcsid_hm_c[] = "$Id: zhm.c,v 1.58 1995-07-07 22:17:25 ghudson Exp $";
+static const char rcsid_hm_c[] = "$Id: zhm.c,v 1.59 1995-11-30 02:24:13 ghudson Exp $";
 
 #ifdef ZEPHYR_USES_HESIOD
 int ZEPHYR_USES_hesiod = 0;
@@ -397,7 +397,12 @@ static void init_hm()
 
 #ifdef _POSIX_VERSION
      sigemptyset(&sa.sa_mask);
+#ifdef SA_INTERRUPT
+     /* SunOS restarts recvfrom() if we don't set SA_INTERRUPT. */
+     sa.sa_flags = SA_INTERRUPT;
+#else
      sa.sa_flags = 0;
+#endif
      sa.sa_handler = set_sig_type;
      sigaction(SIGHUP, &sa, (struct sigaction *)0);
      sigaction(SIGALRM, &sa, (struct sigaction *)0);
