@@ -10,10 +10,10 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZInit.c,v 1.11 1988-05-17 21:22:21 rfrench Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZInit.c,v 1.12 1988-06-15 16:55:13 rfrench Exp $ */
 
 #ifndef lint
-static char rcsid_ZInitialize_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZInit.c,v 1.11 1988-05-17 21:22:21 rfrench Exp $";
+static char rcsid_ZInitialize_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZInit.c,v 1.12 1988-06-15 16:55:13 rfrench Exp $";
 #endif lint
 
 #include <zephyr/mit-copyright.h>
@@ -73,6 +73,10 @@ Code_t ZInitialize()
 
     /* Get the sender so we can cache it */
     (void) ZGetSender();
-	
+
+    /* Initialize the input queue */
+    __Q_Tail = NULL;
+    __Q_Head = NULL;
+    
     return (ZERR_NONE);
 }
