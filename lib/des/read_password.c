@@ -13,19 +13,14 @@
  * echoing.
  */
 
-#ifndef	lint
-static char rcsid_read_password_c[] =
-    "$Id: read_password.c,v 1.2 1995-06-30 21:59:08 ghudson Exp $";
-#endif
-
-#include <sysdep.h>
 #include "mit-copyright.h"
 #include "des.h"
-
-#include <stdio.h>
-#include <string.h>
-#include <signal.h>
 #include <setjmp.h>
+
+#ifndef	lint
+static const char rcsid_read_password_c[] =
+    "$Id: read_password.c,v 1.3 1995-07-07 22:08:03 ghudson Exp $";
+#endif
 
 #ifdef _POSIX_VERSION
 static sigjmp_buf env;

@@ -1,7 +1,7 @@
 /*
  * $Source: /srv/kcr/locker/zephyr/lib/des/Attic/des.h,v $
  * $Author: ghudson $
- * $Header: /srv/kcr/locker/zephyr/lib/des/Attic/des.h,v 1.3 1995-06-30 21:58:49 ghudson Exp $ 
+ * $Header: /srv/kcr/locker/zephyr/lib/des/Attic/des.h,v 1.4 1995-07-07 22:07:50 ghudson Exp $ 
  *
  * Copyright 1987, 1988 by the Massachusetts Institute of Technology.
  *
@@ -22,10 +22,10 @@
 #include "mit-copyright.h"
 #include <sysdep.h>
 
-#define KRB_INT32 INT_32_TYPE
-#define KRB_UINT32 unsigned INT_32_TYPE
-#define int32 INT_32_TYPE
-#define u_int32 unsigned INT_32_TYPE
+#define KRB_INT32 ZEPHYR_INT32
+#define KRB_UINT32 unsigned ZEPHYR_INT32
+#define int32 ZEPHYR_INT32
+#define u_int32 unsigned ZEPHYR_INT32
 
 typedef unsigned char des_cblock[8];	/* crypto-block size */
 /* Key schedule */

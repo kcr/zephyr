@@ -8,14 +8,13 @@
  * <mit-copyright.h>.
  */
 
-#ifndef	lint
-static char rcsid_destest_c[] =
-    "$Id: destest.c,v 1.2 1995-06-30 21:58:51 ghudson Exp $";
-#endif
-
 #include "mit-copyright.h"
 #include "des.h"
-#include <stdio.h>
+
+#ifndef	lint
+static const char rcsid_destest_c[] =
+    "$Id: destest.c,v 1.3 1995-07-07 22:07:52 ghudson Exp $";
+#endif
 
 char clear[] = "eight bytes";
 char cipher[8];

@@ -66,17 +66,14 @@
  *	but nontheless is 64 bit arithmetic.
  */
 
-#ifndef	lint
-static char rcsid_quad_cksum_c[] =
-    "$Id: quad_cksum.c,v 1.2 1995-06-30 21:59:05 ghudson Exp $";
-#endif
-
-#include <stdio.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-
 #include "mit-copyright.h"
 #include "des.h"
+#include <netinet/in.h>
+
+#ifndef	lint
+static const char rcsid_quad_cksum_c[] =
+    "$Id: quad_cksum.c,v 1.3 1995-07-07 22:07:59 ghudson Exp $";
+#endif
 
 /* Externals */
 extern int des_debug;

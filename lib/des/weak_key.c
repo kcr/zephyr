@@ -15,12 +15,12 @@
  * Originally written 8/85 by Steve Miller, MIT Project Athena.
  */
 
-#ifndef	lint
-static char rcsid_weak_key_c[] =
-    "$Id: weak_key.c,v 1.2 1995-06-30 21:59:11 ghudson Exp $";
-#endif
-
 #include "des.h"
+
+#ifndef	lint
+static const char rcsid_weak_key_c[] =
+    "$Id: weak_key.c,v 1.3 1995-07-07 22:08:09 ghudson Exp $";
+#endif
 
 /*
  * The following are the weak DES keys:

@@ -30,13 +30,12 @@
  * Originally written 6/85 by Steve Miller, MIT Project Athena.
  */
 
-#ifndef	lint
-static char rcsid_key_sched_c[] =
-    "$Id: key_sched.c,v 1.2 1995-06-30 21:59:01 ghudson Exp $";
-#endif
-
-#include <stdio.h>
 #include "des.h"
+
+#ifndef	lint
+static const char rcsid_key_sched_c[] =
+    "$Id: key_sched.c,v 1.3 1995-07-07 22:07:55 ghudson Exp $";
+#endif
 
 int
 des_key_sched(k,schedule)
