@@ -4,8 +4,8 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/h/zephyr/zephyr.h.in,v $
- *	$Author: ghudson $
- *	$Id: zephyr.h.in,v 1.8 1996-04-05 19:11:57 ghudson Exp $
+ *	$Author: marc $
+ *	$Id: zephyr.h.in,v 1.9 1996-06-12 04:42:56 marc Exp $
  *
  *	Copyright (c) 1987,1988,1991 by the Massachusetts Institute of
  *	Technology. For copying and distribution information, see the
@@ -167,6 +167,7 @@ Code_t ZFormatRawNoticeList ZP((ZNotice_t *notice, char *list[], int nitems,
 Code_t ZLocateUser ZP((char *, int *, Z_AuthProc));
 Code_t ZRequestLocations ZP((char *, ZAsyncLocateData_t *,
 			     ZNotice_Kind_t, Z_AuthProc));
+Code_t ZhmStat ZP((struct in_addr *, ZNotice_t *));
 Code_t ZInitialize ZP((void));
 Code_t ZSetServerState ZP((int));
 Code_t ZSetFD ZP((int));
