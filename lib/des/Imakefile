@@ -1,4 +1,4 @@
-# $Id: Imakefile,v 1.1 1994-10-31 05:54:16 ghudson Exp $
+# $Id: Imakefile,v 1.2 1994-12-28 19:58:24 probe Exp $
 #
 # Copyright 1987, 1993 by the Massachusetts Institute of Technology.
 #
@@ -25,7 +25,8 @@ DESOBJS= $(OTHEROBJS) key_sched.o debug_decl.o \
 
 #ifdef ATHENA_RULES
 
-SimpleLibrary(des,$(DESOBJS),$(ATHLIBDIR))
+build_library(des,$(DESOBJS))
+# SimpleLibrary(des,$(DESOBJS),$(ATHLIBDIR))
 
 build_program(enc,enc.o libdes.a,,)
 build_program(destest,destest.o libdes.a,,)
