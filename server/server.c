@@ -17,7 +17,7 @@
 
 #ifndef lint
 #ifndef SABER
-static const char rcsid_server_c[] = "$Id: server.c,v 1.66 1996-04-03 22:59:28 ghudson Exp $";
+static const char rcsid_server_c[] = "$Id: server.c,v 1.67 1996-12-04 18:25:09 ghudson Exp $";
 #endif
 #endif
 
@@ -806,7 +806,9 @@ admin_dispatch(notice, auth, who, server)
 #endif
 		}
     } else if (strcmp(opcode, ADMIN_BDUMP) == 0) {
-	if (bdumping)
+	/* Ignore a brain dump request if this is a packet being processed
+	 * concurrently during a brain dump. */
+	if (bdump_concurrent)
 	    return ZERR_NONE;
 	bdump_get(notice, auth, who, server);
     } else if (strcmp(opcode, ADMIN_KILL_CLT) == 0) {
