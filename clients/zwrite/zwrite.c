@@ -18,7 +18,7 @@
 #include <pwd.h>
 
 #ifndef lint
-static char rcsid_zwrite_c[] = "$Id: zwrite.c,v 1.46 1995-06-30 21:53:50 ghudson Exp $";
+static const char rcsid_zwrite_c[] = "$Id: zwrite.c,v 1.47 1995-07-07 22:03:57 ghudson Exp $";
 #endif /* lint */
 
 #define DEFAULT_CLASS "MESSAGE"
