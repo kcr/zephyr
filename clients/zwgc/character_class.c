@@ -5,7 +5,7 @@
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
  *      $Source: /srv/kcr/locker/zephyr/clients/zwgc/character_class.c,v $
- *      $Author: probe $
+ *      $Author: ghudson $
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -13,9 +13,10 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_character_class_c[] = "$Id: character_class.c,v 1.6 1993-11-19 15:08:05 probe Exp $";
+static char rcsid_character_class_c[] = "$Id: character_class.c,v 1.7 1995-06-30 21:52:28 ghudson Exp $";
 #endif
 
+#include <sysdep.h>
 #include <zephyr/mit-copyright.h>
 #include <zephyr/zephyr.h>
 #include "character_class.h"

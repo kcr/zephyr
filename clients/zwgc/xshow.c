@@ -5,7 +5,7 @@
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
  *      $Source: /srv/kcr/locker/zephyr/clients/zwgc/xshow.c,v $
- *      $Author: lwvanels $
+ *      $Author: ghudson $
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -13,12 +13,14 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_xshow_c[] = "$Id: xshow.c,v 1.12 1992-08-26 04:22:34 lwvanels Exp $";
+static char rcsid_xshow_c[] = "$Id: xshow.c,v 1.13 1995-06-30 21:53:18 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
+#include <sysdep.h>
 
-#include <stdio.h>
+#ifndef X_DISPLAY_MISSING
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xresource.h>
@@ -572,3 +574,6 @@ void x_get_input(dpy)
 	xhandleevent(dpy, event.xany.window, &event);
     }
 }
+
+#endif /* X_DISPLAY_MISSING */
+

@@ -5,7 +5,7 @@
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
  *      $Source: /srv/kcr/locker/zephyr/clients/zwgc/X_driver.c,v $
- *      $Author: probe $
+ *      $Author: ghudson $
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -13,7 +13,7 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_X_driver_c[] = "$Id: X_driver.c,v 1.15 1993-10-08 13:32:00 probe Exp $";
+static char rcsid_X_driver_c[] = "$Id: X_driver.c,v 1.16 1995-06-30 21:52:23 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -24,7 +24,10 @@ static char rcsid_X_driver_c[] = "$Id: X_driver.c,v 1.15 1993-10-08 13:32:00 pro
 /*                                                                          */
 /****************************************************************************/
 
-#include <stdio.h>
+#include <sysdep.h>
+
+#ifndef X_DISPLAY_MISSING
+
 #include "X_driver.h"
 #include <X11/Xresource.h>
 #include "new_memory.h"
@@ -49,14 +52,6 @@ Display *dpy = NULL;
 /*                  Code to deal with getting X resources:                  */
 /*                                                                          */
 /****************************************************************************/
-
-/*
- *
- */
-
-#ifndef  APPDEFDATABASE
-#define  APPDEFDATABASE "/usr/athena/lib/zephyr/zwgc_resources"
-#endif
 
 /*
  *
@@ -248,6 +243,7 @@ int open_display_and_load_resources(pargc, argv)
 {
     XrmDatabase temp_db1, temp_db2, temp_db3;
     char *filename, *res, *xdef;
+    char dbasename[128];
     extern char *getenv();
 
     /* Initialize X resource manager: */
@@ -269,7 +265,8 @@ int open_display_and_load_resources(pargc, argv)
       return(1);
 
     /* Read in our application-specific resources: */
-    temp_db1 = XrmGetFileDatabase(APPDEFDATABASE);
+    sprintf(dbasename, "%s/zwgc_resources", DATADIR);
+    temp_db1 = XrmGetFileDatabase(dbasename);
 
     /*
      * Get resources from the just opened display:
@@ -408,3 +405,6 @@ char *X_driver(text)
     free_desc(desc);
     return(NULL);
 }
+
+#endif /* X_DISPLAY_MISSING */
+

@@ -5,7 +5,7 @@
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
  *      $Source: /srv/kcr/locker/zephyr/clients/zwgc/formatter.c,v $
- *      $Author: probe $
+ *      $Author: ghudson $
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -13,15 +13,13 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_formatter_c[] = "$Id: formatter.c,v 1.13 1993-11-19 15:08:17 probe Exp $";
+static char rcsid_formatter_c[] = "$Id: formatter.c,v 1.14 1995-06-30 21:52:39 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
 #include <zephyr/zephyr.h>
 
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
+#include <sysdep.h>
 #include "new_memory.h"
 #include "char_stack.h"
 #include "string_dictionary.h"

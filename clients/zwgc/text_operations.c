@@ -5,7 +5,7 @@
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
  *      $Source: /srv/kcr/locker/zephyr/clients/zwgc/text_operations.c,v $
- *      $Author: jtkohl $
+ *      $Author: ghudson $
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -13,10 +13,11 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_text_operations_c[] = "$Id: text_operations.c,v 1.4 1989-11-15 16:35:01 jtkohl Exp $";
+static char rcsid_text_operations_c[] = "$Id: text_operations.c,v 1.5 1995-06-30 21:53:06 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
+#include <sysdep.h>
 
 #include "new_memory.h"
 #include "text_operations.h"

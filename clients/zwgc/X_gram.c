@@ -5,7 +5,7 @@
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
  *      $Source: /srv/kcr/locker/zephyr/clients/zwgc/X_gram.c,v $
- *      $Author: probe $
+ *      $Author: ghudson $
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -13,10 +13,14 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_X_gram_c[] = "$Id: X_gram.c,v 1.19 1994-04-29 11:52:04 probe Exp $";
+static char rcsid_X_gram_c[] = "$Id: X_gram.c,v 1.20 1995-06-30 21:52:26 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
+
+#include <sysdep.h>
+
+#ifndef X_DISPLAY_MISSING
 
 #include "X_gram.h"
 #include "xmark.h"
@@ -478,3 +482,6 @@ void x_gram_expose(dpy,w,gram,event)
       XDestroyRegion(region);
    }
 }
+
+#endif /* X_DISPLAY_MISSING */
+

@@ -5,7 +5,7 @@
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
  *      $Source: /srv/kcr/locker/zephyr/clients/zwgc/eval.c,v $
- *      $Author: marc $
+ *      $Author: ghudson $
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -13,7 +13,7 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_eval_c[] = "$Id: eval.c,v 1.4 1992-06-20 04:03:14 marc Exp $";
+static char rcsid_eval_c[] = "$Id: eval.c,v 1.5 1995-06-30 21:52:33 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -24,6 +24,7 @@ static char rcsid_eval_c[] = "$Id: eval.c,v 1.4 1992-06-20 04:03:14 marc Exp $";
 /*                                                                          */
 /****************************************************************************/
 
+#include <sysdep.h>
 #include <zephyr/zephyr.h>
 #include "new_memory.h"
 #include "node.h"

@@ -5,7 +5,7 @@
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
  *      $Source: /srv/kcr/locker/zephyr/clients/zwgc/xcut.c,v $
- *      $Author: marc $
+ *      $Author: ghudson $
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -13,7 +13,7 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_xcut_c[] = "$Id: xcut.c,v 1.9 1992-05-07 22:37:55 marc Exp $";
+static char rcsid_xcut_c[] = "$Id: xcut.c,v 1.10 1995-06-30 21:53:11 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -24,13 +24,15 @@ static char rcsid_xcut_c[] = "$Id: xcut.c,v 1.9 1992-05-07 22:37:55 marc Exp $";
 /*                                                                          */
 /****************************************************************************/
 
+#include <sysdep.h>
+
+#ifndef X_DISPLAY_MISSING
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <sys/time.h>
 #include "new_memory.h"
 #include "new_string.h"
 #include "X_gram.h"
-#include <stdio.h>
 #include "zwgc.h"
 #include "xselect.h"
 #include "xmark.h"
@@ -362,3 +364,6 @@ void xcut(dpy,event,desc_context)
 
     XFlush(dpy);
 }
+
+#endif
+

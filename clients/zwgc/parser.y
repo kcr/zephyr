@@ -14,7 +14,7 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_parser_y[] = "$Id: parser.y,v 1.4 1994-12-22 05:03:46 ghudson Exp $";
+static char rcsid_parser_y[] = "$Id: parser.y,v 1.5 1995-06-30 21:52:56 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -56,7 +56,7 @@ static Node *the_program;
 %token  ELSE ELSEIF ENDCASE ENDIF ENDWHILE EXEC EXECPORT EXIT
 %token  FIELDS GET GETENV IF INPUTPORT LANY LBREAK LSPAN
 %token  MATCH NOOP NOT OUTPUTPORT PRINT PROTECT VERBATIM PUT RANY RBREAK
-%token  RSPAN SET SHOW SUBSTITUTE THEN UPCASE WHILE ZVAR
+%token  RSPAN SET SUBSTITUTE THEN UPCASE WHILE ZVAR
 
 %type <node> expr varname string
 %type <node> exprlist comma_exprlist varnamelist

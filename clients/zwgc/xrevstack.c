@@ -5,7 +5,7 @@
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
  *      $Source: /srv/kcr/locker/zephyr/clients/zwgc/xrevstack.c,v $
- *      $Author: marc $
+ *      $Author: ghudson $
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -13,14 +13,17 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_xrevstack_c[] = "$Id: xrevstack.c,v 1.7 1992-05-07 22:37:55 marc Exp $";
+static char rcsid_xrevstack_c[] = "$Id: xrevstack.c,v 1.8 1995-06-30 21:53:15 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
 
-#ifdef REVSTACK
+#include <sysdep.h>
+
+#ifndef X_DISPLAY_MISSING
+
+#ifndef TRUEREVSTACK
 #include "X_gram.h"
-#include <stdio.h>
 
 x_gram *bottom_gram = NULL;
 x_gram *unlinked = NULL;
@@ -260,3 +263,6 @@ x_gram *gram;
 }
 
 #endif /* TRUEREVSTACK */
+
+#endif /* X_DISPLAY_MISSING */
+

@@ -5,7 +5,7 @@
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
  *      $Source: /srv/kcr/locker/zephyr/clients/zwgc/exec.c,v $
- *      $Author: raeburn $
+ *      $Author: ghudson $
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -13,7 +13,7 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_exec_c[] = "$Id: exec.c,v 1.7 1991-01-09 02:35:57 raeburn Exp $";
+static char rcsid_exec_c[] = "$Id: exec.c,v 1.8 1995-06-30 21:52:35 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -24,6 +24,7 @@ static char rcsid_exec_c[] = "$Id: exec.c,v 1.7 1991-01-09 02:35:57 raeburn Exp 
 /*                                                                          */
 /****************************************************************************/
 
+#include <sysdep.h>
 #include <zephyr/zephyr.h>
 #include "new_memory.h"
 #include "exec.h"
@@ -33,10 +34,6 @@ static char rcsid_exec_c[] = "$Id: exec.c,v 1.7 1991-01-09 02:35:57 raeburn Exp 
 #include "port.h"
 #include "variables.h"
 #include "notice.h"
-
-#if !defined(__STDC__) && !defined(const)
-#define const
-#endif
 
 static int exec_subtree(), exec_fields();
 

@@ -5,7 +5,7 @@
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
  *      $Source: /srv/kcr/locker/zephyr/clients/zwgc/zephyr.c,v $
- *      $Author: jtkohl $
+ *      $Author: ghudson $
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -13,7 +13,7 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_zephyr_c[] = "$Id: zephyr.c,v 1.5 1989-12-04 08:47:51 jtkohl Exp $";
+static char rcsid_zephyr_c[] = "$Id: zephyr.c,v 1.6 1995-06-30 21:53:19 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -24,7 +24,7 @@ static char rcsid_zephyr_c[] = "$Id: zephyr.c,v 1.5 1989-12-04 08:47:51 jtkohl E
 /*                                                                          */
 /****************************************************************************/
 
-#include <stdio.h>
+#include <sysdep.h>
 #include <zephyr/zephyr.h>
 #include <sys/socket.h>
 #include "new_string.h"
