@@ -15,7 +15,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_exec_c[] = "$Id: exec.c,v 1.9 1995-07-07 21:59:30 ghudson Exp $";
+static const char rcsid_exec_c[] = "$Id: exec.c,v 1.10 1996-03-04 02:50:04 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -369,6 +369,7 @@ static struct _Opstuff {
     { exec_noop },                         /* substitute */
     { exec_noop },                         /* protect */
     { exec_noop },                         /* verbatim */
+    { exec_noop },                         /* stylestrip */
     { exec_noop },                         /* getenv */
     { exec_noop },                         /* upcase */
     { exec_noop },                         /* downcase */

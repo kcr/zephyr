@@ -15,7 +15,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_lexer_c[] = "$Id: lexer.c,v 1.5 1995-07-07 21:59:41 ghudson Exp $";
+static const char rcsid_lexer_c[] = "$Id: lexer.c,v 1.6 1996-03-04 02:50:06 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -159,6 +159,7 @@ static struct keyword_info keywords[] =   {
 		   { "rspan", RSPAN },
 		   { "set", SET },
 		   { "show", SHOW },
+		   { "stylestrip", STYLESTRIP },
 		   { "substitute", SUBSTITUTE },
 		   { "then", THEN },
 		   { "upcase", UPCASE },

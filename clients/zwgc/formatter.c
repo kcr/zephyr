@@ -15,7 +15,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_formatter_c[] = "$Id: formatter.c,v 1.15 1995-07-07 21:59:38 ghudson Exp $";
+static const char rcsid_formatter_c[] = "$Id: formatter.c,v 1.16 1996-03-04 02:50:05 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -372,6 +372,51 @@ string protect(str)
    temp[templen-1] = '\0';
 
    return(temp);
+}
+
+/* str points to a string.  return value is another string
+   which is the original with all styles removed. */
+string stylestrip(str)
+     string str;
+{
+    int templen = 0, otherchar;
+    char *temp = (char *) malloc(string_Length(str) + 1);
+    char_stack chs;
+    string ostr = str;
+
+    chs = char_stack_create();
+
+    while (*str) {
+	if (*str == '@') {
+	    int len = env_length(str + 1);
+	    if (len != -1) {
+		otherchar = 0;
+		if ((len == 4 && !strncasecmp(str + 1, "font", 4))
+		  || (len == 5 && !strncasecmp(str + 1, "color", 5)))
+		    otherchar = 0x80;
+		otherchar |= otherside(str[len + 1]);
+		char_stack_push(chs, otherchar);
+		str += len + 2;
+		continue;
+	    }
+	}
+	if (!char_stack_empty(chs) && *str == (char_stack_top(chs) & 0x7f)) {
+	    char_stack_pop(chs);
+	    str++;
+	    continue;
+	}
+	if (!char_stack_empty(chs) && (char_stack_top(chs) & 0x80))
+	    str++;
+	else
+	    temp[templen++] = *str++;
+    }
+    temp[templen] = 0;
+
+    while (!char_stack_empty(chs))
+	char_stack_pop(chs);
+    free(ostr);
+
+    return(temp);
 }
 
 void free_desc(desc)

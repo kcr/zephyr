@@ -15,7 +15,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_node_c[] = "$Id: node.c,v 1.5 1995-07-07 21:59:56 ghudson Exp $";
+static const char rcsid_node_c[] = "$Id: node.c,v 1.6 1996-03-04 02:50:07 ghudson Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -268,6 +268,7 @@ static string how_to_print[] = {
     "substitute(%1)",
     "protect(%1)",
     "verbatim(%1)",
+    "stylestrip(%1)",
     "getenv(%1)",
     "upcase(%1)",
     "downcase(%1)",
