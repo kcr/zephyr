@@ -4,7 +4,7 @@
  *      Created by:     David C. Jedlinsky
  *
  *      $Source: /srv/kcr/locker/zephyr/zhm/zhm.c,v $
- *      $Author: ghudson $
+ *      $Author: marc $
  *
  *      Copyright (c) 1987,1991 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -13,7 +13,7 @@
 
 #include "zhm.h"
 
-static const char rcsid_hm_c[] = "$Id: zhm.c,v 1.60 1996-03-04 02:44:39 ghudson Exp $";
+static const char rcsid_hm_c[] = "$Id: zhm.c,v 1.61 1996-10-21 20:41:20 marc Exp $";
 
 #ifdef ZEPHYR_USES_HESIOD
 int ZEPHYR_USES_hesiod = 0;
@@ -332,13 +332,13 @@ static void init_hm()
      starttime = time((time_t *)0);
      OPENLOG("hm", LOG_PID, LOG_DAEMON);
   
+     ZSetServerState(1);	/* Aargh!!! */
      if ((ret = ZInitialize()) != ZERR_NONE) {
 	 Zperr(ret);
 	 com_err("hm", ret, "initializing");
 	 closelog();
 	 exit(-1);
      }
-     ZSetServerState(1);	/* Aargh!!! */
      init_queue();
 
      if (*prim_serv == '\0')
