@@ -10,10 +10,10 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZGetWGPort.c,v 1.4 1988-06-23 11:11:25 jtkohl Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZGetWGPort.c,v 1.5 1988-06-23 11:14:42 jtkohl Exp $ */
 
 #ifndef lint
-static char rcsid_ZGetWGPort_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZGetWGPort.c,v 1.4 1988-06-23 11:11:25 jtkohl Exp $";
+static char rcsid_ZGetWGPort_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZGetWGPort.c,v 1.5 1988-06-23 11:14:42 jtkohl Exp $";
 #endif lint
 
 #include <zephyr/mit-copyright.h>
@@ -23,11 +23,11 @@ static char rcsid_ZGetWGPort_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZGetWGPo
 extern char *getenv();
 extern uid_t getuid();
 
-u_short ZGetWGPort()
+short ZGetWGPort()
 {
     char *envptr, name[128];
     FILE *fp;
-    u_short wgport;
+    short wgport;
 	
     envptr = getenv("WGFILE");
     if (!envptr) {
