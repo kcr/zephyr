@@ -13,7 +13,7 @@
 
 #include "zhm.h"
 
-static char rcsid_hm_c[] = "$Id: zhm.c,v 1.54 1994-10-31 14:50:52 ghudson Exp $";
+static char rcsid_hm_c[] = "$Id: zhm.c,v 1.55 1995-05-03 23:31:27 ghudson Exp $";
 
 #ifdef POSIX
 #include <unistd.h>
@@ -365,9 +365,11 @@ void init_hm()
      fp = fopen(PidFile, "r");
      if (fp != NULL) {
 	  (void)fscanf(fp, "%d\n", &oldpid);
-	  while (!kill(oldpid, SIGTERM))
-	       sleep(1);
-	  syslog(LOG_INFO, "Killed old image.");
+	  if (oldpid > 1) {
+	      while (!kill(oldpid, SIGTERM))
+		  sleep(1);
+	      syslog(LOG_INFO, "Killed old image.");
+	  }
 	  (void) fclose(fp);
      }
 
