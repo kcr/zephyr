@@ -4,17 +4,17 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZSetFD.c,v $
- *	$Author: rfrench $
+ *	$Author: jfc $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZSetFD.c,v 1.5 1987-07-29 15:18:45 rfrench Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZSetFD.c,v 1.6 1991-06-18 13:45:16 jfc Exp $ */
 
 #ifndef lint
-static char rcsid_ZSetFD_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZSetFD.c,v 1.5 1987-07-29 15:18:45 rfrench Exp $";
-#endif lint
+static char rcsid_ZSetFD_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZSetFD.c,v 1.6 1991-06-18 13:45:16 jfc Exp $";
+#endif
 
 #include <zephyr/mit-copyright.h>
 
