@@ -18,7 +18,7 @@
 #include <pwd.h>
 #include <netdb.h>
 #ifndef lint
-static const char *rcsid_zctl_c = "$Id: zctl.c,v 1.26 1996-03-04 02:58:18 ghudson Exp $";
+static const char *rcsid_zctl_c = "$Id: zctl.c,v 1.27 1996-04-03 22:48:49 ghudson Exp $";
 #endif
 
 #define SUBSATONCE 7
@@ -131,7 +131,7 @@ main(argc,argv)
 		exit((code != 0));
 	} 
 
-	printf("ZCTL $Revision: 1.26 $ (Protocol %s%d.%d) - Type '?' for a list of commands.\n\n",
+	printf("ZCTL $Revision: 1.27 $ (Protocol %s%d.%d) - Type '?' for a list of commands.\n\n",
 	       ZVERSIONHDR,
 	       ZVERSIONMAJOR,ZVERSIONMINOR);
 	
@@ -478,8 +478,7 @@ sub_file(argc,argv)
 	}
 	sub.zsub_class = argv[1];
 	sub.zsub_classinst = argv[2];
-	sub.zsub_recipient = (argc == 3)?TOKEN_ME:TOKEN_WILD;
-
+	sub.zsub_recipient = (argc == 3)?TOKEN_ME:argv[3];
 
 	if (make_exist(subsname))
 		return;
