@@ -5,16 +5,16 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZVariables.c,v $
- *	$Author: lwvanels $
+ *	$Author: probe $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZVariables.c,v 1.11 1991-12-04 13:51:03 lwvanels Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZVariables.c,v 1.12 1993-09-24 16:22:09 probe Exp $ */
 
 #ifndef lint
-static char rcsid_ZVariables_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZVariables.c,v 1.11 1991-12-04 13:51:03 lwvanels Exp $";
+static char rcsid_ZVariables_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZVariables.c,v 1.12 1993-09-24 16:22:09 probe Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -184,7 +184,7 @@ static int varline(bfr, var)
 	return(0);			/* var is not the var in
 					   bfr ==> no match */
 
-    cp = index(bfr, '=');
+    cp = strchr(bfr, '=');
     if (!cp)
 	return(0);
     cp++;
