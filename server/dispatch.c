@@ -15,7 +15,7 @@
 
 #ifndef lint
 #ifndef SABER
-static char rcsid_dispatch_c[] = "$Header: /srv/kcr/athena/zephyr/server/dispatch.c,v 1.8 1987-07-14 18:20:48 jtkohl Exp $";
+static char rcsid_dispatch_c[] = "$Header: /srv/kcr/athena/zephyr/server/dispatch.c,v 1.9 1987-07-17 09:53:54 jtkohl Exp $";
 #endif SABER
 #endif lint
 
@@ -151,7 +151,7 @@ struct sockaddr_in *who;
 				ack(notice, who);
 			}
 		}
-		subscr_list_free(clientlist);
+		subscr_free_list(clientlist);
 	}
 
 	if (!acked)
