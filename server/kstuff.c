@@ -9,12 +9,12 @@
  */
 /*
  *	$Source: /srv/kcr/locker/zephyr/server/kstuff.c,v $
- *	$Header: /srv/kcr/locker/zephyr/server/kstuff.c,v 1.19 1995-06-30 22:11:13 ghudson Exp $
+ *	$Header: /srv/kcr/locker/zephyr/server/kstuff.c,v 1.20 1995-07-04 04:28:03 ghudson Exp $
  */
 
 #ifndef lint
 #ifndef SABER
-static char rcsid_kstuff_c[] = "$Id: kstuff.c,v 1.19 1995-06-30 22:11:13 ghudson Exp $";
+static char rcsid_kstuff_c[] = "$Id: kstuff.c,v 1.20 1995-07-04 04:28:03 ghudson Exp $";
 #endif
 #endif
 
@@ -142,14 +142,6 @@ SendKerberosData(fd, ticket, service, host)
 	return (written < 0) ? errno : ZSRV_PKSHORT;
 
     return 0;
-}
-
-/* Hack to replace the kerberos library's idea of the ticket file with
-   our idea */
-char *
-tkt_string()
-{
-    return tkt_file;
 }
 
 int
