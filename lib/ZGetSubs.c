@@ -10,7 +10,11 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZGetSubs.c,v 1.1 1987-07-09 20:02:49 rfrench Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZGetSubs.c,v 1.2 1987-07-29 15:16:33 rfrench Exp $ */
+
+#ifndef lint
+static char rcsid_ZGetSubscriptions_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZGetSubs.c,v 1.2 1987-07-29 15:16:33 rfrench Exp $";
+#endif lint
 
 #include <zephyr/mit-copyright.h>
 

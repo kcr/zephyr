@@ -10,7 +10,11 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZFlsLocs.c,v 1.3 1987-07-01 04:36:32 rfrench Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZFlsLocs.c,v 1.4 1987-07-29 15:15:32 rfrench Exp $ */
+
+#ifndef lint
+static char rcsid_ZFlushLocations_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZFlsLocs.c,v 1.4 1987-07-29 15:15:32 rfrench Exp $";
+#endif lint
 
 #include <zephyr/mit-copyright.h>
 
