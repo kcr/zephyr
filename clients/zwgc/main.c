@@ -15,7 +15,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_main_c[] = "$Id: main.c,v 1.33 1996-03-04 02:50:55 ghudson Exp $";
+static const char rcsid_main_c[] = "$Id: main.c,v 1.34 1996-03-04 21:14:00 ghudson Exp $";
 #endif
 
 #include <sys/resource.h>
@@ -37,7 +37,7 @@ static const char rcsid_main_c[] = "$Id: main.c,v 1.33 1996-03-04 02:50:55 ghuds
 #include "main.h"
 
 extern void notice_handler();
-static void setup_signals(), detach();
+static void setup_signals(), detach(), signal_exit();
 
 /*
  * Global zwgc-wide variables:
