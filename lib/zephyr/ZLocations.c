@@ -5,13 +5,13 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/lib/zephyr/ZLocations.c,v $
- *	$Author: ghudson $
+ *	$Author: marc $
  *
  *	Copyright (c) 1987,1988,1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZLocations.c,v 1.36 1996-04-05 00:29:05 ghudson Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZLocations.c,v 1.37 1996-06-12 04:45:27 marc Exp $ */
 
 #ifndef lint
 static char rcsid_ZLocations_c[] =
@@ -30,12 +30,16 @@ Code_t ZInitLocationInfo(hostname, tty)
     char *tty;
 {
     char *ttyp, *p;
+    struct hostent *hent;
 
     if (hostname) {
 	strcpy(host, hostname);
     } else {
 	if (gethostname(host, MAXHOSTNAMELEN) < 0)
 	    return (errno);
+	hent = gethostbyname(host);
+	if (hent)
+	   (void) strcpy(host, hent->h_name);
     }
     if (tty) {
 	strcpy(mytty, tty);
