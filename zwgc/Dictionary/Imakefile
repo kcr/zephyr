@@ -5,7 +5,7 @@
 /**/#
 /**/#	$Source: /srv/kcr/athena/zephyr/zwgc/Dictionary/Attic/Imakefile,v $
 /**/#	$Author: jtkohl $
-/**/#	$Header: /srv/kcr/athena/zephyr/zwgc/Dictionary/Attic/Imakefile,v 1.1 1989-11-08 14:17:52 jtkohl Exp $
+/**/#	$Header: /srv/kcr/athena/zephyr/zwgc/Dictionary/Attic/Imakefile,v 1.2 1989-11-15 23:59:07 jtkohl Exp $
 /**/#
 
 LIBS= $(ZEPHYR_LIB) $(COMERR_LIB) $(KRB_LIB) $(DES_LIB)
@@ -22,7 +22,7 @@ LINCLUDES = -I../Memory -I../String
 
 GENERATORS= generate_dictionary_instance
 
-SRCDIR= ${SRCTOP}/zwgc/zwgc.dev/Dictionary
+SRCDIR= ${SRCTOP}/zwgc/Dictionary
 CODE= ${GENERATORS} ${REALSRCS} ${REALHDRS} Imakefile
 
 normal_obj_rule()
