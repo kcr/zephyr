@@ -1,6 +1,6 @@
 .\"	$Source: /srv/kcr/locker/zephyr/clients/zwgc/zwgc.1,v $
 .\"	$Author: ghudson $
-.\"	$Id: zwgc.1,v 1.20 1996-03-04 02:50:12 ghudson Exp $
+.\"	$Id: zwgc.1,v 1.21 1997-02-14 21:23:38 ghudson Exp $
 '	# end of TP (cf }N below)
 '	# copied here, since we use @ in some of our tags, and that
 '	# messes up \w and \h
@@ -16,6 +16,14 @@
 .br\}
 .el \\*(]X\h@|\\n()Iu+\\n()Ru@\c
 .}f
+..
+.de }N
+.if \\n()E .br
+.di
+.if "\\n()E"0" .}f
+.if "\\n()E"1" .}1
+.if "\\n()E"2" .}2
+.nr )E 0
 ..
 '	# tagged paragraph (paragraph with hanging label, but no para spacing)
 .de TQ
@@ -336,7 +344,7 @@ String concatenation of
 .IB expr1 " == " expr2
 True if the two expressions are equal, false otherwise.
 .TP
-.IB expr " =~ " expr2
+.IB expr1 " =~ " expr2
 True if the regular expression pattern
 .IR expr2 " matches " expr1.
 .TP
@@ -994,7 +1002,14 @@ For an example of X resources, see
 The X selection code can highlight the wrong portions of messages
 containing formatted text placed with the @center() or @right()
 directives.
-
+.PP
+If you are using Kerberos support and get new tickets (using
+``kinit''), you must send a subscription notice to the server (using a
+command such as ``zctl load /dev/null'') or all received Zephyr
+notices will appear to be unauthentic.  (If all received Zephyr
+notices appear to be forged, your tickets have probably expired, in
+which case you must get new tickets and then run ``zctl load
+/dev/null''.)
 .SH FILES
 .TQ 15
 $HOME/.zwgc.desc
