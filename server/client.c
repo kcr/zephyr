@@ -15,7 +15,7 @@
 
 #ifndef lint
 #ifndef SABER
-static char rcsid_client_s_c[] = "$Header: /srv/kcr/locker/zephyr/server/client.c,v 1.11 1988-02-28 13:06:16 jtkohl Exp $";
+static char rcsid_client_s_c[] = "$Header: /srv/kcr/locker/zephyr/server/client.c,v 1.12 1988-06-03 14:38:08 jtkohl Exp $";
 #endif SABER
 #endif lint
 
@@ -44,9 +44,6 @@ static char rcsid_client_s_c[] = "$Header: /srv/kcr/locker/zephyr/server/client.
 
 #include "zserver.h"
 #include <sys/socket.h>
-#ifdef lint
-#include <sys/uio.h>
-#endif lint
 
 static void clt_free();
 
