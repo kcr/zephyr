@@ -17,7 +17,7 @@
 #ifndef lint
 #ifndef SABER
 static const char rcsid_common_c[] =
-    "$Id: common.c,v 1.13 1995-07-07 22:11:56 ghudson Exp $";
+    "$Id: common.c,v 1.14 1996-03-04 03:16:22 ghudson Exp $";
 #endif /* SABER */
 #endif /* lint */
 
@@ -83,7 +83,7 @@ hash(string)
 }
 
 /* Output a name, replacing newlines with \n and single quotes with \q. */
-void subscr_quote(p, fp)
+void dump_quote(p, fp)
     char *p;
     FILE *fp;
 {
