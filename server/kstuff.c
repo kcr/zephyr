@@ -1,10 +1,11 @@
+#ifdef KERBEROS
 /*
  *	$Source: /srv/kcr/athena/zephyr/server/kstuff.c,v $
- *	$Header: /srv/kcr/athena/zephyr/server/kstuff.c,v 1.3 1987-07-20 17:06:59 jtkohl Exp $
+ *	$Header: /srv/kcr/athena/zephyr/server/kstuff.c,v 1.4 1988-01-25 10:30:26 jtkohl Exp $
  */
 
 #ifndef lint
-static char *rcsid_kstuff_c = "$Header: /srv/kcr/athena/zephyr/server/kstuff.c,v 1.3 1987-07-20 17:06:59 jtkohl Exp $";
+static char *rcsid_kstuff_c = "$Header: /srv/kcr/athena/zephyr/server/kstuff.c,v 1.4 1988-01-25 10:30:26 jtkohl Exp $";
 #endif lint
 
 #include "zserver.h"
@@ -123,3 +124,4 @@ tkt_string()
 {
 	return(tkt_file);
 }
+#endif KERBEROS
