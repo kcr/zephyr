@@ -11,7 +11,7 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZLocations.c,v 1.35 1996-03-04 03:43:16 ghudson Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZLocations.c,v 1.36 1996-04-05 00:29:05 ghudson Exp $ */
 
 #ifndef lint
 static char rcsid_ZLocations_c[] =
@@ -68,6 +68,25 @@ Code_t ZUnsetLocation()
 Code_t ZFlushMyLocations()
 {
     return (Z_SendLocation(LOGIN_CLASS, LOGIN_USER_FLUSH, ZAUTH, ""));
+}
+
+char *ZParseExposureLevel(text)
+     char *text;
+{
+    if (!strcasecmp(text, EXPOSE_NONE))
+	return (EXPOSE_NONE);
+    else if (!strcasecmp(text, EXPOSE_OPSTAFF))
+	return (EXPOSE_OPSTAFF);
+    else if (!strcasecmp(text, EXPOSE_REALMVIS))
+	return (EXPOSE_REALMVIS);
+    else if (!strcasecmp(text, EXPOSE_REALMANN))
+	return (EXPOSE_REALMANN);
+    else if (!strcasecmp(text, EXPOSE_NETVIS))
+	return (EXPOSE_NETVIS);
+    else if (!strcasecmp(text, EXPOSE_NETANN))
+	return (EXPOSE_NETANN);
+    else
+	return(NULL);
 }
 
 Code_t Z_SendLocation(class, opcode, auth, format)
