@@ -11,14 +11,15 @@
  *      "mit-copyright.h". 
  */
 
-#include <sysdep.h>
-#include <zephyr/zephyr.h>
+/* There should be library interfaces for the operations in zstat; for now,
+ * however, zstat is more or less internal to the Zephyr system. */
+#include <internal.h>
+
 #include <sys/socket.h>
-#include <netdb.h>
 #include "zserver.h"
 
 #if !defined(lint) && !defined(SABER)
-static const char rcsid_zstat_c[] = "$Id: zstat.c,v 1.20 1995-07-07 21:58:12 ghudson Exp $";
+static const char rcsid_zstat_c[] = "$Id: zstat.c,v 1.21 1995-07-18 20:22:51 ghudson Exp $";
 #endif
 
 const char *hm_head[] = {
@@ -93,19 +94,11 @@ main(argc, argv)
 		exit(1);
 	}
 
-	if (!(sp = getservbyname(HM_SVCNAME,"udp"))) {
-		fprintf(stderr,"%s/udp: unknown service\n", HM_SVCNAME);
-		exit(-1);
-	}
+	sp = getservbyname(HM_SVCNAME,"udp");
+	hm_port = (sp) ? sp->s_port : HM_SVC_FALLBACK;
 
-	hm_port = sp->s_port;
-
-	if (!(sp = getservbyname(SERVER_SVCNAME,"udp"))) {
-		fprintf(stderr,"%s/udp: unknown service\n",SERVER_SVCNAME);
-		exit(-1);
-	}
-
-	srv_port = sp->s_port;
+	sp = getservbyname(SERVER_SVCNAME,"udp");
+	srv_port = (sp) ? sp->s_port : SERVER_SVC_FALLBACK;
 
 	if (optind == argc) {
 		if (gethostname(hostname, MAXHOSTNAMELEN) < 0) {
