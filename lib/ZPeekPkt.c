@@ -4,16 +4,16 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/athena/zephyr/lib/ZPeekPkt.c,v $
- *	$Author: lwvanels $
+ *	$Author: probe $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZPeekPkt.c,v 1.9 1991-12-04 13:48:11 lwvanels Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZPeekPkt.c,v 1.10 1993-09-24 16:19:15 probe Exp $ */
 
 #ifndef lint
-static char rcsid_ZPeekPacket_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZPeekPkt.c,v 1.9 1991-12-04 13:48:11 lwvanels Exp $";
+static char rcsid_ZPeekPacket_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZPeekPkt.c,v 1.10 1993-09-24 16:19:15 probe Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -38,7 +38,7 @@ Code_t ZPeekPacket(buffer, ret_len, from)
     if (!(*buffer = (char *) malloc((unsigned) *ret_len)))
 	return (ENOMEM);
 
-    bcopy(nextq->packet, *buffer, *ret_len);
+    _BCOPY(nextq->packet, *buffer, *ret_len);
 
     if (from)
 	*from = nextq->from;
