@@ -12,10 +12,12 @@
  */
 
 #include <zephyr/mit-copyright.h>
+#include "zserver.h"
+#include <com_err.h>
 
 #if !defined (lint) && !defined (SABER)
-static char rcsid_access_c[] =
-    "$Id: access.c,v 1.17 1995-06-30 22:10:54 ghudson Exp $";
+static const char rcsid_access_c[] =
+    "$Id: access.c,v 1.18 1995-07-07 22:11:37 ghudson Exp $";
 #endif
 
 /*
@@ -38,9 +40,6 @@ static char rcsid_access_c[] =
  * This module provides the 'glue' between the standard Athena ACL
  * routines and the support needed by the Zephyr server.
  */
-
-#include "zserver.h"
-#include <com_err.h>
 
 /*
  * Our private types for the acl_types field in the Acl structure.

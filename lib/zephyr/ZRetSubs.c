@@ -11,14 +11,14 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZRetSubs.c,v 1.25 1995-06-30 22:04:37 ghudson Exp $ */
-
-#ifndef lint
-static char rcsid_ZRetrieveSubscriptions_c[] =
-    "$Id: ZRetSubs.c,v 1.25 1995-06-30 22:04:37 ghudson Exp $";
-#endif
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZRetSubs.c,v 1.26 1995-07-07 22:11:15 ghudson Exp $ */
 
 #include <internal.h>
+
+#ifndef lint
+static const char rcsid_ZRetrieveSubscriptions_c[] =
+    "$Id: ZRetSubs.c,v 1.26 1995-07-07 22:11:15 ghudson Exp $";
+#endif
 
 static Code_t Z_RetSubs ();
 

@@ -10,14 +10,14 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZGetSender.c,v 1.12 1995-06-30 22:04:12 ghudson Exp $ */
-
-#ifndef lint
-static char rcsid_ZGetSender_c[] =
-    "$Id: ZGetSender.c,v 1.12 1995-06-30 22:04:12 ghudson Exp $";
-#endif
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZGetSender.c,v 1.13 1995-07-07 22:11:03 ghudson Exp $ */
 
 #include <internal.h>
+
+#ifndef lint
+static const char rcsid_ZGetSender_c[] =
+    "$Id: ZGetSender.c,v 1.13 1995-07-07 22:11:03 ghudson Exp $";
+#endif
 
 #include <pwd.h>
 

@@ -12,11 +12,14 @@
  */
 
 #include <zephyr/mit-copyright.h>
+#include "zserver.h"
+#include <sys/socket.h>
+#include <sys/resource.h>
 
 #ifndef lint
 #ifndef SABER
-static char rcsid_main_c[] =
-    "$Id: main.c,v 1.64 1995-07-04 04:28:06 ghudson Exp $";
+static const char rcsid_main_c[] =
+    "$Id: main.c,v 1.65 1995-07-07 22:12:12 ghudson Exp $";
 #endif
 #endif
 
@@ -46,10 +49,6 @@ static char rcsid_main_c[] =
   and the hostm manager may have copies of pointers to some clients
   (if the client has not acknowledged a packet after a given timeout).
 */
-
-#include "zserver.h"
-#include <sys/socket.h>
-#include <sys/resource.h>
 
 #define	EVER		(;;)		/* don't stop looping */
 

@@ -10,14 +10,14 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZFmtList.c,v 1.15 1995-06-30 22:04:02 ghudson Exp $ */
-
-#ifndef lint
-static char rcsid_ZFormatNoticeList_c[] =
-    "$Id: ZFmtList.c,v 1.15 1995-06-30 22:04:02 ghudson Exp $";
-#endif
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZFmtList.c,v 1.16 1995-07-07 22:11:01 ghudson Exp $ */
 
 #include <internal.h>
+
+#ifndef lint
+static const char rcsid_ZFormatNoticeList_c[] =
+    "$Id: ZFmtList.c,v 1.16 1995-07-07 22:11:01 ghudson Exp $";
+#endif
 
 Code_t ZFormatNoticeList(notice, list, nitems, buffer, ret_len, 
 			 cert_routine)

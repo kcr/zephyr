@@ -11,19 +11,19 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/Zinternal.c,v 1.34 1995-06-30 22:04:53 ghudson Exp $ */
-
-#ifndef lint
-static char rcsid_Zinternal_c[] =
-  "$Id: Zinternal.c,v 1.34 1995-06-30 22:04:53 ghudson Exp $";
-static char copyright[] =
-  "Copyright (c) 1987,1988,1991 by the Massachusetts Institute of Technology.";
-#endif
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/Zinternal.c,v 1.35 1995-07-07 22:11:21 ghudson Exp $ */
 
 #include <internal.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <utmp.h>
+
+#ifndef lint
+static const char rcsid_Zinternal_c[] =
+  "$Id: Zinternal.c,v 1.35 1995-07-07 22:11:21 ghudson Exp $";
+static const char copyright[] =
+  "Copyright (c) 1987,1988,1991 by the Massachusetts Institute of Technology.";
+#endif
 
 extern char *inet_ntoa ();
 

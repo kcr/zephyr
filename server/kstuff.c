@@ -9,16 +9,16 @@
  */
 /*
  *	$Source: /srv/kcr/locker/zephyr/server/kstuff.c,v $
- *	$Header: /srv/kcr/locker/zephyr/server/kstuff.c,v 1.20 1995-07-04 04:28:03 ghudson Exp $
+ *	$Header: /srv/kcr/locker/zephyr/server/kstuff.c,v 1.21 1995-07-07 22:12:08 ghudson Exp $
  */
+
+#include "zserver.h"
 
 #ifndef lint
 #ifndef SABER
-static char rcsid_kstuff_c[] = "$Id: kstuff.c,v 1.20 1995-07-04 04:28:03 ghudson Exp $";
+static const char rcsid_kstuff_c[] = "$Id: kstuff.c,v 1.21 1995-07-07 22:12:08 ghudson Exp $";
 #endif
 #endif
-
-#include "zserver.h"
 
 #ifdef ZEPHYR_USES_KERBEROS
 

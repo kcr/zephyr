@@ -10,13 +10,14 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Id: ZMkAuth.c,v 1.17 1995-06-30 22:04:23 ghudson Exp $ */
-
-#ifndef lint
-static char rcsid_ZMakeAuthentication_c[] = "$Id: ZMkAuth.c,v 1.17 1995-06-30 22:04:23 ghudson Exp $";
-#endif
+/* $Id: ZMkAuth.c,v 1.18 1995-07-07 22:11:10 ghudson Exp $ */
 
 #include <internal.h>
+
+#ifndef lint
+static const char rcsid_ZMakeAuthentication_c[] = "$Id: ZMkAuth.c,v 1.18 1995-07-07 22:11:10 ghudson Exp $";
+#endif
+
 #ifdef ZEPHYR_USES_KERBEROS
 #include <krb_err.h>
 static long last_authent_time = 0L;

@@ -10,13 +10,13 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZFlsSubs.c,v 1.4 1995-06-30 22:03:59 ghudson Exp $ */
-
-#ifndef lint
-static char rcsid_ZFlushSubscriptions_c[] = "$Id: ZFlsSubs.c,v 1.4 1995-06-30 22:03:59 ghudson Exp $";
-#endif
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZFlsSubs.c,v 1.5 1995-07-07 22:10:59 ghudson Exp $ */
 
 #include <internal.h>
+
+#ifndef lint
+static const char rcsid_ZFlushSubscriptions_c[] = "$Id: ZFlsSubs.c,v 1.5 1995-07-07 22:10:59 ghudson Exp $";
+#endif
 
 Code_t ZFlushSubscriptions()
 {

@@ -10,13 +10,13 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZIfNotice.c,v 1.14 1995-06-30 22:04:16 ghudson Exp $ */
-
-#ifndef lint
-static char rcsid_ZIfNotice_c[] = "$Id: ZIfNotice.c,v 1.14 1995-06-30 22:04:16 ghudson Exp $";
-#endif
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZIfNotice.c,v 1.15 1995-07-07 22:11:05 ghudson Exp $ */
 
 #include <internal.h>
+
+#ifndef lint
+static const char rcsid_ZIfNotice_c[] = "$Id: ZIfNotice.c,v 1.15 1995-07-07 22:11:05 ghudson Exp $";
+#endif
 
 Code_t ZIfNotice(notice, from, predicate, args)
     ZNotice_t *notice;

@@ -10,13 +10,13 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZClosePort.c,v 1.7 1995-06-30 22:03:55 ghudson Exp $ */
-
-#ifndef lint
-static char rcsid_ZClosePort_c[] = "$Id: ZClosePort.c,v 1.7 1995-06-30 22:03:55 ghudson Exp $";
-#endif
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZClosePort.c,v 1.8 1995-07-07 22:10:57 ghudson Exp $ */
 
 #include <internal.h>
+
+#ifndef lint
+static const char rcsid_ZClosePort_c[] = "$Id: ZClosePort.c,v 1.8 1995-07-07 22:10:57 ghudson Exp $";
+#endif
 
 Code_t ZClosePort()
 {

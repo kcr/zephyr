@@ -19,15 +19,15 @@
 const char zephyr_version[] = "Zephyr sytem version 2.0";
 
 #ifdef DEBUG
-const char version[] = "Zephyr server (DEBUG) $Revision: 3.23 $";
+const char version[] = "Zephyr server (DEBUG) $Revision: 3.24 $";
 #else
-const char version[] = "Zephyr server $Revision: 3.23 $";
+const char version[] = "Zephyr server $Revision: 3.24 $";
 #endif
 
 #if !defined (lint) && !defined (SABER)
-const char rcsid_version_c[] =
-    "$Id: version.c,v 3.23 1995-06-30 22:11:31 ghudson Exp $";
-const char copyright[] =
+static const char rcsid_version_c[] =
+    "$Id: version.c,v 3.24 1995-07-07 22:12:36 ghudson Exp $";
+static const char copyright[] =
     "Copyright (c) 1987,1988,1989,1990 Massachusetts Institute of Technology.\n";
 #endif
 
@@ -38,10 +38,10 @@ get_version()
 
   if (vers_buf[0] == '\0') {
 #ifdef DEBUG
-    sprintf(vers_buf,"Zephyr Server (DEBUG) $Revision: 3.23 $: %s",
+    sprintf(vers_buf,"Zephyr Server (DEBUG) $Revision: 3.24 $: %s",
 	    ZSERVER_VERSION_STRING);
 #else
-    sprintf(vers_buf,"Zephyr Server $Revision: 3.23 $: %s",
+    sprintf(vers_buf,"Zephyr Server $Revision: 3.24 $: %s",
 	    ZSERVER_VERSION_STRING);
 #endif /* DEBUG */
 

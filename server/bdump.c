@@ -4,7 +4,7 @@
  *	Created by:	John T. Kohl
  *
  *	$Source: /srv/kcr/locker/zephyr/server/bdump.c,v $
- *	$Id: bdump.c,v 1.49 1995-07-04 04:27:54 ghudson Exp $
+ *	$Id: bdump.c,v 1.50 1995-07-07 22:11:46 ghudson Exp $
  *	$Author: ghudson $
  *
  *	Copyright (c) 1987,1988,1991 by the Massachusetts Institute of Technology.
@@ -13,14 +13,13 @@
  */
 
 #include <zephyr/mit-copyright.h>
-
-#ifndef lint
-static char rcsid_bdump_c[] = "$Id: bdump.c,v 1.49 1995-07-04 04:27:54 ghudson Exp $";
-#endif /* lint */
-
 #include "zserver.h"
 #include <sys/socket.h>
 #include <com_err.h>
+
+#ifndef lint
+static const char rcsid_bdump_c[] = "$Id: bdump.c,v 1.50 1995-07-07 22:11:46 ghudson Exp $";
+#endif /* lint */
 
 /*
  * External functions are:

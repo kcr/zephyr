@@ -10,13 +10,13 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZAsyncLocate.c,v 1.5 1995-06-30 22:03:52 ghudson Exp $ */
-
-#ifndef lint
-static char rcsid_ZAsyncLocate_c[] = "$Id: ZAsyncLocate.c,v 1.5 1995-06-30 22:03:52 ghudson Exp $";
-#endif
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZAsyncLocate.c,v 1.6 1995-07-07 22:10:54 ghudson Exp $ */
 
 #include <internal.h>
+
+#ifndef lint
+static const char rcsid_ZAsyncLocate_c[] = "$Id: ZAsyncLocate.c,v 1.6 1995-07-07 22:10:54 ghudson Exp $";
+#endif
 
 Code_t ZRequestLocations(user, zald, kind, auth)
      char *user;

@@ -10,14 +10,14 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZNewLocU.c,v 1.9 1995-06-30 22:04:24 ghudson Exp $ */
-
-#ifndef lint
-static char rcsid_ZNewLocateUser_c[] =
-    "$Id: ZNewLocU.c,v 1.9 1995-06-30 22:04:24 ghudson Exp $";
-#endif
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZNewLocU.c,v 1.10 1995-07-07 22:11:12 ghudson Exp $ */
 
 #include <internal.h>
+
+#ifndef lint
+static const char rcsid_ZNewLocateUser_c[] =
+    "$Id: ZNewLocU.c,v 1.10 1995-07-07 22:11:12 ghudson Exp $";
+#endif
 
 Code_t ZLocateUser(user, nlocs, auth)
     char *user;

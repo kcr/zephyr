@@ -20,16 +20,16 @@
  */
 
 #include <zephyr/mit-copyright.h>
+#include "zserver.h"
+
 
 #ifndef SABER
 #ifndef lint
-static char rcsid_acl_files_c[] = "$Id: acl_files.c,v 1.5 1995-06-30 22:10:58 ghudson Exp $";
+static const char rcsid_acl_files_c[] = "$Id: acl_files.c,v 1.6 1995-07-07 22:11:40 ghudson Exp $";
 #endif /* lint */
 #endif /* SABER */
 
 /*** Routines for manipulating access control list files ***/
-
-#include "zserver.h"
 
 /* "aname.inst@realm" */
 #define MAX_PRINCIPAL_SIZE  (ANAME_SZ + INST_SZ + REALM_SZ + 3)

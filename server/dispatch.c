@@ -12,16 +12,15 @@
  */
 
 #include <zephyr/mit-copyright.h>
+#include "zserver.h"
+#include <sys/socket.h>
 
 #ifndef lint
 #ifndef SABER
-static char rcsid_dispatch_c[] =
-"$Id: dispatch.c,v 1.52 1995-06-30 22:11:08 ghudson Exp $";
+static const char rcsid_dispatch_c[] =
+"$Id: dispatch.c,v 1.53 1995-07-07 22:12:00 ghudson Exp $";
 #endif
 #endif
-
-#include "zserver.h"
-#include <sys/socket.h>
 
 #ifdef DEBUG
 Zconst char *ZNoticeKinds[9] = {"UNSAFE", "UNACKED", "ACKED", "HMACK",
