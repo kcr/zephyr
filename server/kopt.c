@@ -19,7 +19,7 @@
 #ifndef lint
 #ifndef SABER
 static char *rcsid_rd_req_c =
-    "$Id: kopt.c,v 1.10 1994-11-11 19:13:34 ghudson Exp $";
+    "$Id: kopt.c,v 1.11 1995-01-03 09:05:08 ghudson Exp $";
 #endif /* lint */
 #endif /* SABER */
 
@@ -33,7 +33,7 @@ static char *rcsid_rd_req_c =
 #include "zserver.h"
 
 /* Byte ordering */
-static int krbONE;
+static int krbONE = 1;
 #define		HOST_BYTE_ORDER	(* (char *) &krbONE)
 
 #define		KRB_PROT_VERSION 	4
