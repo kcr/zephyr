@@ -15,7 +15,7 @@
 
 #ifndef lint
 #ifndef SABER
-static char rcsid_dispatch_c[] = "$Header: /srv/kcr/athena/zephyr/server/dispatch.c,v 1.17 1988-06-03 14:57:04 jtkohl Exp $";
+static char rcsid_dispatch_c[] = "$Header: /srv/kcr/athena/zephyr/server/dispatch.c,v 1.18 1988-06-03 15:04:49 jtkohl Exp $";
 #endif SABER
 #endif lint
 
@@ -351,7 +351,10 @@ ZClient_t *client;
 
 	packlen = sizeof(ZPacket_t);
 
-	if (auth) {			/* we are distributing authentic */
+	if (auth && client) {		/*
+					  we are distributing authentic and
+					  we have a pointer to auth info
+					 */
 		if ((retval = ZFormatAuthenticNotice(notice,
 						     noticepack,
 						     packlen,
