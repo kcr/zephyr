@@ -5,7 +5,7 @@
 /**/#
 /**/#	$Source: /srv/kcr/athena/zephyr/lib/Attic/Imakefile,v $
 /**/#	$Author: jtkohl $
-/**/#	$Header: /srv/kcr/athena/zephyr/lib/Attic/Imakefile,v 1.5 1989-05-31 10:17:40 jtkohl Exp $
+/**/#	$Header: /srv/kcr/athena/zephyr/lib/Attic/Imakefile,v 1.6 1989-07-25 10:54:39 jtkohl Exp $
 /**/#
 #define no_curdir_lint
 
@@ -68,7 +68,8 @@ SRCS=	\
 	ZSubscriptions.c \
 	ZVariables.c \
 	Zinternal.c \
-	acl_files.c
+	acl_files.c \
+	strcasecmp.c
 
 #ifdef KERBEROS
 OLIST=	\
