@@ -1,7 +1,7 @@
 /*
  *	$Source: /srv/kcr/locker/zephyr/lib/des/Attic/desglue.c,v $
  *	$Author: ghudson $
- *	$Header: /srv/kcr/locker/zephyr/lib/des/Attic/desglue.c,v 1.2 1995-06-30 21:58:50 ghudson Exp $
+ *	$Header: /srv/kcr/locker/zephyr/lib/des/Attic/desglue.c,v 1.3 1995-07-18 20:27:10 ghudson Exp $
  *
  *	Copyright (C) 1988 by the Massachusetts Institute of Technology
  *
@@ -12,7 +12,7 @@
  */
 
 #ifndef lint
-static char *rcsid_desglue_c = "$Header: /srv/kcr/locker/zephyr/lib/des/Attic/desglue.c,v 1.2 1995-06-30 21:58:50 ghudson Exp $";
+static char *rcsid_desglue_c = "$Header: /srv/kcr/locker/zephyr/lib/des/Attic/desglue.c,v 1.3 1995-07-18 20:27:10 ghudson Exp $";
 #endif /* lint */
 
 #include "des.h"
@@ -25,16 +25,6 @@ string_to_key(str, key)
     des_string_to_key(str, key);
 }
 
-
-int
-read_pw_string(s, max, prompt, verify)
-    char *s;
-    int max;
-    char *prompt;
-    int verify;
-{
-    return des_read_pw_string (s, max, prompt, verify);
-}
 
 int
 random_key(key)
