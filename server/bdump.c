@@ -4,7 +4,7 @@
  *	Created by:	John T. Kohl
  *
  *	$Source: /srv/kcr/locker/zephyr/server/bdump.c,v $
- *	$Id: bdump.c,v 1.55 1996-04-03 22:59:04 ghudson Exp $
+ *	$Id: bdump.c,v 1.56 1996-10-09 01:27:44 ghudson Exp $
  *	$Author: ghudson $
  *
  *	Copyright (c) 1987,1988,1991 by the Massachusetts Institute of Technology.
@@ -18,7 +18,7 @@
 #include <com_err.h>
 
 #ifndef lint
-static const char rcsid_bdump_c[] = "$Id: bdump.c,v 1.55 1996-04-03 22:59:04 ghudson Exp $";
+static const char rcsid_bdump_c[] = "$Id: bdump.c,v 1.56 1996-10-09 01:27:44 ghudson Exp $";
 #endif /* lint */
 
 /*
@@ -795,8 +795,12 @@ bdump_recv_loop(server)
 	
     /* do the inverse of bdump_send_loop, registering stuff on the fly */
     while (1) {
-	if (packets_waiting())
+	if (packets_waiting()) {
+	    /* A non-braindump packet is waiting; handle it. */
+	    bdumping = 0;
 	    handle_packet();
+	    bdumping = 1;
+	}
 	len = sizeof(packet);
 	retval = get_packet(packet, len, &len);
 	if (retval != ZERR_NONE) {
