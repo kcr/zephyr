@@ -25,7 +25,7 @@
 
 #ifndef SABER
 #ifndef lint
-static const char rcsid_acl_files_c[] = "$Id: acl_files.c,v 1.7 1996-03-04 03:07:35 ghudson Exp $";
+static const char rcsid_acl_files_c[] = "$Id: acl_files.c,v 1.8 1996-04-03 22:57:47 ghudson Exp $";
 #endif /* lint */
 #endif /* SABER */
 
@@ -488,8 +488,7 @@ acl_exact_match(acl, principal)
 }
 
 /* Returns nonzero if it can be determined that acl contains principal */
-/* Recognizes wildcards in acl of the form
-   name.*@realm, *.*@realm, and *.*@* */
+/* Recognizes wildcards in acl. */
 int
 acl_check(acl, principal)
     char *acl;
