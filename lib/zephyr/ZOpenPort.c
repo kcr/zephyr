@@ -10,7 +10,11 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZOpenPort.c,v 1.7 1987-07-29 15:00:25 rfrench Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZOpenPort.c,v 1.8 1987-07-29 15:17:16 rfrench Exp $ */
+
+#ifndef lint
+static char rcsid_ZOpenPort_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZOpenPort.c,v 1.8 1987-07-29 15:17:16 rfrench Exp $";
+#endif lint
 
 #include <zephyr/mit-copyright.h>
 

@@ -10,7 +10,11 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZParseNot.c,v 1.10 1987-07-06 02:09:33 rfrench Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZParseNot.c,v 1.11 1987-07-29 15:17:22 rfrench Exp $ */
+
+#ifndef lint
+static char rcsid_ZParseNotice_c[] = "$Header: /srv/kcr/locker/zephyr/lib/zephyr/ZParseNot.c,v 1.11 1987-07-29 15:17:22 rfrench Exp $";
+#endif lint
 
 #include <zephyr/mit-copyright.h>
 
