@@ -11,10 +11,10 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZLocations.c,v 1.27 1990-11-16 11:01:33 raeburn Exp $ */
+/* $Header: /srv/kcr/athena/zephyr/lib/ZLocations.c,v 1.28 1990-11-16 11:07:46 raeburn Exp $ */
 
 #ifndef lint
-static char rcsid_ZLocations_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZLocations.c,v 1.27 1990-11-16 11:01:33 raeburn Exp $";
+static char rcsid_ZLocations_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZLocations.c,v 1.28 1990-11-16 11:07:46 raeburn Exp $";
 #endif lint
 
 #include <zephyr/mit-copyright.h>
@@ -95,9 +95,7 @@ Z_SendLocation(class, opcode, auth, format)
 		    return (errno);
 
 	    hent = gethostbyname(host);
-	    if (!hent)
-		    (void) strcpy(host, "unknown");
-	    else
+	    if (hent)
 		    (void) strcpy(host, hent->h_name);
 	    bptr[0] = host;
 #ifdef X11
