@@ -18,7 +18,7 @@
 #include <com_err.h>
 
 #ifndef lint
-static const char rcsid_zaway_c[] = "$Id: zaway.c,v 1.12 1995-07-07 21:55:32 ghudson Exp $";
+static const char rcsid_zaway_c[] = "$Id: zaway.c,v 1.13 1997-08-01 18:25:04 ghudson Exp $";
 #endif
 
 #define MESSAGE_CLASS "MESSAGE"
@@ -90,7 +90,7 @@ int main(argc,argv)
 	(void) signal(SIGTERM, cleanup);
 	(void) signal(SIGHUP, cleanup);
 #endif
-	if ((retval = ZSubscribeTo(&sub,1,port)) != ZERR_NONE) {
+	if ((retval = ZSubscribeToSansDefaults(&sub,1,port)) != ZERR_NONE) {
 		com_err(argv[0],retval,"while subscribing");
 		exit(1);
 	}
