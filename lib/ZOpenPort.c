@@ -3,17 +3,15 @@
  *
  *	Created by:	Robert French
  *
- *	$Source: /srv/kcr/athena/zephyr/lib/ZOpenPort.c,v $
- *	$Author: ghudson $
+ *	$Id: ZOpenPort.c,v 1.15 1999-01-22 23:19:17 ghudson Exp $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZOpenPort.c,v 1.14 1998-03-03 21:05:17 ghudson Exp $ */
 
 #ifndef lint
-static char rcsid_ZOpenPort_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZOpenPort.c,v 1.14 1998-03-03 21:05:17 ghudson Exp $";
+static char rcsid_ZOpenPort_c[] = "$Id: ZOpenPort.c,v 1.15 1999-01-22 23:19:17 ghudson Exp $";
 #endif
 
 #include <internal.h>

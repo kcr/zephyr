@@ -3,17 +3,15 @@
  *
  *	Created by:	John T. Kohl
  *
- *	$Source: /srv/kcr/athena/zephyr/lib/ZSendRLst.c,v $
- *	$Author: ghudson $
+ *	$Id: ZSendRLst.c,v 1.5 1999-01-22 23:19:27 ghudson Exp $
  *
  *	Copyright (c) 1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZSendRLst.c,v 1.4 1997-09-14 21:52:58 ghudson Exp $ */
 
 #ifndef lint
-static char rcsid_ZSendRawList_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZSendRLst.c,v 1.4 1997-09-14 21:52:58 ghudson Exp $";
+static char rcsid_ZSendRawList_c[] = "$Id: ZSendRLst.c,v 1.5 1999-01-22 23:19:27 ghudson Exp $";
 #endif
 
 #include <internal.h>

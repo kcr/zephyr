@@ -3,17 +3,15 @@
  *
  *	Created by:	Robert French
  *
- *	$Source: /srv/kcr/athena/zephyr/lib/ZSetSrv.c,v $
- *	$Author: ghudson $
+ *	$Id: ZSetSrv.c,v 1.5 1999-01-22 23:19:29 ghudson Exp $
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/athena/zephyr/lib/ZSetSrv.c,v 1.4 1997-09-14 21:53:01 ghudson Exp $ */
 
 #ifndef lint
-static char rcsid_ZSetServerState_c[] = "$Header: /srv/kcr/athena/zephyr/lib/ZSetSrv.c,v 1.4 1997-09-14 21:53:01 ghudson Exp $";
+static char rcsid_ZSetServerState_c[] = "$Id: ZSetSrv.c,v 1.5 1999-01-22 23:19:29 ghudson Exp $";
 #endif
 
 #include <internal.h>
