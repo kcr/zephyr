@@ -14,7 +14,7 @@
 #ifndef SABER
 #ifndef lint
 static const char rcsid[] =
-"$Id: timer.c,v 1.19 1996-03-04 03:30:41 ghudson Exp $";
+"$Id: timer.c,v 1.20 1996-06-06 06:11:32 ghudson Exp $";
 #endif /* lint */
 #endif /* SABER */
 
@@ -203,6 +203,8 @@ add_timer(new)
     }
     HEAP_ASSIGN(pos, new);
     num_timers++;
+
+    return new;
 }
 
 void
@@ -233,7 +235,7 @@ struct timeval *
 timer_timeout(tvbuf)
     struct timeval *tvbuf;
 {
-    if (num_timers == 0) {
+    if (num_timers > 0) {
 	tvbuf->tv_sec = heap[0]->abstime - NOW;
 	tvbuf->tv_usec = 0;
 	return tvbuf;
