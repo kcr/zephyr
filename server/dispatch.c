@@ -16,7 +16,7 @@
 #ifndef lint
 #ifndef SABER
 static char rcsid_dispatch_c[] =
-    "$Id: dispatch.c,v 1.50 1994-10-31 05:34:26 ghudson Exp $";
+    "$Id: dispatch.c,v 1.51 1995-05-31 16:58:09 ghudson Exp $";
 #endif
 #endif
 
@@ -693,7 +693,11 @@ rexmit(arg)
 	register ZClient_t *client;
 
 #if 1
-	zdbug((LOG_DEBUG,"rexmit"));
+	syslog(LOG_DEBUG, "rexmit %s/%d #%d(%d) time %d(%d)",
+	       inet_ntoa(nackpacket->na_addr.sin_addr),
+	       ntohs(nackpacket->na_addr.sin_port),
+	       nackpacket->na_rexmits + 1, num_rexmits,
+	       NOW, nackpacket->na_abstimo);
 #endif
 
 	if (++(nackpacket->na_rexmits) > num_rexmits ||
@@ -1038,7 +1042,6 @@ control_dispatch(notice, auth, who, server)
 					inet_ntoa (who->sin_addr),
 					ntohs (who->sin_port)));
 #endif
-				hostm_lose_ignore(client);
 				(void) client_deregister(client, host, 0);
 			}
 
