@@ -4,13 +4,13 @@
  *	Created by:	Robert French
  *
  *	$Source: /srv/kcr/locker/zephyr/h/zephyr/Attic/zephyr_internal.h,v $
- *	$Author: raeburn $
+ *	$Author: jfc $
  *
  *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/h/zephyr/Attic/zephyr_internal.h,v 1.18 1991-03-29 03:23:16 raeburn Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/h/zephyr/Attic/zephyr_internal.h,v 1.19 1991-06-20 11:35:05 jfc Exp $ */
 
 #ifndef __ZINTERNAL_H__
 #define __ZINTERNAL_H__
@@ -84,26 +84,14 @@ extern int __subscriptions_next;
 extern int krb_err_base;
 #endif
 
-#ifdef NO_MALLOC_ZERO
-#ifdef __STDC__
-extern void * (*Z_malloc) ();
-#else
-extern char * (*Z_malloc) ();
-#endif
-#undef malloc
-#define malloc(N) ((*Z_malloc)(N))
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifndef NO_MALLOC_ZERO
 #if defined(__STDC__) || defined(__cplusplus)
     extern void *malloc (unsigned);
 #else
     extern char *malloc();
-#endif
 #endif
     extern time_t time Zproto((time_t *));
     extern long random();
