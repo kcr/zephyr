@@ -14,7 +14,7 @@
 #ifndef SABER
 #ifndef lint
 static const char rcsid[] =
-"$Id: timer.c,v 1.20 1996-06-06 06:11:32 ghudson Exp $";
+"$Id: timer.c,v 1.21 1997-09-05 19:23:42 ghudson Exp $";
 #endif /* lint */
 #endif /* SABER */
 
@@ -237,6 +237,8 @@ timer_timeout(tvbuf)
 {
     if (num_timers > 0) {
 	tvbuf->tv_sec = heap[0]->abstime - NOW;
+	if (tvbuf->tv_sec < 0)
+	    tvbuf->tv_sec = 0;
 	tvbuf->tv_usec = 0;
 	return tvbuf;
     } else {

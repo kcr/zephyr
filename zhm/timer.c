@@ -5,7 +5,7 @@
  *      Derived from timer_manager_ by Ken Raeburn
  *
  *      $Source: /srv/kcr/locker/zephyr/zhm/timer.c,v $
- *      $Author: marc $
+ *      $Author: ghudson $
  *
  */
 
@@ -15,7 +15,7 @@
 #ifndef SABER
 #ifndef lint
 static const char rcsid[] =
-"$Id: timer.c,v 1.4 1996-06-10 23:03:08 marc Exp $";
+"$Id: timer.c,v 1.5 1997-09-05 19:23:27 ghudson Exp $";
 #endif /* lint */
 #endif /* SABER */
 
@@ -238,6 +238,8 @@ timer_timeout(tvbuf)
 {
     if (num_timers > 0) {
 	tvbuf->tv_sec = heap[0]->abstime - time(NULL);
+	if (tvbuf->tv_sec < 0)
+	    tvbuf->tv_sec = 0;
 	tvbuf->tv_usec = 0;
 	return tvbuf;
     } else {
