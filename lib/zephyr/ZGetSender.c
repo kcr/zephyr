@@ -10,7 +10,7 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h". 
  */
-/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZGetSender.c,v 1.9 1993-11-21 03:11:08 probe Exp $ */
+/* $Header: /srv/kcr/locker/zephyr/lib/zephyr/ZGetSender.c,v 1.10 1993-11-21 03:18:13 probe Exp $ */
 
 #ifndef lint
 static char rcsid_ZGetSender_c[] =
@@ -21,8 +21,6 @@ static char rcsid_ZGetSender_c[] =
 #include <zephyr/zephyr_internal.h>
 
 #include <pwd.h>
-
-uid_t getuid();
 
 char *ZGetSender()
 {
