@@ -4,7 +4,7 @@
  *
  *	Created by:	C. Anthony Della Fera
  *
- *	$Id: zshutdown_notify.c,v 1.13 1995-06-30 21:49:39 ghudson Exp $
+ *	$Id: zshutdown_notify.c,v 1.14 1995-07-04 04:24:59 ghudson Exp $
  *
  *	Copyright (c) 1987, 1993 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -20,7 +20,7 @@
 
 #ifndef lint
 static char *rcsid_zshutdown_notify_c =
-    "$Id: zshutdown_notify.c,v 1.13 1995-06-30 21:49:39 ghudson Exp $";
+    "$Id: zshutdown_notify.c,v 1.14 1995-07-04 04:24:59 ghudson Exp $";
 #endif
 
 #define N_KIND		UNSAFE
@@ -86,14 +86,14 @@ main(argc,argv)
     }
     if (retval = krb_get_lrealm(rlm, 1)) {
 	fprintf(stderr, "%s: can't get local realm: %s\n",
-		argv[0], krb_err_txt[retval]);
+		argv[0], krb_get_err_txt(retval));
 	exit(1);
     }
     if (retval = krb_get_svc_in_tkt(SVC_NAME, hn2, rlm,
 				    SERVER_SERVICE, SERVER_INSTANCE, 1,
 				    KEYFILE)) {
 	fprintf(stderr, "%s: can't get tickets: %s\n",
-		argv[0], krb_err_txt[retval]);
+		argv[0], krb_get_err_txt(retval));
 	exit(1);
     }
 #endif

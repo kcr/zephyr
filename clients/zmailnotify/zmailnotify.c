@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: zmailnotify.c,v 1.24 1995-06-30 21:49:03 ghudson Exp $
+ *	$Id: zmailnotify.c,v 1.25 1995-07-04 04:24:48 ghudson Exp $
  *
  *	Copyright (c) 1987,1993 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -16,7 +16,7 @@
 
 #ifndef lint
 static char rcsid_zmailnotify_c[] =
-    "$Id: zmailnotify.c,v 1.24 1995-06-30 21:49:03 ghudson Exp $";
+    "$Id: zmailnotify.c,v 1.25 1995-07-04 04:24:48 ghudson Exp $";
 #endif
 
 #include <sys/socket.h>
@@ -444,7 +444,7 @@ char *host;
     authopts = KOPT_DO_OLDSTYLE;
     rem = krb_sendsvc(s,"pop");
     if (rem != KSUCCESS) {
-	(void) sprintf(Errmsg, "kerberos error: %s", krb_err_txt[rem]);
+	(void) sprintf(Errmsg, "kerberos error: %s", krb_get_err_txt(rem));
 	(void) close(s);
 	return(NOTOK);
     }
@@ -464,7 +464,7 @@ char *host;
     free(host_save);
     free(ticket);
     if (rem != KSUCCESS) {
-	(void) sprintf(Errmsg, "kerberos error: %s",krb_err_txt[rem]);
+	(void) sprintf(Errmsg, "kerberos error: %s",krb_get_err_txt(rem));
 	(void) close(s);
 	return(NOTOK);
     }
