@@ -7,7 +7,7 @@ sysconfdir=@sysconfdir@
 sbindir=@sbindir@
 
 includedir=${prefix}/include
-mandir=@mandir@
+mandir=${prefix}/man
 bindir=${exec_prefix}/bin
 libdir=${exec_prefix}/lib
 

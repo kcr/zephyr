@@ -4,7 +4,7 @@
  *
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
- *      $Id: tty_filter.c,v 1.18 1999/08/13 00:19:51 danw Exp $
+ *      $Id: tty_filter.c,v 1.21 2002/04/18 18:28:17 rbasch Exp $
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -14,7 +14,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_tty_filter_c[] = "$Id: tty_filter.c,v 1.18 1999/08/13 00:19:51 danw Exp $";
+static const char rcsid_tty_filter_c[] = "$Id: tty_filter.c,v 1.21 2002/04/18 18:28:17 rbasch Exp $";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -36,10 +36,12 @@ static const char rcsid_tty_filter_c[] = "$Id: tty_filter.c,v 1.18 1999/08/13 00
 
 extern int tgetent();
 extern char *tgetstr(),*getenv();
-#if 0
-short ospeed;
-char PC;
+#ifdef linux
+extern speed_t ospeed;
+#else
+extern short ospeed;
 #endif
+char PC;
 
 /* Dictionary naming convention:
 
@@ -93,7 +95,6 @@ char **argv;
     int ex;
     string_dictionary_binding *b;
     int isrealtty = string_Eq(drivername, "tty");
-#if 0
 #ifdef HAVE_TERMIOS_H
     struct termios tbuf;
 
@@ -102,7 +103,6 @@ char **argv;
     struct sgttyb sgttyb;
 
     ospeed = (ioctl(0, TIOCGETP, &sgttyb) == 0) ? sgttyb.sg_ospeed : 2400;
-#endif
 #endif
 
     if (termcap_dict == (string_dictionary) NULL)
@@ -133,10 +133,8 @@ char **argv;
 	/* We cheat here, and ignore the padding (if any) specified for
 	   the mode-change strings (it's a real pain to do "right") */
 
-#if 0
 	tmp = tgetstr("pc", &p);
 	PC = (tmp) ? *tmp : 0;
-#endif
 	if (tmp = tgetstr("md",&p)) {	/* bold ? */
 	    EXPAND("B.bold");
 	    tmp = tgetstr("me",&p);
@@ -327,6 +325,7 @@ static tty_str_info *convert_desc_to_tty_str_info(desc)
 
 	/* Add new block (call it temp) to result: */
 	temp = (tty_str_info *)malloc(sizeof(struct _tty_str_info));
+	*temp = current_mode;
 	if (last_result_block) {
 	    last_result_block->next = temp;
 	    last_result_block = temp;
@@ -350,13 +349,13 @@ static tty_str_info *convert_desc_to_tty_str_info(desc)
 	}
 	if (desc->code == DT_STR) {
 	    /* just combine string info with current mode: */
-	    *temp = current_mode;
 	    temp->str = desc->str;
 	    temp->len = desc->len;
 	} else if (desc->code == DT_NL) {
 	    /* make the new block a ' ' alignment block with an empty string */
 	    temp->alignment = ' ';
 	    temp->len = 0;
+	    temp->ignore = 0;
 	}
     }
 
