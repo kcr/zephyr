@@ -5,7 +5,7 @@
  *
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
- *      $Id: parser.y,v 1.7 2003/01/23 05:32:16 ghudson Exp $
+ *      $Id$
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -15,7 +15,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_parser_y[] = "$Id: parser.y,v 1.7 2003/01/23 05:32:16 ghudson Exp $";
+static const char rcsid_parser_y[] = "$Id$";
 #endif
 
 #include <zephyr/mit-copyright.h>

@@ -4,7 +4,7 @@
  *      Created by:     John T. Kohl
  *      Derived from timer_manager_.h by Ken Raeburn
  *
- *      $Id: timer.h,v 1.2 1999/01/22 23:19:59 ghudson Exp $
+ *      $Id$
  *
  */
 

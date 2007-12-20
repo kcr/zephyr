@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: zpopnotify.c,v 1.13 1999/08/13 00:19:41 danw Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -22,7 +22,7 @@
 #include <errno.h>
 
 #ifndef lint
-static char rcsid_zpopnotify_c[] = "$Id: zpopnotify.c,v 1.13 1999/08/13 00:19:41 danw Exp $";
+static char rcsid_zpopnotify_c[] = "$Id$";
 #endif /* lint */
 
 #define MAIL_CLASS "MAIL"

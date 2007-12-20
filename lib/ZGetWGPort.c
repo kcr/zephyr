@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: ZGetWGPort.c,v 1.11 1999/01/22 23:19:12 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -11,7 +11,7 @@
  */
 
 #ifndef lint
-static char rcsid_ZGetWGPort_c[] = "$Id: ZGetWGPort.c,v 1.11 1999/01/22 23:19:12 ghudson Exp $";
+static char rcsid_ZGetWGPort_c[] = "$Id$";
 #endif
 
 #include <internal.h>

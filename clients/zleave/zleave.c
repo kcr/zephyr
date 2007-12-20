@@ -3,7 +3,7 @@
  *
  *      Created by:     David Jedlinsky
  *
- *      $Id: zleave.c,v 1.25 1999/08/13 00:19:39 danw Exp $
+ *      $Id$
  *
  *      Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -17,7 +17,7 @@
 #include <com_err.h>
 
 #ifndef lint
-static char rcsid_zlocate_c[] = "$Id: zleave.c,v 1.25 1999/08/13 00:19:39 danw Exp $";
+static char rcsid_zlocate_c[] = "$Id$";
 #endif /* lint */
 
 /*

@@ -3,7 +3,7 @@
  *
  *	Created by:	John T. Kohl
  *
- *	$Id: uloc.c,v 1.60 2001/02/27 04:59:03 zacheiss Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -17,7 +17,7 @@
 #ifndef lint
 #ifndef SABER
 static const char rcsid_uloc_c[] =
-"$Id: uloc.c,v 1.60 2001/02/27 04:59:03 zacheiss Exp $";
+"$Id$";
 #endif /* SABER */
 #endif /* lint */
 

@@ -3,7 +3,7 @@
  *
  *      Created by:     David C. Jedlinsky
  *
- *      $Id: zhm.c,v 1.62 2000/05/19 23:19:21 zacheiss Exp $
+ *      $Id$
  *
  *      Copyright (c) 1987,1991 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -12,7 +12,7 @@
 
 #include "zhm.h"
 
-static const char rcsid_hm_c[] = "$Id: zhm.c,v 1.62 2000/05/19 23:19:21 zacheiss Exp $";
+static const char rcsid_hm_c[] = "$Id$";
 
 #ifdef HAVE_HESIOD
 int use_hesiod = 0;

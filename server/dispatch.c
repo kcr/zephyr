@@ -4,7 +4,7 @@
  *	Created by:	John T. Kohl
  *
  *	$Source: /afs/dev.mit.edu/source/repository/athena/lib/zephyr/server/dispatch.c,v $
- *	$Author: ghudson $
+ *	$Author$
  *
  *	Copyright (c) 1987, 1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -18,7 +18,7 @@
 #ifndef lint
 #ifndef SABER
 static const char rcsid_dispatch_c[] =
-"$Id: dispatch.c,v 1.63 2001/04/10 23:28:19 ghudson Exp $";
+"$Id$";
 #endif
 #endif
 

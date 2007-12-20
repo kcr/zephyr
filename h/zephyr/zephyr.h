@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: zephyr.h,v 1.54 1999/01/22 23:18:59 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987,1988,1991 by the Massachusetts Institute of
  *	Technology. For copying and distribution information, see the

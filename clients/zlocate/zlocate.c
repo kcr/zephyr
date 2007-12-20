@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: zlocate.c,v 1.15 1999/01/22 23:18:36 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -15,7 +15,7 @@
 #include <sys/socket.h>
 
 #if !defined(lint) && !defined(SABER)
-static const char rcsid_zlocate_c[] = "$Id: zlocate.c,v 1.15 1999/01/22 23:18:36 ghudson Exp $";
+static const char rcsid_zlocate_c[] = "$Id$";
 #endif
 
 int numusers=0, numleft=0, parallel=0, oneline=0;

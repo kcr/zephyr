@@ -3,7 +3,7 @@
  *
  *	Created by:	John T. Kohl
  *
- *	$Id: acl.h,v 3.2 1999/01/22 23:19:38 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file

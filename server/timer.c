@@ -4,7 +4,7 @@
  *      Created by:     John T. Kohl
  *      Derived from timer_manager_ by Ken Raeburn
  *
- *      $Id: timer.c,v 1.18 1999/01/22 23:19:49 ghudson Exp $
+ *      $Id$
  *
  */
 
@@ -13,7 +13,7 @@
 #ifndef SABER
 #ifndef lint
 static const char rcsid[] =
-"$Id: timer.c,v 1.18 1999/01/22 23:19:49 ghudson Exp $";
+"$Id$";
 #endif /* lint */
 #endif /* SABER */
 

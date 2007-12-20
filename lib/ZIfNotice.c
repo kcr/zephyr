@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: ZIfNotice.c,v 1.15 1999/01/22 23:19:13 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -13,7 +13,7 @@
 #include <internal.h>
 
 #ifndef lint
-static const char rcsid_ZIfNotice_c[] = "$Id: ZIfNotice.c,v 1.15 1999/01/22 23:19:13 ghudson Exp $";
+static const char rcsid_ZIfNotice_c[] = "$Id$";
 #endif
 
 Code_t ZIfNotice(notice, from, predicate, args)

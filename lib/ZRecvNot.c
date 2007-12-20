@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: ZRecvNot.c,v 1.15 1999/01/22 23:19:21 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -11,7 +11,7 @@
  */
 
 #ifndef lint
-static char rcsid_ZReceiveNotice_c[] = "$Id: ZRecvNot.c,v 1.15 1999/01/22 23:19:21 ghudson Exp $";
+static char rcsid_ZReceiveNotice_c[] = "$Id$";
 #endif
 
 #include <internal.h>

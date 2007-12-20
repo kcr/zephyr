@@ -4,7 +4,7 @@
  *
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
- *      $Id: tty_filter.c,v 1.21 2002/04/18 18:28:17 rbasch Exp $
+ *      $Id$
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -14,7 +14,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_tty_filter_c[] = "$Id: tty_filter.c,v 1.21 2002/04/18 18:28:17 rbasch Exp $";
+static const char rcsid_tty_filter_c[] = "$Id$";
 #endif
 
 #include <zephyr/mit-copyright.h>

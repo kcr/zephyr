@@ -4,7 +4,7 @@
  *	Created by:	John T. Kohl
  *
  *	$Source: /afs/dev.mit.edu/source/repository/athena/lib/zephyr/server/class.c,v $
- *	$Author: zacheiss $
+ *	$Author$
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -17,7 +17,7 @@
 
 #if !defined (lint) && !defined (SABER)
 static const char rcsid_class_c[] =
-"$Id: class.c,v 1.27 2001/02/27 04:43:59 zacheiss Exp $";
+"$Id$";
 #endif
 
 /*

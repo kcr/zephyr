@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: znol.c,v 1.17 2000/05/08 15:59:05 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -16,7 +16,7 @@
 #include <pwd.h>
 
 #ifndef lint
-static const char rcsid_znol_c[] = "$Id: znol.c,v 1.17 2000/05/08 15:59:05 ghudson Exp $";
+static const char rcsid_znol_c[] = "$Id$";
 #endif 
 
 #define SUBSATONCE 7

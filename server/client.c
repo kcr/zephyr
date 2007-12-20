@@ -3,7 +3,7 @@
  *
  *	Created by:	John T. Kohl
  *
- *	$Id: client.c,v 1.34 1999/01/22 23:19:41 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987,1988,1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -16,7 +16,7 @@
 
 #if !defined (lint) && !defined (SABER)
 static const char rcsid_client_c[] =
-"$Id: client.c,v 1.34 1999/01/22 23:19:41 ghudson Exp $";
+"$Id$";
 #endif
 
 /*

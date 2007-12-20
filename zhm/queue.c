@@ -3,7 +3,7 @@
  *
  *      Created by:     David C. Jedlinsky
  *
- *      $Id: queue.c,v 1.22 1999/10/20 16:44:11 ghudson Exp $
+ *      $Id$
  *
  *      Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -14,7 +14,7 @@
 
 #ifndef lint
 #ifndef SABER
-static char rcsid_queue_c[] = "$Id: queue.c,v 1.22 1999/10/20 16:44:11 ghudson Exp $";
+static char rcsid_queue_c[] = "$Id$";
 #endif /* SABER */
 #endif /* lint */
 

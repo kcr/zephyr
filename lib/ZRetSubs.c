@@ -4,7 +4,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: ZRetSubs.c,v 1.26 1999/01/22 23:19:23 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987,1988,1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -15,7 +15,7 @@
 
 #ifndef lint
 static const char rcsid_ZRetrieveSubscriptions_c[] =
-    "$Id: ZRetSubs.c,v 1.26 1999/01/22 23:19:23 ghudson Exp $";
+    "$Id$";
 #endif
 
 static Code_t Z_RetSubs ();

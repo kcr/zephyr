@@ -16,7 +16,7 @@
 
 #ifndef lint
 #ifndef SABER
-static const char rcsid_kstuff_c[] = "$Id: kstuff.c,v 1.27 2004/02/29 06:34:04 zacheiss Exp $";
+static const char rcsid_kstuff_c[] = "$Id$";
 #endif
 #endif
 
