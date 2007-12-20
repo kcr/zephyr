@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: zwrite.c,v 1.50 2002/05/22 15:13:51 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -17,7 +17,7 @@
 #include <pwd.h>
 
 #ifndef lint
-static const char rcsid_zwrite_c[] = "$Id: zwrite.c,v 1.50 2002/05/22 15:13:51 ghudson Exp $";
+static const char rcsid_zwrite_c[] = "$Id$";
 #endif /* lint */
 
 #define DEFAULT_CLASS "MESSAGE"

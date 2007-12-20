@@ -4,7 +4,7 @@
  *
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
- *      $Id: string_dictionary_aux.c,v 1.2 1999/01/22 23:20:35 ghudson Exp $
+ *      $Id$
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -12,7 +12,7 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_string_dictionary_aux_c[] = "$Id: string_dictionary_aux.c,v 1.2 1999/01/22 23:20:35 ghudson Exp $";
+static char rcsid_string_dictionary_aux_c[] = "$Id$";
 #endif
 
 /*

@@ -4,7 +4,7 @@
  *
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
- *      $Id: xerror.c,v 1.5 1999/08/13 00:19:51 danw Exp $
+ *      $Id$
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -14,7 +14,7 @@
 #include <sysdep.h>
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_xerror_c[] = "$Id: xerror.c,v 1.5 1999/08/13 00:19:51 danw Exp $";
+static const char rcsid_xerror_c[] = "$Id$";
 #endif
 
 #include <zephyr/mit-copyright.h>

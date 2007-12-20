@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: zmailnotify.c,v 1.25 1997/10/25 21:47:11 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987,1993 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -16,7 +16,7 @@
 
 #ifndef lint
 static const char rcsid_zmailnotify_c[] =
-    "$Id: zmailnotify.c,v 1.25 1997/10/25 21:47:11 ghudson Exp $";
+    "$Id$";
 #endif
 
 #include <sys/socket.h>

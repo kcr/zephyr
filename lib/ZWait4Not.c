@@ -4,7 +4,7 @@
  *
  *	Created by:	<Joe Random Hacker>
  *
- *	$Id: ZWait4Not.c,v 1.3 1999/01/22 23:19:31 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -14,7 +14,7 @@
 #include "mit-copyright.h"
 
 #ifndef lint
-static char rcsid_ZWaitForNotice_c[] = "$Id: ZWait4Not.c,v 1.3 1999/01/22 23:19:31 ghudson Exp $";
+static char rcsid_ZWaitForNotice_c[] = "$Id$";
 #endif
 
 #include <internal.h>

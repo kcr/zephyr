@@ -3,7 +3,7 @@
  *
  *      Created by:     David C. Jedlinsky
  *
- *      $Id: zstat.c,v 1.21 1999/08/13 00:18:50 danw Exp $
+ *      $Id$
  *
  *      Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -18,7 +18,7 @@
 #include "zserver.h"
 
 #if !defined(lint) && !defined(SABER)
-static const char rcsid_zstat_c[] = "$Id: zstat.c,v 1.21 1999/08/13 00:18:50 danw Exp $";
+static const char rcsid_zstat_c[] = "$Id$";
 #endif
 
 const char *hm_head[] = {

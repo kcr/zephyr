@@ -4,7 +4,7 @@
  *	Created by:	John T. Kohl
  *
  *	$Source: /afs/dev.mit.edu/source/repository/athena/lib/zephyr/server/main.c,v $
- *	$Author: zacheiss $
+ *	$Author$
  *
  *	Copyright (c) 1987,1988,1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -19,7 +19,7 @@
 #ifndef lint
 #ifndef SABER
 static const char rcsid_main_c[] =
-    "$Id: main.c,v 1.69 2001/02/27 04:50:08 zacheiss Exp $";
+    "$Id$";
 #endif
 #endif
 

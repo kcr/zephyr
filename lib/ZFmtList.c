@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: ZFmtList.c,v 1.16 1999/01/22 23:19:07 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987,1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -14,7 +14,7 @@
 
 #ifndef lint
 static const char rcsid_ZFormatNoticeList_c[] =
-    "$Id: ZFmtList.c,v 1.16 1999/01/22 23:19:07 ghudson Exp $";
+    "$Id$";
 #endif
 
 Code_t ZFormatNoticeList(notice, list, nitems, buffer, ret_len, 

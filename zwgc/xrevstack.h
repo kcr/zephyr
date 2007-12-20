@@ -4,7 +4,7 @@
  *
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
- *      $Id: xrevstack.h,v 1.5 1999/01/22 23:20:46 ghudson Exp $
+ *      $Id$
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -15,7 +15,7 @@
 #define _XREVSTACK_H_
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_xrevstack_h[] = "$Id: xrevstack.h,v 1.5 1999/01/22 23:20:46 ghudson Exp $";
+static char rcsid_xrevstack_h[] = "$Id$";
 #endif
 
 #include <zephyr/mit-copyright.h>

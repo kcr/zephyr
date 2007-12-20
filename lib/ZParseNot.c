@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: ZParseNot.c,v 1.30 2002/09/10 16:04:29 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987,1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file

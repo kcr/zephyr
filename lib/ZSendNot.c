@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: ZSendNot.c,v 1.13 1999/01/22 23:19:24 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -11,7 +11,7 @@
  */
 
 #ifndef lint
-static char rcsid_ZSendNotice_c[] = "$Id: ZSendNot.c,v 1.13 1999/01/22 23:19:24 ghudson Exp $";
+static char rcsid_ZSendNotice_c[] = "$Id$";
 #endif
 
 #include <internal.h>

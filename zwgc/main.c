@@ -4,7 +4,7 @@
  *
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
- *      $Id: main.c,v 1.39 2004/06/24 02:27:34 ghudson Exp $
+ *      $Id$
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -17,7 +17,7 @@
 #endif
 
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_main_c[] = "$Id: main.c,v 1.39 2004/06/24 02:27:34 ghudson Exp $";
+static const char rcsid_main_c[] = "$Id$";
 #endif
 
 #include <netdb.h>

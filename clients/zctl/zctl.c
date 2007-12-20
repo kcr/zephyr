@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: zctl.c,v 1.32 2003/11/04 19:21:49 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -17,7 +17,7 @@
 #include <pwd.h>
 #include <netdb.h>
 #ifndef lint
-static const char *rcsid_zctl_c = "$Id: zctl.c,v 1.32 2003/11/04 19:21:49 ghudson Exp $";
+static const char *rcsid_zctl_c = "$Id$";
 #endif
 
 #define SUBSATONCE 7
@@ -137,7 +137,7 @@ main(argc,argv)
 		exit((code != 0));
 	} 
 
-	printf("ZCTL $Revision: 1.32 $ (Protocol %s%d.%d) - Type '?' for a list of commands.\n\n",
+	printf("ZCTL $Revision$ (Protocol %s%d.%d) - Type '?' for a list of commands.\n\n",
 	       ZVERSIONHDR,
 	       ZVERSIONMAJOR,ZVERSIONMINOR);
 	

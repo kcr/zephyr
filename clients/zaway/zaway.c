@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: zaway.c,v 1.17 2006/07/26 17:15:09 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987, 1993 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -17,7 +17,7 @@
 #include <com_err.h>
 
 #ifndef lint
-static const char rcsid_zaway_c[] = "$Id: zaway.c,v 1.17 2006/07/26 17:15:09 ghudson Exp $";
+static const char rcsid_zaway_c[] = "$Id$";
 #endif
 
 #define MESSAGE_CLASS "MESSAGE"

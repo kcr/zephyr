@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: ZOpenPort.c,v 1.16 2005/04/14 21:37:52 zacheiss Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -11,7 +11,7 @@
  */
 
 #ifndef lint
-static char rcsid_ZOpenPort_c[] = "$Id: ZOpenPort.c,v 1.16 2005/04/14 21:37:52 zacheiss Exp $";
+static char rcsid_ZOpenPort_c[] = "$Id$";
 #endif
 
 #include <internal.h>

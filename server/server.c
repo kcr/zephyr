@@ -4,7 +4,7 @@
  *	Created by:	John T. Kohl
  *
  *	$Source: /afs/dev.mit.edu/source/repository/athena/lib/zephyr/server/server.c,v $
- *	$Author: zacheiss $
+ *	$Author$
  *
  *	Copyright (c) 1987, 1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -17,7 +17,7 @@
 
 #ifndef lint
 #ifndef SABER
-static const char rcsid_server_c[] = "$Id: server.c,v 1.66 2001/02/27 04:51:41 zacheiss Exp $";
+static const char rcsid_server_c[] = "$Id$";
 #endif
 #endif
 

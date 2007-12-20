@@ -4,7 +4,7 @@
  *
  *      Created by:     Marc Horowitz <marc@athena.mit.edu>
  *
- *      $Id: xmark.c,v 1.9 1999/01/22 23:20:44 ghudson Exp $
+ *      $Id$
  *
  *      Copyright (c) 1989 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -12,7 +12,7 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_xmark_c[] = "$Id: xmark.c,v 1.9 1999/01/22 23:20:44 ghudson Exp $";
+static char rcsid_xmark_c[] = "$Id$";
 #endif
 
 #include <zephyr/mit-copyright.h>

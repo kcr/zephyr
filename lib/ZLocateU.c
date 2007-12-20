@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: ZLocateU.c,v 1.24 1999/01/22 23:19:14 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
@@ -11,7 +11,7 @@
  */
 
 #ifndef lint
-static char rcsid_ZLocateUser_c[] = "$Id: ZLocateU.c,v 1.24 1999/01/22 23:19:14 ghudson Exp $";
+static char rcsid_ZLocateUser_c[] = "$Id$";
 #endif
 
 #include <internal.h>

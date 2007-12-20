@@ -3,7 +3,7 @@
  *
  *      Created by:     David C. Jedlinsky
  *
- *      $Id: zhm_client.c,v 1.12 2000/04/05 14:57:37 ghudson Exp $
+ *      $Id$
  *
  *      Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file
@@ -14,7 +14,7 @@
 
 #ifndef lint
 #ifndef SABER
-static char rcsid_hm_client_c[] = "$Id: zhm_client.c,v 1.12 2000/04/05 14:57:37 ghudson Exp $";
+static char rcsid_hm_client_c[] = "$Id$";
 #endif /* SABER */
 #endif /* lint */
 

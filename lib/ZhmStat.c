@@ -3,7 +3,7 @@
  *
  *      Created by:     Marc Horowitz
  *
- *      $Id: ZhmStat.c,v 1.5 1999/01/22 23:19:32 ghudson Exp $
+ *      $Id$
  *
  *      Copyright (c) 1996 by the Massachusetts Institute of Technology.
  *      For copying and distribution information, see the file

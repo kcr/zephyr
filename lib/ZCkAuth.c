@@ -3,7 +3,7 @@
  *
  *	Created by:	Robert French
  *
- *	$Id: ZCkAuth.c,v 1.23 1999/01/22 23:19:02 ghudson Exp $
+ *	$Id$
  *
  *	Copyright (c) 1987,1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file

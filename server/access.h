@@ -6,7 +6,7 @@
  *
  * Created by Ken Raeburn.
  *
- * $Id: access.h,v 1.5 1999/01/22 23:19:37 ghudson Exp $
+ * $Id$
  *
  * Copyright (c) 1990 by the Massachusetts Institute of Technology.
  * For copying and distribution information, see the file
