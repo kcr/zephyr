@@ -10,7 +10,7 @@
 #include <sysdep.h>
 #ifdef CMU_ZWGCPLUS
 #if (!defined(lint) && !defined(SABER))
-static const char rcsid_plus_c[] = "$Id: plus.c,v 1.7 1998/08/10 22:54:11 shadow Exp $";
+static const char rcsid_plus_c[] = "$Id$";
 #endif
 
 #include <zephyr/mit-copyright.h>
