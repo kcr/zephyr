@@ -21,6 +21,7 @@ static const char rcsid_X_gram_c[] = "$Id$";
 
 #ifndef X_DISPLAY_MISSING
 
+#include <zephyr/zephyr.h>
 #include "X_gram.h"
 #include "xmark.h"
 #include <X11/Xutil.h>
@@ -34,11 +35,12 @@ static const char rcsid_X_gram_c[] = "$Id$";
 #include "xrevstack.h"
 #include "xerror.h"
 #include "xselect.h"
+#ifdef CMU_ZWGCPLUS
+#include "plus.h"
+#endif
 
 extern XContext desc_context;
 extern char *app_instance;
-extern unsigned long x_string_to_color();
-extern char *getenv();
 
 /*
  *
@@ -49,7 +51,7 @@ int internal_border_width = 2;
 unsigned long default_fgcolor;
 unsigned long default_bgcolor;
 unsigned long default_bordercolor;
-long ttl = 500;
+long ttl = 0;
 static int reset_saver;
 static int border_width = 1;
 static int cursor_code = XC_sailboat;
@@ -89,14 +91,14 @@ static Atom net_wm_window_type_utility = None;
  */
 
 /*ARGSUSED*/
-void x_set_icccm_hints(dpy,w,name,icon_name,psizehints,pwmhints,main_window)
-     Display *dpy;
-     Window w;
-     char *name;
-     char *icon_name;
-     XSizeHints *psizehints;
-     XWMHints *pwmhints;
-     Window main_window;
+void
+x_set_icccm_hints(Display *dpy,
+		  Window w,
+		  char *name,
+		  char *icon_name,
+		  XSizeHints *psizehints,
+		  XWMHints *pwmhints,
+		  Window main_window)
 {
    XStoreName(dpy,w,name);
    XSetIconName(dpy,w,icon_name);
@@ -113,8 +115,8 @@ void x_set_icccm_hints(dpy,w,name,icon_name,psizehints,pwmhints,main_window)
       XSetWMProtocols(dpy,w,&XA_WM_DELETE_WINDOW,1);
 }
 
-void x_gram_init(dpy)
-     Display *dpy;
+void
+x_gram_init(Display *dpy)
 {
     char *temp;
     XSizeHints sizehints;
@@ -129,17 +131,30 @@ void x_gram_init(dpy)
        default_fgcolor = default_bgcolor;
        default_bgcolor = tc;
     }
-    if (temp = get_string_resource("foreground","Foreground"))
-      default_fgcolor = x_string_to_color(temp,default_fgcolor);
-    if (temp = get_string_resource("background","Background"))
-      default_bgcolor = x_string_to_color(temp,default_bgcolor);
+    temp = get_string_resource("foreground", "Foreground");
+    if (temp)
+      default_fgcolor = x_string_to_color(temp, default_fgcolor);
+    temp = get_string_resource("background", "Background");
+    if (temp)
+      default_bgcolor = x_string_to_color(temp, default_bgcolor);
     default_bordercolor = default_fgcolor;
-    if (temp = get_string_resource("borderColor","BorderColor"))
-      default_bordercolor = x_string_to_color(temp,default_bordercolor);
+    temp = get_string_resource("borderColor", "BorderColor");
+    if (temp)
+      default_bordercolor = x_string_to_color(temp, default_bordercolor);
 
-    temp = get_string_resource("minTimeToLive","MinTimeToLive");
+    temp = get_string_resource("minTimeToLive", "MinTimeToLive");
     if (temp && atoi(temp)>=0)
        ttl = atoi(temp);
+
+#ifdef CMU_ZWGCPLUS
+    if (ttl == 0) {
+      temp = get_string_resource("lifespan", "LifeSpan");
+      if (temp && atoi(temp)>=0)
+        ttl = atoi(temp);
+    }
+
+    get_full_names = get_bool_resource("getFullNames", "GetFullNames", 0);
+#endif
 
     reverse_stack = get_bool_resource("reverseStack", "ReverseStack", 0);
     reset_saver =  get_bool_resource("resetSaver", "ResetSaver", 1);
@@ -221,6 +236,9 @@ void x_gram_init(dpy)
     xattributes.cursor = cursor;
     xattributes.event_mask = (ExposureMask|ButtonReleaseMask|ButtonPressMask
 			      |LeaveWindowMask|Button1MotionMask
+#ifdef CMU_ZWGCPLUS
+			      |KeyPressMask
+#endif
 			      |Button3MotionMask|StructureNotifyMask);
     xattributes_mask = (CWBackPixel|CWBorderPixel|CWEventMask|CWCursor);
 
@@ -261,8 +279,9 @@ void x_gram_init(dpy)
     }
 }
 
-int x_calc_gravity(xalign, yalign)
-     int xalign, yalign;
+int
+x_calc_gravity(int xalign,
+	       int yalign)
 {
     if (yalign > 0) {					/* North */
 	return (xalign > 0)  ? NorthWestGravity
@@ -279,21 +298,22 @@ int x_calc_gravity(xalign, yalign)
     }
 }
 
-void x_gram_create(dpy, gram, xalign, yalign, xpos, ypos, xsize, ysize,
-		   beepcount)
-     Display *dpy;
-     x_gram *gram;
-     int xalign, yalign;
-     int xpos, ypos;
-     int xsize, ysize;
-     int beepcount;
+void
+x_gram_create(Display *dpy,
+	      x_gram *gram,
+	      int xalign,
+	      int yalign,
+	      int xpos,
+	      int ypos,
+	      int xsize,
+	      int ysize,
+	      int beepcount)
 {
     Window w;
     XSizeHints sizehints;
     XWMHints wmhints;
     XSetWindowAttributes attributes;
     unsigned long all_desktops = 0xFFFFFFFF;
-    extern void x_get_input();
 
     /*
      * Adjust xpos, ypos based on the alignments xalign, yalign and the sizes:
@@ -302,15 +322,15 @@ void x_gram_create(dpy, gram, xalign, yalign, xpos, ypos, xsize, ysize,
       xpos = WidthOfScreen(DefaultScreenOfDisplay(dpy)) - xpos - xsize
 	- 2*border_width;
     else if (xalign == 0)
-      xpos = (WidthOfScreen(DefaultScreenOfDisplay(dpy)) - xsize
-	      - 2*border_width)>>1 + xpos;
+      xpos = ((WidthOfScreen(DefaultScreenOfDisplay(dpy)) - xsize
+	       - 2*border_width)>>1) + xpos;
 
     if (yalign<0)
       ypos = HeightOfScreen(DefaultScreenOfDisplay(dpy)) - ypos - ysize
 	- 2*border_width;
     else if (yalign == 0)
-      ypos = (HeightOfScreen(DefaultScreenOfDisplay(dpy)) - ysize
-	      - 2*border_width)>>1 + ypos;
+      ypos = ((HeightOfScreen(DefaultScreenOfDisplay(dpy)) - ysize
+	       - 2*border_width)>>1) + ypos;
 
     /*
      * Create the window:
@@ -397,18 +417,18 @@ void x_gram_create(dpy, gram, xalign, yalign, xpos, ypos, xsize, ysize,
     x_get_input(dpy);
 }
 
-void x_gram_draw(dpy, w, gram, region)
-     Display *dpy;
-     Window w;
-     x_gram *gram;
-     Region region;
+void
+x_gram_draw(Display *dpy,
+	    Window w,
+	    x_gram *gram,
+	    Region region)
 {
    int i;
    GC gc;
    XGCValues gcvals;
    xblock *xb;
    XTextItem text;
-   int startblock,endblock,startpixel,endpixel;
+   int startblock, endblock, startpixel = 0, endpixel = 0;
    
 #define SetFG(fg) \
    gcvals.foreground=fg; \
@@ -493,11 +513,11 @@ void x_gram_draw(dpy, w, gram, region)
    XFreeGC(dpy,gc);
 }
 
-void x_gram_expose(dpy,w,gram,event)
-     Display *dpy;
-     Window w;
-     x_gram *gram;
-     XExposeEvent *event;
+void
+x_gram_expose(Display *dpy,
+	      Window w,
+	      x_gram *gram,
+	      XExposeEvent *event)
 {
    static Region region;
    static int partregion;

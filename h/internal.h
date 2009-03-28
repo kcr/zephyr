@@ -11,16 +11,23 @@
 #include <krb_err.h>
 #endif
 
+#ifdef HAVE_KRB5
+#include <krb5.h>
+#endif
+
 #ifdef HAVE_HESIOD
 #include <hesiod.h>
 #endif
 
 #ifndef HAVE_KRB4
-#define REALM_SZ	MAXHOSTNAMELEN
-#define INST_SZ		0		/* no instances w/o Kerberos */
-#define ANAME_SZ	9		/* size of a username + null */
 #define CLOCK_SKEW	300		/* max time to cache packet ids */
 #endif
+
+#ifndef REALM_SZ  /* XXX */
+#include <arpa/nameser.h>
+#define REALM_SZ	NS_MAXDNAME
+#endif
+#define MAX_PRINCIPAL_SIZE	1024
 
 #define SERVER_SVC_FALLBACK	htons((unsigned short) 2103)
 #define HM_SVC_FALLBACK		htons((unsigned short) 2104)
@@ -33,6 +40,13 @@
 #define Z_FRAGFUDGE		13	/* Room to for multinotice field */
 #define Z_NOTICETIMELIMIT	30	/* Time to wait for fragments */
 #define Z_INITFILTERSIZE	30	/* Starting size of uid filter */
+
+#define Z_AUTHMODE_NONE          0      /* no authentication */
+#define Z_AUTHMODE_KRB4          1      /* authenticate using Kerberos V4 */
+#define Z_AUTHMODE_KRB5          2      /* authenticate using Kerberos V5 */
+
+#define Z_KEYUSAGE_CLT_CKSUM  1027    /* client->server notice checksum */
+#define Z_KEYUSAGE_SRV_CKSUM  1029    /* server->client notice checksum */
 
 struct _Z_Hole {
     struct _Z_Hole	*next;
@@ -64,6 +78,11 @@ extern int __Zephyr_open;	/* 0 if FD opened, 1 otherwise */
 extern int __HM_set;		/* 0 if dest addr set, 1 otherwise */
 extern int __Zephyr_server;	/* 0 if normal client, 1 if server or zhm */
 
+#ifdef HAVE_KRB5
+extern krb5_context Z_krb5_ctx;
+Code_t Z_krb5_lookup_cksumtype(krb5_enctype, krb5_cksumtype *);
+#endif
+
 extern ZLocations_t *__locate_list;
 extern int __locate_num;
 extern int __locate_next;
@@ -74,29 +93,82 @@ extern int __subscriptions_next;
 
 extern int __Zephyr_port;		/* Port number */
 extern struct in_addr __My_addr;
+extern int __Zephyr_fd;
+extern int __Q_CompleteLength;
+extern struct sockaddr_in __HM_addr;
+extern char __Zephyr_realm[];
 
-typedef Code_t (*Z_SendProc) __P((ZNotice_t *, char *, int, int));
+typedef Code_t (*Z_SendProc) (ZNotice_t *, char *, int, int);
 
-struct _Z_InputQ *Z_GetFirstComplete __P((void));
-struct _Z_InputQ *Z_GetNextComplete __P((struct _Z_InputQ *));
-Code_t Z_XmitFragment __P((ZNotice_t*, char *,int,int));
-void Z_RemQueue __P((struct _Z_InputQ *));
-Code_t Z_AddNoticeToEntry __P((struct _Z_InputQ*, ZNotice_t*, int));
-Code_t Z_FormatAuthHeader __P((ZNotice_t *, char *, int, int *, Z_AuthProc));
-Code_t Z_FormatHeader __P((ZNotice_t *, char *, int, int *, Z_AuthProc));
-Code_t Z_FormatRawHeader __P((ZNotice_t *, char*, int,
-			      int*, char **, char **));
-Code_t Z_ReadEnqueue __P((void));
-Code_t Z_ReadWait __P((void));
-Code_t Z_SendLocation __P((char*, char*, Z_AuthProc, char*));
-Code_t Z_SendFragmentedNotice __P((ZNotice_t *notice, int len,
+struct _Z_InputQ *Z_GetFirstComplete (void);
+struct _Z_InputQ *Z_GetNextComplete (struct _Z_InputQ *);
+Code_t Z_XmitFragment (ZNotice_t*, char *,int,int);
+void Z_RemQueue (struct _Z_InputQ *);
+Code_t Z_AddNoticeToEntry (struct _Z_InputQ*, ZNotice_t*, int);
+Code_t Z_FormatAuthHeader (ZNotice_t *, char *, int, int *, Z_AuthProc);
+Code_t Z_FormatHeader (ZNotice_t *, char *, int, int *, Z_AuthProc);
+Code_t Z_FormatRawHeader (ZNotice_t *, char*, int,
+			      int*, char **, char **);
+Code_t Z_ReadEnqueue (void);
+Code_t Z_ReadWait (void);
+Code_t Z_SendLocation (char*, char*, Z_AuthProc, char*);
+Code_t Z_SendFragmentedNotice (ZNotice_t *notice, int len,
 				   Z_AuthProc cert_func,
-				   Z_SendProc send_func));
-Code_t Z_WaitForComplete __P((void));
-Code_t Z_WaitForNotice __P((ZNotice_t *notice,
-			    int (*pred) __P((ZNotice_t *, void *)), void *arg,
-			    int timeout));
+				   Z_SendProc send_func);
+Code_t Z_WaitForComplete (void);
+Code_t Z_WaitForNotice (ZNotice_t *notice,
+			int (*pred)(ZNotice_t *, void *), void *arg,
+			int timeout);
+
+
+Code_t Z_NewFormatHeader (ZNotice_t *, char *, int, int *, Z_AuthProc);
+Code_t Z_NewFormatAuthHeader (ZNotice_t *, char *, int, int *, Z_AuthProc);
+Code_t Z_NewFormatRawHeader (ZNotice_t *, char *, int, int *, char **, 
+                                 int *, char **, char **);
+Code_t Z_AsciiFormatRawHeader (ZNotice_t *, char *, int, int *, char **, 
+                                 int *, char **, char **);
 
 void Z_gettimeofday(struct _ZTimeval *ztv, struct timezone *tz);
+
+#ifdef HAVE_KRB5
+int ZGetCreds(krb5_creds **creds_out);
+int ZGetCredsRealm(krb5_creds **creds_out, char *realm);
+Code_t Z_Checksum(krb5_data *cksumbuf, krb5_keyblock *keyblock,
+		  krb5_cksumtype cksumtype, char **asn1_data,
+		  unsigned int *asn1_len);
+Code_t Z_ExtractEncCksum(krb5_keyblock *keyblock, krb5_enctype *enctype,
+			 krb5_cksumtype *cksumtype);
+int Z_krb5_verify_cksum(krb5_keyblock *keyblock, krb5_data *cksumbuf,
+			krb5_cksumtype cksumtype, unsigned char *asn1_data,
+			int asn1_len);
+Code_t Z_InsertZcodeChecksum(krb5_keyblock *keyblock, ZNotice_t *notice, 
+                             char *buffer,
+                             char *cksum_start, int cksum_len, 
+                             char *cstart, char *cend, int buffer_len,
+                             int *length_ajdust);
+unsigned long z_quad_cksum(const unsigned char *, u_int32_t *, long,
+			   int, unsigned char *);
+#endif
+
+#ifdef HAVE_KRB5_CREDS_KEYBLOCK_ENCTYPE
+#define Z_keydata(keyblock)	((keyblock)->contents)
+#define Z_keylen(keyblock)	((keyblock)->length)
+#define Z_credskey(creds)	(&(creds)->keyblock)
+#define Z_enctype(keyblock)	((keyblock)->enctype)
+#else
+#define Z_keydata(keyblock)	((keyblock)->keyvalue.data)
+#define Z_keylen(keyblock)	((keyblock)->keyvalue.length)
+#define Z_credskey(creds)	(&(creds)->session)
+#define Z_enctype(keyblock)	((keyblock)->keytype)
+#endif
+
+#ifdef HAVE_KRB5_TICKET_ENC_PART2
+#define Z_tktprincp(tkt)	((tkt)->enc_part2 != 0)
+#define Z_tktprinc(tkt)		((tkt)->enc_part2->client)
+#else
+#define	Z_tktprincp(tkt)	((tkt)->client != 0)
+#define Z_tktprinc(tkt)		((tkt)->client)
+#endif
+
 #endif /* __INTERNAL_H__ */
 

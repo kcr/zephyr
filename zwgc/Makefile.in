@@ -40,7 +40,7 @@ OBJS=	port_dictionary.o pointer_dictionary.o unsigned_long_dictionary.o \
 	xcut.o regexp.o character_class.o text_operations.o file.o error.o \
 	variables.o formatter.o X_fonts.o X_gram.o tty_filter.o \
 	standard_ports.o xselect.o xmark.o xrevstack.o xerror.o \
-	new_string.o new_memory.o
+	new_string.o new_memory.o plus.o
 
 all: zwgc
 
@@ -77,7 +77,7 @@ lexer.o: y.tab.h
 parser.o: y.tab.c y.tab.h
 	${CC} -c ${ALL_CFLAGS} -o $@ y.tab.c
 
-y.tab.c y.tab.h: parser.y
+y.tab.c y.tab.h: ${srcdir}/parser.y
 	${YACC} ${YFLAGS} ${srcdir}/parser.y
 
 .c.o:

@@ -11,7 +11,7 @@
  */
 
 #ifndef lint
-static char rcsid_ZInitialize_c[] =
+static const char rcsid_ZInitialize_c[] =
     "$Zephyr: /afs/athena.mit.edu/astaff/project/zephyr/src/lib/RCS/ZInitialize.c,v 1.17 89/05/30 18:11:25 jtkohl Exp $";
 #endif
 
@@ -21,27 +21,49 @@ static char rcsid_ZInitialize_c[] =
 #ifdef HAVE_KRB4
 #include <krb_err.h>
 #endif
+#ifdef HAVE_KRB5
+#include <krb5.h>
+#endif
+#ifdef HAVE_KRB5_ERR_H
+#include <krb5_err.h>
+#endif
 
 #ifndef INADDR_NONE
 #define INADDR_NONE 0xffffffff
 #endif
 
-Code_t ZInitialize()
+#if defined(HAVE_KRB5) && defined(KRB5_REFERRAL_REALM)
+#include <profile.h>
+
+int z_get_host_realm_replacement(char *, char ***);
+#endif
+
+Code_t
+ZInitialize(void)
 {
     struct servent *hmserv;
     struct hostent *hostent;
     char addr[4], hostname[MAXHOSTNAMELEN];
     struct in_addr servaddr;
     struct sockaddr_in sin;
-    int s, sinsize = sizeof(sin);
+    unsigned int s, sinsize = sizeof(sin);
     Code_t code;
     ZNotice_t notice;
+#ifdef HAVE_KRB5
+    char **krealms = NULL;
+#else
 #ifdef HAVE_KRB4
     char *krealm = NULL;
     int krbval;
     char d1[ANAME_SZ], d2[INST_SZ];
+#endif
+#endif
 
+#ifdef HAVE_KRB4
     initialize_krb_error_table();
+#endif
+#ifdef HAVE_KRB5
+    initialize_krb5_error_table();
 #endif
 
     initialize_zeph_error_table();
@@ -67,6 +89,11 @@ Code_t ZInitialize()
     __Q_Tail = NULL;
     __Q_Head = NULL;
     
+#ifdef HAVE_KRB5
+    if ((code = krb5_init_context(&Z_krb5_ctx)))
+        return(code);
+#endif
+
     /* if the application is a server, there might not be a zhm.  The
        code will fall back to something which might not be "right",
        but this is is ok, since none of the servers call krb_rd_req. */
@@ -85,8 +112,18 @@ Code_t ZInitialize()
 	  If this code ever support a multiplexing zhm, this will have to
 	  be made smarter, and probably per-message */
 
+#ifdef HAVE_KRB5
+#ifndef KRB5_REFERRAL_REALM
+       code = krb5_get_host_realm(Z_krb5_ctx, notice.z_message, &krealms);
+       if (code)
+	 return(code);
+#else
+       code = z_get_host_realm_replacement(notice.z_message, &krealms);
+#endif
+#else
 #ifdef HAVE_KRB4
        krealm = krb_realmofhost(notice.z_message);
+#endif
 #endif
        hostent = gethostbyname(notice.z_message);
        if (hostent && hostent->h_addrtype == AF_INET)
@@ -95,6 +132,24 @@ Code_t ZInitialize()
        ZFreeNotice(&notice);
     }
 
+#ifdef HAVE_KRB5
+    if (krealms) {
+      strcpy(__Zephyr_realm, krealms[0]);
+      krb5_free_host_realm(Z_krb5_ctx, krealms);
+    } else {
+      char *p; /* XXX define this somewhere portable */
+      /* XXX check ticket file here */
+      code = krb5_get_default_realm(Z_krb5_ctx, &p);
+      strcpy(__Zephyr_realm, p);
+#ifdef HAVE_KRB5_FREE_DEFAULT_REALM
+      krb5_free_default_realm(Z_krb5_ctx, p);
+#else
+      free(p);
+#endif
+      if (code)
+	return code;
+    }
+#else
 #ifdef HAVE_KRB4
     if (krealm) {
 	strcpy(__Zephyr_realm, krealm);
@@ -105,6 +160,7 @@ Code_t ZInitialize()
     }
 #else
     strcpy(__Zephyr_realm, "local-realm");
+#endif
 #endif
 
     __My_addr.s_addr = INADDR_NONE;
@@ -148,3 +204,217 @@ Code_t ZInitialize()
     return (ZERR_NONE);
 }
 
+const char * ZGetRealm (void) {
+    return __Zephyr_realm;
+}
+
+int ZGetFD (void) {
+    return __Zephyr_fd;
+}
+
+int ZQLength (void) {
+    return __Q_CompleteLength;
+}
+
+struct sockaddr_in ZGetDestAddr (void) {
+    return __HM_addr;
+}
+
+#if defined(HAVE_KRB5) && defined(KRB5_REFERRAL_REALM)
+#include <ctype.h>
+#include <netinet/in.h>
+#include <arpa/nameser.h>
+#include <resolv.h>
+
+static int txt_lookup(char *qname, char **result) {
+    int ret, buflen, left;
+    void *buf = NULL;
+    HEADER *hdr;
+    unsigned char *p;
+    char dname[MAXDNAME];
+    int queries, answers, stored;
+
+    ret = res_init();
+    if (ret < 0)
+	return -1;
+
+    buflen = 0;
+    do {
+	buflen = buflen ? buflen * 2 : 2048;
+	buf = (buf == NULL) ? malloc(buflen) : realloc(buf, buflen);
+	
+	ret = res_search(qname, C_IN, T_TXT, buf, buflen);
+    } while (ret > buflen);
+
+    if (ret < 0)
+	return -1;
+
+    buflen = ret;
+    left = ret;
+
+    hdr = (HEADER *)buf;
+    p = buf;
+    queries = ntohs(hdr->qdcount);
+    answers = ntohs(hdr->ancount);
+    p += sizeof (HEADER);
+    left -= sizeof (HEADER);
+
+    while (queries--) {
+	ret = dn_expand(buf, buf + buflen, p, dname, sizeof dname);
+	if (ret < 0 || (ret + 4) > left)
+	    return -1;
+	p += ret + 4;
+	left -= ret + 4;
+    }
+
+    if (!ret || !answers)
+	return -1;
+
+    stored = 0;
+    while (answers--) {
+	int class, type;
+	
+	ret = dn_expand(buf, buf + buflen, p, dname, sizeof dname);
+	if (ret < 0 || ret > left)
+	    return -1;
+	p += ret;
+	left -= ret;
+
+	if (left < 10)
+	    return -1;
+	type = ntohs(*(u_int16_t *)p);
+	p += 2;
+	class = ntohs(*(u_int16_t *)p);
+	p += 6;
+	ret = ntohs(*(u_int16_t *)p);
+	p += 2;
+	left -= 10;
+
+	if (ret > left)
+	    return -1;
+
+	if (class == C_IN && type == T_TXT) {
+	    *result = malloc(ret);
+	    if (*result == NULL)
+		return -1;
+	    memcpy(*result, p + 1, ret - 1);
+	    (*result)[ret - 1] = 0;
+	    return 0;
+	}
+
+	p += ret;
+    }
+    return -1;
+}	
+
+int z_get_host_realm_replacement(char *inhost, char ***krealms) {
+    char *host, *p;
+    char *realm = NULL;
+    char *default_realm = NULL;
+    char *tmp_realm;
+    char *qname;
+    profile_t prof;
+    int ret;
+    
+    host = strdup(inhost);
+
+    for (p = host; *p; p++)
+	if (isupper(*p))
+	    *p = tolower(*p);
+
+    p = host;
+    while (p && !default_realm) {
+	if (*p == '.') {
+	    p++;
+	    if (default_realm == NULL) {
+		default_realm = p;
+	    }
+	} else {
+	    p = strchr(p, '.');
+	}
+    }
+
+    p = host;
+    tmp_realm = NULL;
+
+    krb5_get_profile(Z_krb5_ctx, &prof);
+    while(p) {
+	ret = profile_get_string(prof, "domain_realm", p,
+				 0, NULL, &tmp_realm);
+	if (ret) {
+	    profile_abandon(prof);
+	    free(host);
+	    return ret;
+	}
+
+	if (tmp_realm != NULL)
+	    break;
+
+	if (*p == '.')
+	    p++;
+	else
+	    p = strchr(p, '.');
+    }
+
+    if (tmp_realm != NULL) {
+	realm = strdup(tmp_realm);
+	profile_release_string(tmp_realm);
+	if (realm == NULL) {
+	    free(host);
+	    return errno;
+	}
+    }
+    profile_abandon(prof);
+
+    if (realm == NULL) {
+	p = host;
+	do {
+	    qname = malloc(strlen(p) + strlen("_kerberos..") + 1);
+	    if (qname == NULL) {
+		free(host);
+		return errno;
+	    }
+	    sprintf(qname, "_kerberos.%s.", p);
+	    ret = txt_lookup(qname, &realm);
+	    free(qname);
+	    
+	    p = strchr(p,'.');
+	    if (p) 
+		p++;
+	} while (ret && p && p[0]);
+    }
+
+    if (realm == NULL) {
+	if (default_realm != NULL) {
+	    realm = strdup(default_realm);
+	    if (realm == NULL) {
+		free(host);
+		return errno;
+	    }
+	    
+	    for (p = realm; *p; p++)
+		if (islower(*p))
+		    *p = toupper(*p);
+	} else {
+	    ret = krb5_get_default_realm(Z_krb5_ctx, &realm);
+	    if (ret) {
+		free(host);
+		return ret;
+	    }
+	}
+    }
+    
+    free(host);
+
+    if ((*krealms = calloc(2, sizeof(*krealms))) == NULL) {
+	if (realm)
+	    free(realm);
+	return errno;
+    }
+
+    (*krealms)[0] = realm;
+    (*krealms)[1] = NULL;
+
+    return 0;
+}
+#endif

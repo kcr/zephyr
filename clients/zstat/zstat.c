@@ -15,6 +15,8 @@
 #include <internal.h>
 
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include "zserver.h"
 
 #if !defined(lint) && !defined(SABER)
@@ -47,16 +49,20 @@ int outoftime = 0;
 int serveronly = 0,hmonly = 0;
 u_short srv_port;
 
-void usage(), do_stat();
+void usage(char *);
+void do_stat(char *);
+int srv_stat(char *);
+int hm_stat(char *, char *);
 
-RETSIGTYPE timeout()
+RETSIGTYPE
+timeout(int ignored)
 {
 	outoftime = 1;
 }
 
-main(argc, argv)
-	int argc;
-	char *argv[];
+int
+main(int argc,
+     char *argv[])
 {
 	Code_t ret;
 	char hostname[MAXHOSTNAMELEN];
@@ -114,8 +120,7 @@ main(argc, argv)
 }
 
 void
-do_stat(host)
-	char *host;
+do_stat(char *host)
 {
 	char srv_host[MAXHOSTNAMELEN];
 	
@@ -132,8 +137,8 @@ do_stat(host)
 }
 
 int
-hm_stat(host,server)
-	char *host,*server;
+hm_stat(char *host,
+	char *server)
 {
 	struct in_addr inaddr;
 	Code_t code;
@@ -144,9 +149,6 @@ hm_stat(host,server)
 	time_t runtime;
 	struct tm *tim;
 	ZNotice_t notice;
-#ifdef _POSIX_VERSION
-	struct sigaction sa;
-#endif
 	
 	if ((inaddr.s_addr = inet_addr(host)) == (unsigned)(-1)) {
 	    if ((hp = gethostbyname(host)) == NULL) {
@@ -196,8 +198,7 @@ hm_stat(host,server)
 }
 
 int
-srv_stat(host)
-	char *host;
+srv_stat(char *host)
 {
 	char *line[20],*mp;
 	int sock,i,nf,ret;
@@ -236,6 +237,7 @@ srv_stat(host)
 	(void) memset((char *)&notice, 0, sizeof(notice));
 	notice.z_kind = UNSAFE;
 	notice.z_port = 0;
+	notice.z_charset = ZCHARSET_UNKNOWN;
 	notice.z_class = ZEPHYR_ADMIN_CLASS;
 	notice.z_class_inst = "";
 	notice.z_opcode = ADMIN_STATUS;
@@ -308,8 +310,7 @@ srv_stat(host)
 }
 
 void
-usage(s)
-	char *s;
+usage(char *s)
 {
 	fprintf(stderr,"usage: %s [-s] [-h] [host ...]\n",s);
 	exit(1);

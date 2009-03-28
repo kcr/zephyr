@@ -11,12 +11,13 @@
  */
 
 #ifndef lint
-static char rcsid_ZFlushLocations_c[] = "$Id$";
+static const char rcsid_ZFlushLocations_c[] = "$Id$";
 #endif
 
 #include <internal.h>
 
-Code_t ZFlushLocations()
+Code_t
+ZFlushLocations(void)
 {
 	int i;
 	

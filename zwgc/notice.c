@@ -31,6 +31,10 @@ static const char rcsid_notice_c[] = "$Id$";
 #include "error.h"
 #include "variables.h"
 #include "notice.h"
+#ifdef CMU_ZWGCPLUS
+#include <pwd.h>
+#include "plus.h"
+#endif
 
 /*
  *    int count_nulls(char *data, int length)
@@ -38,9 +42,9 @@ static const char rcsid_notice_c[] = "$Id$";
  *        Effects: Returns the # of nulls in data[0]..data[length-1]
  */
 
-int count_nulls(data, length)
-     char *data;
-     int length;
+int
+count_nulls(char *data,
+	    int length)
 {
     int count = 0;
 
@@ -66,9 +70,9 @@ int count_nulls(data, length)
  *                 remain.  (this is the case when *length_p == 0)
  */
 
-string get_next_field(data_p, length_p)
-     char **data_p;
-     int *length_p;
+string
+get_next_field(char **data_p,
+	       int *length_p)
 {
     char *data = *data_p;
     int length = *length_p;
@@ -98,10 +102,9 @@ string get_next_field(data_p, length_p)
  *                 "" is returned.
  */
 
-string get_field(data, length, num)
-     char *data;
-     int length;
-     int num;
+string get_field(char *data,
+		 int length,
+		 int num)
 {
     /*
      * While num>1 and there are fields left, skip a field & decrement num:
@@ -132,9 +135,9 @@ string get_field(data, length, num)
  *                be freed.
  */
 
-string convert_nulls_to_newlines(data, length)
-     char *data;
-     int length;
+string
+convert_nulls_to_newlines(char *data,
+			  int length)
 {
     char *result, *ptr;
     char c;
@@ -158,8 +161,8 @@ string convert_nulls_to_newlines(data, length)
  *                 eventually.
  */
 
-static string z_kind_to_ascii(z_kind)
-     ZNotice_Kind_t z_kind;
+static string
+z_kind_to_ascii(ZNotice_Kind_t z_kind)
 {
     string result;
 
@@ -217,8 +220,8 @@ static string z_kind_to_ascii(z_kind)
  *                 eventually.
  */
 
-static string z_auth_to_ascii(z_auth)
-     int z_auth;
+static string
+z_auth_to_ascii(int z_auth)
 {
     string result;
 
@@ -249,12 +252,15 @@ static string z_auth_to_ascii(z_auth)
  *        Effects:
  */
 
-char *decode_notice(notice, hostname)
-     ZNotice_t *notice;
-     char *hostname;
+char *
+decode_notice(ZNotice_t *notice,
+	      char *hostname)
 {
     char *temp;
     string time, notyear, year, date_string, time_string;
+#ifdef CMU_ZWGCPLUS
+    extern char *getSelectedText();
+#endif
 
     /*
      * Convert useful notice fields to ascii and store away in
@@ -266,6 +272,7 @@ char *decode_notice(notice, hostname)
     var_set_variable("instance", notice->z_class_inst);
     var_set_variable("opcode", notice->z_opcode);
     var_set_variable("default", notice->z_default_format);
+    var_set_variable("charset", (char *)ZCharsetToString(notice->z_charset)); /*XXX const*/
     var_set_variable("recipient",
 		     (notice->z_recipient[0] ? notice->z_recipient : "*"));
     var_set_variable("fullsender", notice->z_sender);
@@ -273,6 +280,14 @@ char *decode_notice(notice, hostname)
     var_set_variable_then_free_value("kind", z_kind_to_ascii(notice->z_kind));
     var_set_variable_then_free_value("auth", z_auth_to_ascii(notice->z_auth));
 
+#ifdef CMU_ZWGCPLUS
+    if ((temp=getSelectedText()) != 0)
+	var_set_variable("selection", temp);
+    
+    var_set_variable("delete_window", "none");
+    var_set_variable("event_time", "none");
+    var_set_variable("event_name", "event");
+#endif
     /*
      * Set $sender to the name of the notice sender except first strip off the
      * realm name if it is the local realm:
@@ -283,6 +298,17 @@ char *decode_notice(notice, hostname)
 						      temp-notice->z_sender));
     else
       var_set_variable("sender", notice->z_sender);
+#ifdef CMU_ZWGCPLUS
+    if (get_full_names) {
+      struct passwd *pwnam = getpwnam(var_get_variable("sender"));
+      if (pwnam) {
+        temp = string_Copy(pwnam->pw_gecos);
+        var_set_variable_then_free_value("sendername", temp);
+      } else {
+        var_set_variable("sendername", "unknown");
+      }
+    }
+#endif
     
     /*
      * Convert time & date notice was sent to ascii.  The $time

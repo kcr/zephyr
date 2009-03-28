@@ -23,20 +23,19 @@ static const char rcsid_znol_c[] = "$Id$";
 #define ON 1
 #define OFF 0
 
-main(argc,argv)
-	int argc;
-	register char *argv[];
+int
+main(int argc, char *argv[])
 {
 	register char *cp;
 	ZSubscription_t subs[SUBSATONCE];
 	ZLocations_t locations;
-	FILE *fp;
+	FILE *fp = NULL;
 	struct passwd *pwd;
 	char anyonename[BUFSIZ],name[BUFSIZ],cleanname[BUFSIZ],*envptr;
 	char *comment_ptr;
 	int onoff = ON,quiet = 0,justlist = 0,useronly = 0, filenamed = 0;
 	int retval,arg,ind,one,numlocs,i;
-	int wgport;
+	int wgport = 0;
 
 	if ((retval = ZInitialize()) != ZERR_NONE) {
 		com_err(argv[0],retval,"initializing");
@@ -137,7 +136,8 @@ main(argc,argv)
 		    if (cleanname[0] == '#' || cleanname[0] == '\0' ||
 			cleanname[0] == '\n')
 			continue;	/* ignore comment and empty lines */
-		    if (comment_ptr = strchr(cleanname, '#'))
+		    comment_ptr = strchr(cleanname, '#');
+		    if (comment_ptr)
 			*comment_ptr = '\0'; /* Ignore from # onwards */
 		    /* Get rid of old-style nol entries, just in case */
 		    cp = cleanname + strlen(cleanname) - 1;

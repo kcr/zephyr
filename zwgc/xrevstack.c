@@ -22,14 +22,15 @@ static const char rcsid_xrevstack_c[] = "$Id$";
 #ifndef X_DISPLAY_MISSING
 
 #ifndef TRUEREVSTACK
+#include <zephyr/zephyr.h>
 #include "X_gram.h"
 
 x_gram *bottom_gram = NULL;
 x_gram *unlinked = NULL;
 int reverse_stack = 0;
 
-void add_to_bottom(gram)
-     x_gram *gram;
+void
+add_to_bottom(x_gram *gram)
 {
    if (bottom_gram) {
       bottom_gram->below = gram;
@@ -44,17 +45,19 @@ void add_to_bottom(gram)
 }
 
 /*ARGSUSED*/
-void pull_to_top(gram)
-     x_gram *gram;
-{}
+void
+pull_to_top(x_gram *gram)
+{
+}
 
 /*ARGSUSED*/
-void push_to_bottom(gram)
-     x_gram *gram;
-{}
+void
+push_to_bottom(x_gram *gram)
+{
+}
 
-void delete_gram(gram)
-     x_gram *gram;
+void
+delete_gram(x_gram *gram)
 {
    if (gram == bottom_gram) {
       if (gram->above) {
@@ -82,8 +85,8 @@ void delete_gram(gram)
    gram->above = gram;
 }
 
-void unlink_gram(gram)
-     x_gram *gram;
+void
+unlink_gram(x_gram *gram)
 {
    delete_gram(gram);
 
@@ -111,8 +114,8 @@ x_gram *bottom_gram=NULL;
 static x_gram *top_gram=NULL;
 
 #ifdef DEBUG
-void print_gram_list(str)
-char *str;
+void
+print_gram_list(char *str)
 {
    x_gram *gram;
    char buf[80];
@@ -135,8 +138,8 @@ char *str;
 }
 #endif
 
-void pull_to_top(gram)
-x_gram *gram;
+void
+pull_to_top(x_gram *gram)
 {
    if (gram==top_gram) {
       /* already here */
@@ -166,8 +169,8 @@ x_gram *gram;
 #endif
 }
 
-void push_to_bottom(gram)
-x_gram *gram;
+void
+push_to_bottom(x_gram *gram)
 {
    if (gram==bottom_gram) {
       /* already here */
@@ -199,8 +202,8 @@ x_gram *gram;
 #endif
 }
 
-void unlink_gram(gram)
-x_gram *gram;
+void
+unlink_gram(x_gram *gram)
 {
    if (top_gram==bottom_gram) {
       /* the only gram in the stack */
@@ -222,8 +225,8 @@ x_gram *gram;
 }
 
 #ifdef notdef
-void add_to_top(gram)
-x_gram *gram;
+void
+add_to_top(x_gram *gram)
 {
    if (top_gram==NULL) {
       gram->above=NULL;
@@ -242,8 +245,8 @@ x_gram *gram;
 }
 #endif
 
-void add_to_bottom(gram)
-x_gram *gram;
+void
+add_to_bottom(x_gram *gram)
 {
    if (bottom_gram==NULL) {
       gram->above=NULL;

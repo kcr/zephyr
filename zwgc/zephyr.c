@@ -38,6 +38,9 @@ static const char rcsid_zephyr_c[] = "$Id$";
 #ifndef X_DISPLAY_MISSING
 #include "X_driver.h"
 #endif
+#ifdef CMU_ZWGCPLUS
+#include "plus.h"
+#endif
 
 #ifdef DEBUG
 extern int zwgc_debug;
@@ -58,13 +61,14 @@ static unsigned short zephyr_port = 0;
  *                 modified in any way.
  */
 
-static string get_zwgc_port_number_filename()
+static string
+get_zwgc_port_number_filename(void)
 {
     static char buffer[40];
     char *temp;
-    char *getenv();
 
-    if (temp = getenv("WGFILE"))
+    temp = getenv("WGFILE");
+    if (temp)
       return(temp);
     else {
 	sprintf(buffer, "/tmp/wg.%d", getuid());
@@ -76,7 +80,8 @@ static string get_zwgc_port_number_filename()
  *  Write out the port number to the wg file.
  */
 
-void write_wgfile()
+void
+write_wgfile(void)
 {
     char *name = get_zwgc_port_number_filename();
     FILE *port_file;
@@ -95,8 +100,8 @@ void write_wgfile()
  *
  */
 
-static void handle_zephyr_input(notice_handler)
-     void (*notice_handler)();
+static void
+handle_zephyr_input(void (*notice_handler)(ZNotice_t *))
 {
     ZNotice_t *notice;
     struct sockaddr_in from;
@@ -117,6 +122,13 @@ static void handle_zephyr_input(notice_handler)
 	    notice->z_auth = ZCheckAuthentication(notice, &from);
 	    notice_handler(notice);
 	}
+#ifdef CMU_ZWGCPLUS
+	if (get_list_refcount(notice) <= 0) {
+	    /* no windows created */
+	    if (!get_notice_fake(notice))
+		list_del_notice(notice);
+	}
+#endif
     }
 }
 
@@ -124,8 +136,7 @@ static void handle_zephyr_input(notice_handler)
  *
  */
 
-void zephyr_init(notice_handler)
-     void (*notice_handler)();
+void zephyr_init(void (*notice_handler)(ZNotice_t *))
 {
     char *temp;
     char *exposure;
@@ -170,7 +181,8 @@ void zephyr_init(notice_handler)
      * not one of the allowed ones, print an error and treat it as
      * EXPOSE_NONE.
      */
-    if (temp = ZGetVariable("exposure")) {
+    temp = ZGetVariable("exposure");
+    if (temp) {
 	if (!(exposure = ZParseExposureLevel(temp))) {
 	    ERROR2("invalid exposure level %s, using exposure level none instead.\n", temp);
 	    exposure = EXPOSE_NONE;
@@ -191,13 +203,14 @@ void zephyr_init(notice_handler)
     /*
      * Set $realm to our realm and $user to our zephyr username:
      */
-    var_set_variable("realm", ZGetRealm());
+    var_set_variable("realm", (char *)ZGetRealm()); /* XXX should propagate the
+						     * const */
     var_set_variable("user", ZGetSender());
 
     /*
      * <<<>>>
      */
-    mux_add_input_source(ZGetFD(), (void (*)())handle_zephyr_input,
+    mux_add_input_source(ZGetFD(), (void (*)(void *))handle_zephyr_input,
 			 notice_handler);
     zephyr_inited = 1;
     return;
@@ -207,7 +220,7 @@ void zephyr_init(notice_handler)
  *
  */
 
-void finalize_zephyr() /* <<<>>> */
+void finalize_zephyr(void) /* <<<>>> */
 {
     string temp;
 

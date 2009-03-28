@@ -11,17 +11,18 @@
  */
 
 #ifndef lint
-static char rcsid_ZOpenPort_c[] = "$Id$";
+static const char rcsid_ZOpenPort_c[] = "$Id$";
 #endif
 
 #include <internal.h>
 #include <sys/socket.h>
 
-Code_t ZOpenPort(port)
-    u_short *port;
+Code_t
+ZOpenPort(u_short *port)
 {
     struct sockaddr_in bindin;
-    int len;
+    unsigned int len;
+    int val = 1;
     
     (void) ZClosePort();
 
@@ -32,10 +33,14 @@ Code_t ZOpenPort(port)
 
     bindin.sin_family = AF_INET;
 
-    if (port && *port)
+    if (port && *port) {
 	bindin.sin_port = *port;
-    else
+	if (setsockopt(__Zephyr_fd, SOL_SOCKET, SO_REUSEADDR, &val, sizeof val) < 0) {
+	    return errno;
+	}
+    } else {
 	bindin.sin_port = 0;
+    }
 
     bindin.sin_addr.s_addr = INADDR_ANY;
 

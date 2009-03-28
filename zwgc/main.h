@@ -33,7 +33,11 @@ extern char *location_override;
  *                 program with error code 1.
  */
 
-extern void usage();
+extern void usage(void);
+
+#ifdef CMU_ZWGCPLUS
+extern void reprocess_notice(ZNotice_t *notice, char *hostname);
+#endif
 
 /* USRDESC points to a file (relative to user's homedir) which has a user's
    description file */

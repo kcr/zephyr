@@ -12,7 +12,7 @@
  */
 
 #if (!defined(lint) && !defined(SABER))
-static char rcsid_xmark_c[] = "$Id$";
+static const char rcsid_xmark_c[] = "$Id$";
 #endif
 
 #include <zephyr/mit-copyright.h>
@@ -23,6 +23,7 @@ static char rcsid_xmark_c[] = "$Id$";
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include <zephyr/zephyr.h>
 #include "X_gram.h"
 #include "X_fonts.h"
 #include "xmark.h"
@@ -43,10 +44,11 @@ x_gram *oldgram = NULL;
    (STARTCHAR != -1) && (ENDCHAR != -1) && \
    (STARTPIXEL != -1) && (ENDPIXEL != -1))
 
-void xmarkSetBound(gram,x,y,which)
-     x_gram *gram;
-     int x,y;
-     int which;
+void
+xmarkSetBound(x_gram *gram,
+	      int x,
+	      int y,
+	      int which)
 {
    int i,xofs,yofs;
    XFontStruct *font;
@@ -136,8 +138,9 @@ void xmarkSetBound(gram,x,y,which)
 }
 
 /* needs both bounds to be valid (!= -1) */
-static int xmarkNearest(x,y)
-     int x,y;
+static int
+xmarkNearest(int x,
+	     int y)
 {
    int middle;
 
@@ -157,11 +160,14 @@ static int xmarkNearest(x,y)
    }
 }
 
-void xmarkExpose(dpy,w,gram,b1,p1,b2,p2)
-     Display *dpy;
-     Window w;
-     x_gram *gram;
-     unsigned int b1,p1,b2,p2;
+void
+xmarkExpose(Display *dpy,
+	    Window w,
+	    x_gram *gram,
+	    unsigned int b1,
+	    unsigned int p1,
+	    unsigned int b2,
+	    unsigned int p2)
 {
 #define swap(x,y) temp=(x); (x)=(y); (y)=temp
    int i,temp;
@@ -226,11 +232,11 @@ void xmarkExpose(dpy,w,gram,b1,p1,b2,p2)
 
 /* Public functions: */
 
-void xmarkRedraw(dpy,w,gram,range)
-     Display *dpy;
-     Window w;
-     x_gram *gram;
-     int range;
+void
+xmarkRedraw(Display *dpy,
+	    Window w,
+	    x_gram *gram,
+	    int range)
 {
 #define ob1 ((unsigned int) oldblock[XMARK_START_BOUND])
 #define ob2 ((unsigned int) oldblock[XMARK_END_BOUND])
@@ -262,7 +268,8 @@ void xmarkRedraw(dpy,w,gram,range)
 }
 
 /* needs both bounds to be valid (!= -1) */
-int xmarkSecond()
+int
+xmarkSecond(void)
 {
    if (STARTBLOCK > ENDBLOCK)
      return(XMARK_START_BOUND);
@@ -278,7 +285,8 @@ int xmarkSecond()
    }
 }
 
-void xmarkClear()
+void
+xmarkClear(void)
 {
    oldblock[0]=markblock[0];
    oldblock[1]=markblock[1];
@@ -295,9 +303,10 @@ void xmarkClear()
    markgram=NULL;
 }
 
-int xmarkExtendFromFirst(gram,x,y)
-     x_gram *gram;
-     int x,y;
+int
+xmarkExtendFromFirst(x_gram *gram,
+		     int x,
+		     int y)
 {
    if (markgram != gram) {
       xmarkClear();
@@ -317,9 +326,10 @@ int xmarkExtendFromFirst(gram,x,y)
    }
 }
 
-int xmarkExtendFromNearest(gram,x,y)
-     x_gram *gram;
-     int x,y;
+int
+xmarkExtendFromNearest(x_gram *gram,
+		       int x,
+		       int y)
 {
    int bound;
 
@@ -341,7 +351,8 @@ int xmarkExtendFromNearest(gram,x,y)
    }
 }
 
-char *xmarkGetText()
+char *
+xmarkGetText(void)
 {
     int i, index, len;
     int last_y = -1;
