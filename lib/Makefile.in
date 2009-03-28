@@ -39,19 +39,20 @@ OBJS =	zephyr_err.lo ZAsyncLocate.lo ZCkAuth.lo ZCkIfNot.lo ZClosePort.lo \
 	ZPeekIfNot.lo ZPeekNot.lo ZPeekPkt.lo ZPending.lo ZReadAscii.lo \
 	ZRecvNot.lo ZRecvPkt.lo ZRetSubs.lo ZSendList.lo ZSendNot.lo \
 	ZSendPkt.lo ZSendRaw.lo ZSendRLst.lo ZSetDest.lo ZSetFD.lo ZSetSrv.lo \
-	ZSubs.lo ZVariables.lo ZWait4Not.lo Zinternal.lo
+	ZSubs.lo ZVariables.lo ZWait4Not.lo Zinternal.lo ZMakeZcode.lo \
+	ZReadZcode.lo ZCkZAut.lo quad_cksum.lo charset.lo ZExpnRlm.lo
 
 .SUFFIXES: .lo
 
 all: libzephyr.la
 
 libzephyr.la: ${OBJS}
-	${LIBTOOL} --mode=link ${CC} -rpath ${libdir} -version-info 3:0:0 \
+	${LIBTOOL} --mode=link ${CC} -rpath ${libdir} -version-info 4:0:0 \
 	  ${LDFLAGS} -o $@ ${OBJS} ${LIBS}
 
 zephyr_err.c ${BUILDTOP}/h/zephyr/zephyr_err.h: zephyr_err.et
 	compile_et ${srcdir}/zephyr_err.et
-	mv zephyr_err.h ${BUILDTOP}/h/zephyr
+	mv -f zephyr_err.h ${BUILDTOP}/h/zephyr
 
 .c.lo:
 	${LIBTOOL} --mode=compile ${CC} -c -o $@ ${ALL_CFLAGS} $<

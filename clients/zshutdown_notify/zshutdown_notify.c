@@ -19,7 +19,7 @@
 #include <netdb.h>
 
 #ifndef lint
-static const char *rcsid_zshutdown_notify_c =
+static const char rcsid_zshutdown_notify_c[] =
     "$Id$";
 #endif
 
@@ -41,9 +41,9 @@ static const char *rcsid_zshutdown_notify_c =
 static char warning[] = "Please detach any filesystems you may have\nattached from this host by typing detach -host %s";
 
 /*ARGSUSED*/
-main(argc,argv)
-    int argc;
-    char *argv[];
+int
+main(int argc,
+     char *argv[])
 {
     ZNotice_t notice;
     struct hostent *hp;
@@ -57,7 +57,6 @@ main(argc,argv)
     char rlm[REALM_SZ];
     char hn2[MAXHOSTNAMELEN];
     char *cp;
-    extern char *krb_get_phost();
 #endif
 
     if (gethostname(hostname, MAXHOSTNAMELEN) < 0) {
@@ -84,14 +83,16 @@ main(argc,argv)
 	fprintf(stderr, "%s: can't figure out canonical hostname\n",argv[0]);
 	exit(1);
     }
-    if (retval = krb_get_lrealm(rlm, 1)) {
+    retval = krb_get_lrealm(rlm, 1);
+    if (retval) {
 	fprintf(stderr, "%s: can't get local realm: %s\n",
 		argv[0], krb_get_err_text(retval));
 	exit(1);
     }
-    if (retval = krb_get_svc_in_tkt(SVC_NAME, hn2, rlm,
-				    SERVER_SERVICE, SERVER_INSTANCE, 1,
-				    KEYFILE)) {
+    retval = krb_get_svc_in_tkt(SVC_NAME, hn2, rlm,
+				SERVER_SERVICE, SERVER_INSTANCE, 1,
+				KEYFILE);
+    if (retval) {
 	fprintf(stderr, "%s: can't get tickets: %s\n",
 		argv[0], krb_get_err_text(retval));
 	exit(1);
@@ -119,6 +120,7 @@ main(argc,argv)
 
     notice.z_kind = N_KIND;
     notice.z_port = 0;
+    notice.z_charset = ZCHARSET_UNKNOWN;
     notice.z_class = N_CLASS;
     notice.z_class_inst = hostname;
     notice.z_opcode = N_OPCODE;

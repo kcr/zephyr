@@ -24,11 +24,11 @@ static const char rcsid_zaway_c[] = "$Id$";
 #define DEFAULT_MSG "I'm sorry, but I am currently away from the terminal and am\nnot able to receive your message.\n"
 #define RESPONSE_OPCODE ""
 
-RETSIGTYPE cleanup();
+RETSIGTYPE cleanup(int);
 u_short port;
 
-void usage(name)
-	char *name;
+void
+usage(char *name)
 {
 	printf("Usage: %s [OPTIONS] [FILE]\n"
 	       "\n"
@@ -38,9 +38,9 @@ void usage(name)
 	       name);
 }
 
-int main(argc,argv)
-	int argc;
-	char *argv[];
+int
+main(int argc,
+     char *argv[])
 {
 	FILE *fp;
 	ZNotice_t notice;
@@ -52,7 +52,10 @@ int main(argc,argv)
 	int optchar, watch_location;
 	char *cmdline_msg;
 	int nlocs;
-	char *find_message();
+	char *find_message(ZNotice_t *, FILE *);
+	char *charset = NULL;
+	unsigned short zcharset;
+	    
 #ifdef _POSIX_VERSION
 	struct sigaction sa;
 #endif
@@ -74,7 +77,7 @@ int main(argc,argv)
 
 	cmdline_msg = 0;
 	watch_location = 0;
-	while ((optchar = getopt(argc, argv, "m:wh")) != EOF) {
+	while ((optchar = getopt(argc, argv, "m:whx:")) != EOF) {
 		switch (optchar) {
 		case 'm':
 			cmdline_msg = optarg;
@@ -88,6 +91,10 @@ int main(argc,argv)
 			usage(argv[0]);
 			return 0;
 
+		case 'x':
+			charset = optarg;
+			break;
+
 		case '?':
 			fprintf(stderr,
 				"Unrecognized option '-%c'.\n"
@@ -96,6 +103,8 @@ int main(argc,argv)
 			return 1;
 		}
 	}
+
+	zcharset = ZGetCharset(charset);
 
 	if (argc > optind)
 		(void) strcpy(awayfile,argv[optind]);
@@ -165,12 +174,11 @@ int main(argc,argv)
 		}
 
 		if (cmdline_msg) {
-			ptr = malloc(strlen(cmdline_msg)+1);
-			if (!ptr) {
-				com_err(argv[0],ENOMEM,"while getting cmdline message");
-				exit(1);
-			}
-			(void) strcpy(ptr,cmdline_msg);
+		    ptr = strdup(cmdline_msg);
+		    if (!ptr) {
+			com_err(argv[0],ENOMEM,"while getting cmdline message");
+			exit(1);
+		    }
 		}
 		else if (fp) {
 			if (!(ptr = find_message(&notice,fp))) {
@@ -190,6 +198,7 @@ int main(argc,argv)
 		notice.z_sender = 0;
 		notice.z_default_format = "";
 		notice.z_opcode = RESPONSE_OPCODE;
+		notice.z_charset = zcharset;
 
 		msg[0] = "Automated reply:";
 		msg[1] = ptr;
@@ -203,11 +212,11 @@ int main(argc,argv)
 	}
 }
 
-char *find_message(notice,fp)
-	ZNotice_t *notice;
-	register FILE *fp;
+char *
+find_message(ZNotice_t *notice,
+	     FILE *fp)
 {
-	register char *ptr,*ptr2;
+	char *ptr,*ptr2;
 	char bfr[BUFSIZ],sender[BUFSIZ];
 	int gotone,lastwasnt;
 	
@@ -253,7 +262,8 @@ char *find_message(notice,fp)
 	return (ptr);
 }
 
-RETSIGTYPE cleanup()
+RETSIGTYPE
+cleanup(int ignored)
 {
     ZCancelSubscriptions(port);
     exit(1);

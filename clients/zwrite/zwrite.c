@@ -31,20 +31,21 @@ static const char rcsid_zwrite_c[] = "$Id$";
 int nrecips, msgarg, verbose, quiet, nodot, cc;
 char *whoami, *inst, *class, *opcode, *realm, *recips[MAXRECIPS];
 Z_AuthProc auth;
-void un_tabify();
+void un_tabify(char **, int *);
 
-char *fix_filsrv_inst();
-void usage(), send_off();
+char *fix_filsrv_inst(char *);
+void usage(char *);
+void send_off(ZNotice_t *, int);
 
-main(argc, argv)
-    int argc;
-    char *argv[];
+int
+main(int argc, char *argv[])
 {
     int retval, arg, nocheck, nchars, msgsize, filsys, tabexpand;
     char *message, *signature = NULL, *format = NULL;
     static char bfr[BUFSIZ], classbfr[BUFSIZ], instbfr[BUFSIZ], sigbfr[BUFSIZ];
     static char opbfr[BUFSIZ];
     static ZNotice_t notice;
+    char *charset = NULL;
 
     whoami = argv[0];
 
@@ -60,20 +61,23 @@ main(argc, argv)
     verbose = quiet = msgarg = nrecips = nocheck = filsys = nodot = 0;
     tabexpand = 1;
 
-    if (class = ZGetVariable("zwrite-class")) {
+    class = ZGetVariable("zwrite-class");
+    if (class) {
 	(void) strcpy(classbfr, class);
 	class = classbfr;
     }
     else
 	class = DEFAULT_CLASS;
-    if (inst = ZGetVariable("zwrite-inst")) {
+    inst = ZGetVariable("zwrite-inst");
+    if (inst) {
 	(void) strcpy(instbfr, inst);
 	inst = instbfr;
     }
     else
 	inst = DEFAULT_INSTANCE;
 
-    if (opcode = ZGetVariable("zwrite-opcode"))
+    opcode = ZGetVariable("zwrite-opcode");
+    if (opcode)
       opcode = strcpy(opbfr, opcode);
     else
       opcode = DEFAULT_OPCODE;
@@ -86,7 +90,7 @@ main(argc, argv)
 	
     arg = 1;
 	
-    for (;arg<argc&&!msgarg;arg++) {
+    for (;arg<argc && !msgarg; arg++) {
 	if (*argv[arg] != '-') {
 	    recips[nrecips++] = argv[arg];
 	    continue;
@@ -179,6 +183,12 @@ main(argc, argv)
 	case 'C':
 	    cc = 1;
 	    break;
+	case 'x':
+	    if (arg == argc-1)
+		usage(whoami);
+	    arg++;
+	    charset = argv[arg];
+	    break;
 	default:
 	    usage(whoami);
 	}
@@ -224,6 +234,7 @@ main(argc, argv)
     notice.z_sender = 0;
     notice.z_message_len = 0;
     notice.z_recipient = "";
+    notice.z_charset = ZGetCharset(charset);
     if (format)
 	    notice.z_default_format = format;
     else if (filsys == 1)
@@ -242,11 +253,12 @@ main(argc, argv)
     if (!nocheck && nrecips)
 	send_off(&notice, 0);
 	
-    if (!msgarg && isatty(0))
+    if (!msgarg && isatty(0)) {
 	if (nodot)
 	    printf("Type your message now.  End with the end-of-file character.\n");
 	else
 	    printf("Type your message now.  End with control-D or a dot on a line by itself.\n");
+    }
 	
     message = NULL;
     msgsize = 0;
@@ -313,7 +325,7 @@ main(argc, argv)
 	    message = realloc(message, (unsigned)(msgsize+1));
 	}
 	else {	/* Use read so you can send binary messages... */
-	    while (nchars = read(fileno(stdin), bfr, sizeof bfr)) {
+	    while ((nchars = read(fileno(stdin), bfr, sizeof bfr))) {
 		if (nchars == -1) {
 		    fprintf(stderr, "Read error from stdin!  Can't continue!\n");
 		    exit(1);
@@ -338,12 +350,10 @@ main(argc, argv)
 }
 
 void
-send_off(notice, real)
-    ZNotice_t *notice;
-    int real;
+send_off(ZNotice_t *notice, int real)
 {
     int i, success, retval;
-    char bfr[BUFSIZ], realm_recip[BUFSIZ], dest[3 * BUFSIZ], *cp;
+    char bfr[BUFSIZ], realm_recip[BUFSIZ], dest[3 * BUFSIZ];
     ZNotice_t retnotice;
 
     success = 0;
@@ -445,13 +455,12 @@ send_off(notice, real)
 } 
 
 void
-usage(s)
-    char *s;
+usage(char *s)
 {
     fprintf(stderr,
 	    "Usage: %s [-a] [-o] [-d] [-v] [-q] [-n] [-t] [-u] [-l]\n\
 \t[-c class] [-i inst] [-O opcode] [-f fsname] [-s signature] [-C]\n\
-\t[user ...] [-F format] [-r realm] [-m message]\n", s);
+\t[user ...] [-F format] [-r realm] [-x charset] [-m message]\n", s);
     fprintf(stderr,"\t-f and -c are mutually exclusive\n\
 \t-f and -i are mutually exclusive\n\
 \trecipients must be specified unless -c or -f specifies a class\n\
@@ -466,8 +475,8 @@ usage(s)
   name returned by gethostbyname(hostname)
  */
 
-char *fix_filsrv_inst(str)
-char *str;
+char *
+fix_filsrv_inst(char *str)
 {
 	static char fsinst[BUFSIZ];
 	char *ptr;
@@ -500,9 +509,8 @@ char *str;
 #endif /* ! TABSTOP */
 
 void
-un_tabify(bufp, sizep)
-char **bufp;
-register int *sizep;
+un_tabify(char **bufp,
+	  int *sizep)
 {
     register char *cp, *cp2;
     char *cp3;

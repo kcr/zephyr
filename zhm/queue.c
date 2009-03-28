@@ -14,7 +14,7 @@
 
 #ifndef lint
 #ifndef SABER
-static char rcsid_queue_c[] = "$Id$";
+static const char rcsid_queue_c[] = "$Id$";
 #endif /* SABER */
 #endif /* lint */
 
@@ -30,17 +30,19 @@ typedef struct _Queue {
 static Queue *hm_queue;
 static int retransmits_enabled = 0;
 
-static Queue *find_notice_in_queue __P((ZNotice_t *notice));
-static Code_t dump_queue __P((void));
-static void queue_timeout __P((void *arg));
+static Queue *find_notice_in_queue(ZNotice_t *notice);
+static void queue_timeout(void *arg);
+
+extern void new_server(char *);
 
 int rexmit_times[] = { 2, 2, 4, 4, 8, -1 };
 
 #ifdef DEBUG
-Code_t dump_queue();
+Code_t dump_queue(void);
 #endif
 
-void init_queue()
+void
+init_queue(void)
 {
     Queue *q;
 
@@ -56,11 +58,11 @@ void init_queue()
     DPR("Queue initialized and flushed.\n");
 }
 
-Code_t add_notice_to_queue(notice, packet, repl, len)
-    ZNotice_t *notice;
-    char * packet;
-    struct sockaddr_in *repl;
-    int len;
+Code_t
+add_notice_to_queue(ZNotice_t *notice,
+		    char *packet,
+		    struct sockaddr_in *repl,
+		    int len)
 {
     Queue *entry;
 
@@ -81,7 +83,13 @@ Code_t add_notice_to_queue(notice, packet, repl, len)
 	    free(entry->packet);
 	} else {
 	    entry->reply = *repl;
-	    LIST_INSERT(&hm_queue, entry);
+	    /*LIST_INSERT(&hm_queue, entry);*/
+
+	    (entry)->next = *(&hm_queue);
+	    if (*&hm_queue) ((*(&hm_queue))->prev_p = &(entry)->next);
+	    (*&hm_queue) = (entry);
+	    (entry)->prev_p = (&hm_queue);
+		
 	}
 	entry->timer = (retransmits_enabled) ?
 	    timer_set_rel(rexmit_times[0], queue_timeout, entry) : NULL;
@@ -89,10 +97,10 @@ Code_t add_notice_to_queue(notice, packet, repl, len)
     return(ZERR_NONE);
 }
 
-Code_t remove_notice_from_queue(notice, kind, repl)
-    ZNotice_t *notice;
-    ZNotice_Kind_t *kind;
-    struct sockaddr_in *repl;
+Code_t
+remove_notice_from_queue(ZNotice_t *notice,
+			 ZNotice_Kind_t *kind,
+			 struct sockaddr_in *repl)
 {
     Queue *entry;
 
@@ -106,7 +114,9 @@ Code_t remove_notice_from_queue(notice, kind, repl)
     if (entry->timer)
 	timer_reset(entry->timer);
     free(entry->packet);
-    LIST_DELETE(entry);
+    /*LIST_DELETE(entry);*/
+    *(entry)->prev_p = (entry)->next;
+    if((entry)->next) ((entry)->next->prev_p = (entry)->prev_p);
 #ifdef DEBUG
     dump_queue();
 #endif /* DEBUG */
@@ -115,8 +125,8 @@ Code_t remove_notice_from_queue(notice, kind, repl)
 }
 
 /* We have a server; transmit all of our packets. */
-void retransmit_queue(sin)
-    struct sockaddr_in *sin;
+void
+retransmit_queue(struct sockaddr_in *sin)
 {
     Queue *entry;
     Code_t ret;
@@ -148,7 +158,8 @@ void retransmit_queue(sin)
 }
 
 /* We lost our server; nuke all of our timers. */
-void disable_queue_retransmits()
+void
+disable_queue_retransmits(void)
 {
     Queue *entry;
 
@@ -161,7 +172,8 @@ void disable_queue_retransmits()
 }
 
 #ifdef DEBUG
-static Code_t dump_queue()
+static Code_t
+dump_queue(void)
 {
     Queue *entry;
     caddr_t mp;
@@ -193,7 +205,8 @@ static Code_t dump_queue()
 }
 #endif /* DEBUG */
 
-int queue_len()
+int
+queue_len(void)
 {
     int length = 0;
     Queue *entry;
@@ -203,8 +216,8 @@ int queue_len()
     return length;
 }
 
-static Queue *find_notice_in_queue(notice)
-    ZNotice_t *notice;
+static Queue *
+find_notice_in_queue(ZNotice_t *notice)
 {
     Queue *entry;
 
@@ -215,8 +228,8 @@ static Queue *find_notice_in_queue(notice)
     return NULL;
 }
 
-static void queue_timeout(arg)
-    void *arg;
+static void
+queue_timeout(void *arg)
 {
     Queue *entry = (Queue *) arg;
     Code_t ret;

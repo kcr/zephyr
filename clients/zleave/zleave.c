@@ -17,7 +17,7 @@
 #include <com_err.h>
 
 #ifndef lint
-static char rcsid_zlocate_c[] = "$Id$";
+static const char rcsid_zlocate_c[] = "$Id$";
 #endif /* lint */
 
 /*
@@ -52,23 +52,27 @@ char copyright[] =
  */
 char origlogin[20];
 char tempfile[40];
-char *getlogin();
 char *whenleave;
 char *reminder_message = NULL;
 char buff[100];
 int use_zephyr=1, oldpid;
 
-void usage(), doalarm(), bother(), delay();
+void usage(void);
+void doalarm(long);
+void bother(long, char *);
+void delay(long);
+int gethm(char *, int *, int*);
 
-main(argc, argv)
-char **argv;
+int
+main(int argc,
+     char **argv)
 {
 	time_t now;
-	long when, diff, hours, minutes;
+	long when, diff;
+	int hours, minutes;
 	char *cp;
 	FILE *fp;
 	struct tm *nv;
-	int gethm();
 	int port, c;
 	ZSubscription_t sub;
 	
@@ -180,7 +184,7 @@ char **argv;
 }
 
 void
-usage()
+usage(void)
 {
 	fprintf(stderr, "usage: zleave [[+]hhmm [-m \"Reminder Message\"]]\n\
 \tor: zleave can[cel]\n");
@@ -188,12 +192,12 @@ usage()
 }
 
 int
-gethm(cp, hp, mp)
-register char *cp;
-int *hp, *mp;
+gethm(char *cp,
+      int *hp,
+      int *mp)
 {
-	register char c;
-	register int tod;
+	char c;
+	int tod;
 
 	tod = 0;
 	while ((c = *cp++) != '\0') {
@@ -207,8 +211,7 @@ int *hp, *mp;
 }
 
 void
-doalarm(nmins)
-long nmins;
+doalarm(long nmins)
 {
 	time_t daytime;
 	char *msg1, *msg2, *msg3, *msg4;
@@ -251,7 +254,8 @@ long nmins;
 	daytime += gseconds;
 	whenleave = ctime(&daytime);
 
-	if (fp = fopen(tempfile,"r")) {
+	fp = fopen(tempfile,"r");
+	if (fp) {
 	      if (fscanf(fp, "%d", &oldpid) == 1)
 		      if (!kill(oldpid,9))
 			      printf("Old zleave process killed.\n");
@@ -309,9 +313,8 @@ long nmins;
 }
 
 void
-bother(slp, msg)
-long slp;
-char *msg;
+bother(long slp,
+       char *msg)
 {
       ZNotice_t notice;
       ZNotice_t retnotice;
@@ -332,6 +335,7 @@ char *msg;
 	    (void) memset((char *)&notice, 0, sizeof(notice));
 	    notice.z_kind = ACKED;
 	    notice.z_port = 0;
+	    notice.z_charset = ZCHARSET_UNKNOWN;
 	    notice.z_class = MESSAGE_CLASS;
 	    notice.z_class_inst = INSTANCE;
 	    notice.z_recipient = ZGetSender();
@@ -384,8 +388,7 @@ char *msg;
  * knows what zero means.
  */
 void
-delay(secs)
-long secs;
+delay(long secs)
 {
 	long n;
 	register char *l;

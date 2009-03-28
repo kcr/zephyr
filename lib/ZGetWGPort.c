@@ -11,12 +11,13 @@
  */
 
 #ifndef lint
-static char rcsid_ZGetWGPort_c[] = "$Id$";
+static const char rcsid_ZGetWGPort_c[] = "$Id$";
 #endif
 
 #include <internal.h>
 
-int ZGetWGPort()
+int
+ZGetWGPort(void)
 {
     char *envptr, name[128];
     FILE *fp;

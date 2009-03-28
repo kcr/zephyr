@@ -11,15 +11,16 @@
  */
 
 #ifndef lint
-static char rcsid_ZParseNotice_c[] =
+static const char rcsid_ZParseNotice_c[] =
     "$Zephyr: /mit/zephyr/src/lib/RCS/ZParseNotice.c,v 1.22 91/03/29 03:34:46 raeburn Exp $";
 #endif
 
 #include <internal.h>
 
 /* Skip to the next NUL-terminated field in the packet. */
-static char *next_field(ptr, end)
-    char *ptr, *end;
+static char *
+next_field(char *ptr,
+	   char *end)
 {
     while (ptr < end && *ptr != '\0')
 	ptr++;
@@ -28,10 +29,10 @@ static char *next_field(ptr, end)
     return (ptr);
 }
 
-Code_t ZParseNotice(buffer, len, notice)
-    char *buffer;
-    int len;
-    ZNotice_t *notice;
+Code_t
+ZParseNotice(char *buffer,
+	     int len,
+	     ZNotice_t *notice)
 {
     char *ptr, *end;
     unsigned long temp;
@@ -76,6 +77,7 @@ Code_t ZParseNotice(buffer, len, notice)
     if (ZReadAscii32(ptr, end-ptr, &temp) == ZERR_BADFIELD)
 	BAD_PACKET;
     numfields = temp;
+    notice->z_num_hdr_fields = numfields;
     ptr = next_field(ptr, end);
 
     /*XXX 3 */
@@ -209,11 +211,22 @@ Code_t ZParseNotice(buffer, len, notice)
     else
 	notice->z_default_format = "";
 	
-    if (ZReadAscii32(ptr, end-ptr, &temp) == ZERR_BADFIELD)
-	BAD_PACKET;
-    notice->z_checksum = temp;
-    numfields--;
-    ptr = next_field(ptr, end);
+    if (numfields && ptr < end) {
+      notice->z_ascii_checksum = ptr;
+
+      if (ZReadAscii32(ptr, end-ptr, &temp) == ZERR_BADFIELD)
+	notice->z_checksum = 0;
+      else
+	notice->z_checksum = temp;
+
+      numfields--;
+      ptr = next_field (ptr, end);
+    }
+    else 
+      {
+	notice->z_ascii_checksum = "";
+	notice->z_checksum = 0;
+      }
 
     if (numfields && ptr < end) {
 	notice->z_multinotice = ptr;
@@ -235,6 +248,55 @@ Code_t ZParseNotice(buffer, len, notice)
     else
 	notice->z_multiuid = notice->z_uid;
 
+    if (numfields && ptr < end) {
+	/* we will take it on faith that ipv6 addresses are longer than ipv4
+	   addresses */
+	unsigned char addrbuf[sizeof(notice->z_sender_sockaddr.ip6.sin6_addr)];
+	int len;
+
+	/* because we're paranoid about naughtily misformated packets */
+	if (memchr(ptr, '\0', end - ptr) == NULL)
+	    BAD_PACKET;
+
+	if (*ptr == 'Z') {
+	    if (ZReadZcode((unsigned char *)ptr, addrbuf,
+			   sizeof(addrbuf), &len) == ZERR_BADFIELD)
+		BAD_PACKET;
+	} else {
+	    len = sizeof(notice->z_sender_sockaddr.ip4.sin_addr);
+	    if (ZReadAscii(ptr, end - ptr, (unsigned char *)addrbuf,
+			   len) == ZERR_BADFIELD)
+		BAD_PACKET;
+	}
+
+	if (len == sizeof(notice->z_sender_sockaddr.ip6.sin6_addr)) {
+	    notice->z_sender_sockaddr.ip6.sin6_family = AF_INET6;
+	    memcpy(&notice->z_sender_sockaddr.ip6.sin6_addr, addrbuf, len);
+	} else if (len == sizeof(notice->z_sender_sockaddr.ip4.sin_addr)) {
+	    notice->z_sender_sockaddr.ip4.sin_family = AF_INET;
+	    memcpy(&notice->z_sender_sockaddr.ip4.sin_addr, addrbuf, len);
+	} else
+	    BAD_PACKET;
+
+	numfields--;
+	ptr = next_field(ptr, end);
+    } else {
+	memset(&notice->z_sender_sockaddr, 0,
+	       sizeof notice->z_sender_sockaddr);
+	notice->z_sender_sockaddr.ip4.sin_family = AF_INET;
+	notice->z_sender_sockaddr.ip4.sin_addr = notice->z_uid.zuid_addr;
+    }
+
+    if (numfields && ptr < end) {
+	if (ZReadAscii16(ptr, end-ptr, &notice->z_charset) == ZERR_BADFIELD)
+	    BAD_PACKET;
+	notice->z_charset = htons(notice->z_charset);
+
+	numfields--;
+	ptr = next_field(ptr, end);
+    } else
+	notice->z_charset = ZCHARSET_UNKNOWN;
+    
     for (i=0;ptr < end && i<Z_MAXOTHERFIELDS && numfields;i++,numfields--) {
 	notice->z_other_fields[i] = ptr;
 	ptr = next_field(ptr, end);

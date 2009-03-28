@@ -27,6 +27,8 @@ static const char rcsid_X_driver_c[] = "$Id$";
 
 #ifndef X_DISPLAY_MISSING
 
+#include <zephyr/zephyr.h>
+#include "new_string.h"
 #include "X_driver.h"
 #include <X11/Xresource.h>
 #include "new_memory.h"
@@ -37,6 +39,7 @@ static const char rcsid_X_driver_c[] = "$Id$";
 #include "X_gram.h"
 #include "xselect.h"
 #include "unsigned_long_dictionary.h"
+#include "zephyr.h"
 
 char *app_instance;
 
@@ -84,8 +87,8 @@ static XrmDatabase x_resources = NULL;
  *                  returns -1.
  */
 
-static int convert_string_to_bool(text)
-     string text;
+static int
+convert_string_to_bool(string text)
 {
     if (!strcasecmp("yes", text) || !strcasecmp("y", text) ||
 	!strcasecmp("true", text) || !strcasecmp("t", text) ||
@@ -103,9 +106,9 @@ static int convert_string_to_bool(text)
  *
  */
 
-char *get_string_resource(name, class)
-     string name;
-     string class;
+char *
+get_string_resource(string name,
+		    string class)
 {
     string full_name, full_class;
     int status;
@@ -134,10 +137,10 @@ char *get_string_resource(name, class)
  *
  */
 
-int get_bool_resource(name, class, default_value)
-     string name;
-     string class;
-     int default_value;
+int
+get_bool_resource(string name,
+		  string class,
+		  int default_value)
 {
     int result;
     char *temp;
@@ -165,9 +168,9 @@ static unsigned_long_dictionary color_dict = NULL;
  *     trip each time.
  */
 
-unsigned long x_string_to_color(name,def)
-     char *name;
-     unsigned long def;
+unsigned long
+x_string_to_color(char *name,
+		  unsigned long def)
 {
    unsigned_long_dictionary_binding *binding;
    int exists;
@@ -222,6 +225,9 @@ static XrmOptionDescRec cmd_options[] = {
     {"-foreground",  "*foreground",   XrmoptionSepArg, (caddr_t) NULL},
     {"-geometry",    ".geometry",     XrmoptionSepArg, (caddr_t) NULL},
     {"-iconname",    ".iconName",     XrmoptionSepArg, (caddr_t) NULL},
+#ifdef CMU_ZWGCPLUS
+    {"-lifespan",    "*lifespan",     XrmoptionSepArg, (caddr_t) NULL},
+#endif
     {"-name",        ".name",         XrmoptionSepArg, (caddr_t) NULL},
     {"-reverse",     "*reverseVideo", XrmoptionNoArg,  (caddr_t) "on"},
     {"-rv",          "*reverseVideo", XrmoptionNoArg,  (caddr_t) "on"},
@@ -236,14 +242,13 @@ static XrmOptionDescRec cmd_options[] = {
  *
  */
 
-int open_display_and_load_resources(pargc, argv)
-     int *pargc;
-     char **argv;
+int
+open_display_and_load_resources(int *pargc,
+				char **argv)
 {
     XrmDatabase temp_db1, temp_db2, temp_db3;
     char *filename, *res, *xdef;
     char dbasename[128];
-    extern char *getenv();
 
     /* Initialize X resource manager: */
     XrmInitialize();
@@ -294,7 +299,8 @@ int open_display_and_load_resources(pargc, argv)
     /*
      * Get XENVIRONMENT resources, if they exist, and merge
      */
-    if (filename = getenv("XENVIRONMENT"))
+    filename = getenv("XENVIRONMENT");
+    if (filename)
     {
 	temp_db3 = XrmGetFileDatabase(filename);
 	XrmMergeDatabases(temp_db3, &temp_db1);
@@ -316,11 +322,9 @@ int open_display_and_load_resources(pargc, argv)
  *
  */
 
-int X_driver_ioerror(display)
-Display *display;
+int
+X_driver_ioerror(Display *display)
 {
-    extern void finalize_zephyr();
-
     ERROR2("X IO error on display '%s'--exiting\n", DisplayString(display));
     finalize_zephyr();
     exit(1);
@@ -331,14 +335,12 @@ Display *display;
 /*                                                                          */
 /****************************************************************************/
 
-extern void x_get_input();
-
 /*ARGSUSED*/
-int X_driver_init(drivername, notfirst, pargc, argv)
-     char *drivername;
-     char notfirst;
-     int *pargc;
-     char **argv;
+int
+X_driver_init(char *drivername,
+	      char notfirst,
+	      int *pargc,
+	      char **argv)
 {
     string temp;
     int sync;
@@ -358,9 +360,11 @@ int X_driver_init(drivername, notfirst, pargc, argv)
     /*
      * For now, set some useful variables using resources:
      */
-    if (sync=get_bool_resource("synchronous", "Synchronous", 0))
-      XSynchronize(dpy,sync);
-    if (temp = get_string_resource("geometry", "Geometry"))
+    sync = get_bool_resource("synchronous", "Synchronous", 0);
+    if (sync)
+      XSynchronize(dpy, sync);
+    temp = get_string_resource("geometry", "Geometry");
+    if (temp)
       var_set_variable("default_X_geometry", temp);
 
     temp=strrchr(argv[0],'/');
@@ -373,12 +377,13 @@ int X_driver_init(drivername, notfirst, pargc, argv)
     x_gram_init(dpy);
     xicccmInitAtoms(dpy);
     
-    mux_add_input_source(ConnectionNumber(dpy), x_get_input, dpy);
+    mux_add_input_source(ConnectionNumber(dpy), (void(*)(void *))x_get_input, dpy);
 
     return(0);
 }
 
-void X_driver_reset()
+void
+X_driver_reset(void)
 {
 }
 
@@ -388,8 +393,8 @@ void X_driver_reset()
 /*                                                                          */
 /****************************************************************************/
 
-char *X_driver(text)
-     string text;
+char *
+X_driver(string text)
 {
     string text_copy;
     desctype *desc;

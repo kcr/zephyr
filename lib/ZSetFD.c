@@ -11,13 +11,13 @@
  */
 
 #ifndef lint
-static char rcsid_ZSetFD_c[] = "$Id$";
+static const char rcsid_ZSetFD_c[] = "$Id$";
 #endif
 
 #include <internal.h>
 
-Code_t ZSetFD(fd)
-	int	fd;
+Code_t
+ZSetFD(int fd)
 {
 	(void) ZClosePort();
 

@@ -21,6 +21,7 @@ static const char rcsid_main_c[] = "$Id$";
 #endif
 
 #include <netdb.h>
+#include <arpa/nameser.h>
 #include <sys/socket.h>
 #include <sys/resource.h>
 #include <zephyr/mit-copyright.h>
@@ -39,11 +40,21 @@ static const char rcsid_main_c[] = "$Id$";
 #include "port.h"
 #include "variables.h"
 #include "main.h"
+#ifdef CMU_ZCTL_PUNT
+#include "int_dictionary.h"
+#endif
+#ifdef CMU_ZWGCPLUS
+#include "plus.h"
+int zwgcplus = 0;
+#endif
 
-extern void notice_handler();
-static void process_notice(), setup_signals(), detach(), signal_exit();
+void notice_handler(ZNotice_t *);
+static void process_notice(ZNotice_t *, char *);
+static void setup_signals(int);
+static void detach(void);
+static void signal_exit(int);
 #ifdef HAVE_ARES
-static void notice_callback();
+static void notice_callback(void *, int, int, char *, char *);
 #endif
 
 /*
@@ -105,36 +116,49 @@ static struct _Node *program = NULL;
  * <<<>>>
  */
 
-static void fake_startup_packet()
+static void
+fake_startup_packet(void)
 {
-    ZNotice_t notice;
+    ZNotice_t *notice = (ZNotice_t *)malloc(sizeof(ZNotice_t));
     struct timezone tz;
     char msgbuf[BUFSIZ];
+    extern void Z_gettimeofday(struct _ZTimeval *, struct timezone *);
 
     var_set_variable("version", zwgc_version_string);
 
-    (void) memset(&notice, 0, sizeof(notice));
+    (void) memset(notice, 0, sizeof(ZNotice_t));
 
-    notice.z_version = "";
-    notice.z_class = "WG_CTL_CLASS";
-    notice.z_class_inst = "WG_CTL_USER<<<>>>";
-    notice.z_opcode = "WG_STARTUP";
-    notice.z_default_format = "Zwgc mark II version $version now running...\n";
-    notice.z_recipient = "";
-    notice.z_sender = "ZWGC";
-    gettimeofday(&notice.z_time,&tz);
-    notice.z_port = 0;
-    notice.z_kind = ACKED;
-    notice.z_auth = ZAUTH_YES;
+    notice->z_version = "";
+    notice->z_class = "WG_CTL_CLASS";
+    notice->z_class_inst = "WG_CTL_USER<<<>>>";
+    notice->z_opcode = "WG_STARTUP";
+    notice->z_default_format = "Zwgc mark II version $version now running...\n";
+    notice->z_recipient = "";
+    notice->z_sender = "ZWGC";
+    Z_gettimeofday(&notice->z_time, &tz);
+    notice->z_port = 0;
+    notice->z_kind = ACKED;
+    notice->z_auth = ZAUTH_YES;
+    notice->z_charset = ZCHARSET_UNKNOWN;
     sprintf(msgbuf,"Zwgc mark II version %s now running...",
 	    zwgc_version_string);
-    notice.z_message = msgbuf;
-    notice.z_message_len = strlen(notice.z_message)+1;
+    notice->z_message = msgbuf;
+    notice->z_message_len = strlen(notice->z_message)+1;
     
-    process_notice(&notice, NULL);
+#ifdef CMU_ZWGCPLUS
+    list_add_notice(notice);
+    set_notice_fake(notice, 1);
+#endif
+    process_notice(notice, NULL);
+#ifdef CMU_ZWGCPLUS
+    list_del_notice(notice);
+#else
+    free(notice);
+#endif
 }
 
-static void read_in_description_file()
+static void
+read_in_description_file(void)
 {
     FILE *input_file;
     char defdesc[128];
@@ -163,7 +187,8 @@ static void read_in_description_file()
  *                 program with error code 1.
  */
 
-void usage()
+void
+usage(void)
 {
 #ifdef DEBUG
     fprintf(stderr, "\
@@ -185,7 +210,8 @@ zwgc: usage: zwgc [-f <filename>] [-subfile <filename>]\n\
  * <<<>>>
  */
 
-static void run_initprogs()
+static void
+run_initprogs(void)
 {
     /*
      * This code stolen from old zwgc: yuck.  Clean up & fix.  <<<>>>
@@ -214,15 +240,14 @@ static void run_initprogs()
  * main -- the program entry point.  Does parsing & top level control.
  */
 
-int main(argc, argv)
-     int argc;
-     char **argv;
+int
+main(int argc,
+     char **argv)
 {
     char **new;
     register char **current;
     int dofork = 1;
 #ifdef HAVE_ARES
-    char *errmem;
     int status;
 #endif
 
@@ -271,8 +296,7 @@ int main(argc, argv)
     status = ares_init(&achannel);
     if (status != ARES_SUCCESS) {
 	fprintf(stderr, "Couldn't initialize resolver: %s\n",
-		ares_strerror(status, &errmem));
-	ares_free_errmem(errmem);
+		ares_strerror(status));
 	return(1);
     }
 #endif
@@ -281,6 +305,9 @@ int main(argc, argv)
      * Initialize various subsystems in proper order:
      */
     dprintf("Initializing subsystems...\n"); /*<<<>>>*/
+#ifdef CMU_ZWGCPLUS
+    init_noticelist();
+#endif
     mux_init();
     var_clear_all_variables(); /* <<<>>> */
     init_ports();       /* <<<>>> */
@@ -303,6 +330,11 @@ int main(argc, argv)
     dprintf("Test Zwgc parser.\n\n");
     read_in_description_file();
 
+#ifdef CMU_ZWGCPLUS
+    if (strcmp(progname, "zwgcplus") == 0)
+      zwgcplus = 1;
+#endif
+
     dprintf("Entering main loop\n");
     mux_loop();
 
@@ -321,50 +353,122 @@ int main(argc, argv)
 #define  USER_SUPPRESS     "SUPPRESS"
 #define  USER_UNSUPPRESS   "UNSUPPRESS"
 
-void notice_handler(notice)
-     ZNotice_t *notice;
-{
-    struct hostent *fromhost = NULL;
+#ifdef CMU_ZCTL_PUNT
+#define  USER_LIST_SUPPRESSED "LIST-SUPPRESSED"
 
-    if (notice->z_sender_addr.s_addr) {
-#ifdef HAVE_ARES
-	ares_gethostbyaddr(achannel, &(notice->z_sender_addr),
-			   sizeof(notice->z_sender_addr), AF_INET,
-			   notice_callback, notice);
-	return;
-#else
-	fromhost = gethostbyaddr((char *) &(notice->z_sender_addr),
-				 sizeof(struct in_addr), AF_INET);
-#endif
+#define PUNT_INC 1024
+extern int_dictionary puntable_addresses_dict;
+ZNotice_t punt_reply;
+
+void
+create_punt_reply(int_dictionary_binding *punt)
+{
+    string binding;
+    int key_len = strlen(punt->key);
+    char *tmp;
+    
+    if (!punt_reply.z_message) {
+	punt_reply.z_message = (char *)malloc(PUNT_INC);
+	punt_reply.z_message[0] = 0;
     }
-    process_notice(notice, fromhost ? fromhost->h_name : NULL);
+    
+    if ((punt_reply.z_message_len + key_len + 1) / PUNT_INC > 
+	(punt_reply.z_message_len + PUNT_INC - 1) / PUNT_INC) {
+	char *new_message = (char *)malloc((punt_reply.z_message_len
+					    / PUNT_INC + 1) * PUNT_INC);
+	
+	strcpy(new_message, punt_reply.z_message);
+	
+	free(punt_reply.z_message);
+	punt_reply.z_message = new_message;
+    }
+    tmp = punt_reply.z_message + strlen(punt_reply.z_message);
+    strcat (punt_reply.z_message, punt->key);
+    strcat (punt_reply.z_message, "\n");
+    punt_reply.z_message_len += key_len + 1;
+    
+    while (*tmp != '\001') tmp++;
+    *tmp = ',';
+    while (*tmp != '\001') tmp++;
+    *tmp = ',';
+}
+#endif /* CMU_ZCTL_PUNT */
+
+void
+notice_handler(ZNotice_t *notice)
+{
+    char node[MAXDNAME];
+
+#if defined(CMU_ZWGCPLUS)
+    list_add_notice(notice);
+#endif
+
+#ifdef HAVE_ARES
+    ares_getnameinfo(achannel,
+		     (const struct sockaddr *)&(notice->z_sender_sockaddr),
+		     notice->z_sender_sockaddr.sa.sa_family == AF_INET ?
+		     sizeof(struct sockaddr_in) :
+		     notice->z_sender_sockaddr.sa.sa_family == AF_INET6 ?
+		     sizeof(struct sockaddr_in6) :
+		     sizeof(notice->z_sender_sockaddr), ARES_NI_LOOKUPHOST,
+		     notice_callback, notice);
+    
+#else
+    getnameinfo((const struct sockaddr *)&(notice->z_sender_sockaddr),
+		sizeof(notice->z_sender_sockaddr),
+		node, sizeof(node), NULL, 0, 0);
+    
+    process_notice(notice, node);
+#ifdef CMU_ZWGCPLUS
+    /* Let list_del_notice clean up for us. */
+#else
     ZFreeNotice(notice);
     free(notice);
+#endif
+#endif
 }
 
 #ifdef HAVE_ARES
-static void notice_callback(arg, status, fromhost)
-     void *arg;
-     int status;
-     struct hostent *fromhost;
+/*
+static void
+notice_callback(void *arg,
+		int status,
+		int timeouts,
+		struct hostent *fromhost)
+*/
+static void
+notice_callback(void *arg,
+		int status,
+		int timeouts,
+		char *node,
+		char *service)
 {
     ZNotice_t *notice = (ZNotice_t *) arg;
 
-    process_notice(notice, fromhost ? fromhost->h_name : NULL);
+#ifdef CMU_ZWGCPLUS
+    plus_set_hname(notice, node);
+#endif
+
+    process_notice(notice, node);
+#ifdef CMU_ZWGCPLUS
+    list_del_notice(notice);
+#else
     ZFreeNotice(notice);
     free(notice);
+#endif
 }
 #endif
 
-static void process_notice(notice, hostname)
-     ZNotice_t *notice;
-     char *hostname;
+static void
+process_notice(ZNotice_t *notice,
+	       char *hostname)
 {
     char *control_opcode;
 
     dprintf("Got a message\n");
 
-    if (control_opcode = decode_notice(notice, hostname)) {
+    control_opcode = decode_notice(notice, hostname);
+    if (control_opcode) {
 #ifdef DEBUG
 	printf("got control opcode <%s>.\n", control_opcode);
 #endif
@@ -399,12 +503,59 @@ static void process_notice(notice, hostname)
 	    free(class);
 	    free(instance);
 	    free(recipient);
+#ifdef CMU_ZCTL_PUNT
+        } else if (!strcasecmp(control_opcode, USER_LIST_SUPPRESSED)) {
+	    struct sockaddr_in old, to;
+	    int retval;
+	    
+	    if (!notice->z_port) {
+		printf("zwgc: can't reply to LIST-SUPPRESSED request\n");
+		return;
+	    }
+	    memset((char *) &punt_reply, 0, sizeof(ZNotice_t));
+	    punt_reply.z_kind = CLIENTACK;
+	    punt_reply.z_class = WG_CTL_CLASS;
+	    punt_reply.z_class_inst = "WG_REPLY";
+	    punt_reply.z_recipient = "zctl?";
+	    punt_reply.z_sender = "Zwgc";
+	    punt_reply.z_default_format = "";
+	    punt_reply.z_opcode = USER_LIST_SUPPRESSED;
+	    punt_reply.z_port = notice->z_port;
+	    punt_reply.z_message = NULL;
+	    punt_reply.z_message_len = 0;
+	    
+	    if (puntable_addresses_dict) {
+		int_dictionary_Enumerate(puntable_addresses_dict,
+					 create_punt_reply);
+	    }
+	    
+	    old = ZGetDestAddr();
+	    to = old;
+	    
+	    to.sin_port = notice->z_port;
+	    if ((retval = ZSetDestAddr(&to)) != ZERR_NONE) {
+		com_err("zwgc",retval,"while setting destination address");
+		exit(1);
+	    }
+	    
+	    ZSendNotice(&punt_reply, ZNOAUTH);
+	    
+	    if ((retval = ZSetDestAddr(&old)) != ZERR_NONE) {
+		com_err("zwgc",retval,"while resetting destination address");
+		exit(1);
+	    }
+	    
+	    if (punt_reply.z_message) {
+		free(punt_reply.z_message);
+		punt_reply.z_message = NULL;
+	    }
+#endif
 	} else if (!strcasecmp(control_opcode, USER_EXIT)) {
-	    signal_exit();
+	    signal_exit(0);
 	} else
 	  printf("zwgc: unknown control opcode %s.\n", control_opcode);
 
-	return;
+	goto cleanup;
     }
 
     if (!zwgc_active) {
@@ -412,7 +563,7 @@ static void process_notice(notice, hostname)
 	if (zwgc_debug)
 	  printf("NON-ACTIVE: PUNTED <%s>!!!!\n", notice->z_class_inst);
 #endif
-	return;
+	goto cleanup;	
     }
     
     if (puntable_address_p(notice->z_class,
@@ -422,11 +573,23 @@ static void process_notice(notice, hostname)
 	if (zwgc_debug)
 	  printf("PUNTED <%s>!!!!\n", notice->z_class_inst);
 #endif
-	return;
+	goto cleanup;
     }
 
     exec_process_packet(program, notice);
+  cleanup:
+    return;
 }
+
+#ifdef CMU_ZWGCPLUS
+void
+reprocess_notice(ZNotice_t *notice, char *hostname)
+{
+  list_add_notice(notice);
+  process_notice(notice, hostname);
+  list_del_notice(notice);
+}
+#endif
 
 /***************************************************************************/
 
@@ -434,21 +597,22 @@ static void process_notice(notice, hostname)
  *
  */
 
-static void signal_exit()
+static void
+signal_exit(int ignored)
 {
     mux_end_loop_p = 1;
 }
 
 /* clean up ALL the waiting children, in case we get hit with
    multiple SIGCHLD's at once, and don't process in time. */
-static RETSIGTYPE signal_child()
+static RETSIGTYPE
+signal_child(int ignored)
 {
 #ifdef HAVE_WAITPID
   int status;
 #else
   union wait status;
 #endif
-  extern int errno;
   int pid, old_errno = errno;
 
   do {
@@ -462,13 +626,14 @@ static RETSIGTYPE signal_child()
 }
 
 /* rewrite the wgfile in case it has gone away */
-static RETSIGTYPE signal_usr1()
+static RETSIGTYPE
+signal_usr1(int ignored)
 {
     write_wgfile();
 }
 
-static void setup_signals(dofork)
-     int dofork;
+static void
+setup_signals(int dofork)
 {
 #ifdef _POSIX_VERSION
     struct sigaction sa;
@@ -525,7 +690,8 @@ static void setup_signals(dofork)
 
 /* detach() taken from old zwgc, with lots of stuff ripped out */
 
-static void detach()
+static void
+detach(void)
 {
   /* detach from terminal and fork. */
   register int i;
@@ -538,6 +704,7 @@ static void detach()
    * of finding the session leader; otherwise use the process group of
    * the parent process, which is a good guess. */
 #if defined(HAVE_GETSID)
+
   setpgid(0, getsid(0));
 #elif defined(HAVE_GETPGID)
   setpgid(0, getpgid(getppid()));
@@ -546,7 +713,8 @@ static void detach()
 #endif
 
   /* fork off and let parent exit... */
-  if (i = fork()) {
+  i = fork();
+  if (i) {
       if (i < 0) {
 	  perror("zwgc: cannot fork, aborting:");
 	  exit(1);
