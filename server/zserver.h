@@ -64,6 +64,27 @@ typedef struct {
 } Sched;
 #endif
 
+enum _ZRealm_state {
+    REALM_UP,				/* ZRealm is up */
+    REALM_TARDY,			/* ZRealm due for a hello XXX */
+    REALM_DEAD,				/* ZRealm is considered dead */
+    REALM_STARTING			/* ZRealm is between dead and up */
+};
+
+enum _Server_state {
+    SERV_UP,				/* Server is up */
+    SERV_TARDY,				/* Server due for a hello */
+    SERV_DEAD,				/* Server is considered dead */
+    SERV_STARTING			/* Server is between dead and up */
+};
+
+enum _Sent_type {
+    NOT_SENT,				/* message was not xmitted */
+    SENT,				/* message was xmitted */
+    AUTH_FAILED,			/* authentication failed */
+    NOT_FOUND				/* user not found for uloc */
+};
+
 typedef struct _Destination Destination;
 typedef struct _Destlist Destlist;
 typedef struct _ZRealm ZRealm;
@@ -87,13 +108,6 @@ struct _Destination {
 struct _Destlist {
     Destination	dest;
     struct _Destlist	*next, **prev_p;
-};
-
-enum _ZRealm_state {
-    REALM_UP,				/* ZRealm is up */
-    REALM_TARDY,			/* ZRealm due for a hello XXX */
-    REALM_DEAD,				/* ZRealm is considered dead */
-    REALM_STARTING			/* ZRealm is between dead and up */
 };
 
 struct _ZRealm {
@@ -141,13 +155,6 @@ struct _Triplet {
     struct _Triplet	*next, **prev_p;
 };
 
-enum _Server_state {
-    SERV_UP,				/* Server is up */
-    SERV_TARDY,				/* Server due for a hello */
-    SERV_DEAD,				/* Server is considered dead */
-    SERV_STARTING			/* Server is between dead and up */
-};
-
 struct _Unacked {
     Timer		*timer;		/* timer for retransmit */
     Client		*client;	/* responsible client, or NULL */
@@ -186,13 +193,6 @@ struct _Server {
     short		num_hello_sent;	/* number of hello's sent */
     unsigned int	dumping;	/* 1 if dumping, so we should queue */
     char		addr_str[16];	/* text version of address */
-};
-
-enum _Sent_type {
-    NOT_SENT,				/* message was not xmitted */
-    SENT,				/* message was xmitted */
-    AUTH_FAILED,			/* authentication failed */
-    NOT_FOUND				/* user not found for uloc */
 };
 
 /* statistics gathering */
