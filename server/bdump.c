@@ -823,11 +823,11 @@ bdump_get(ZNotice_t *notice,
 Code_t
 bdump_send_list_tcp(ZNotice_Kind_t kind,
 		    struct sockaddr_in *addr,
-		    char *class_name,
-		    char *inst,
-		    char *opcode,
-		    char *sender,
-		    char *recip,
+		    const char *class_name,
+		    const char *inst,
+		    const char *opcode,
+		    const char *sender,
+		    const char *recip,
 		    char **lyst,
 		    int num)
 {
@@ -1157,7 +1157,7 @@ bdump_recv_loop(Server *server)
     int blen;
 #endif
 #if defined(HAVE_KRB4) || defined(HAVE_KRB5)    
-    char *cp;
+    const char *cp;
 #ifndef HAVE_KRB4
     unsigned char cblock[8];
 #else
@@ -1565,7 +1565,7 @@ get_packet(void *packet, int len, int *retlen)
 static Code_t
 extract_sin(ZNotice_t *notice, struct sockaddr_in *target)
 {
-    char *cp = notice->z_message;
+    const char *cp = notice->z_message;
     char *buf;
 
     buf = cp;

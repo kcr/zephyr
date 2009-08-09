@@ -66,7 +66,7 @@ Z_RetSubs(register ZNotice_t *notice,
 	register int i;
 	int retval,nrecv,gimmeack;
 	ZNotice_t retnotice;
-	char *ptr,*end,*ptr2;
+	const char *ptr,*end,*ptr2;
 	ZSubscription_t *list = __subscriptions_list;
 
 	retval = ZFlushSubscriptions();

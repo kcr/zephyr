@@ -62,7 +62,7 @@ static char *zdowncase(const char* s)
 }
 
 String *
-make_string(char *s,
+make_string(const char *s,
 	    int downcase)
 {
     char *new_s;

@@ -310,7 +310,7 @@ realm_which_realm(struct sockaddr_in *who)
 }
 
 ZRealm *
-realm_get_realm_by_name(char *name)
+realm_get_realm_by_name(const char *name)
 {
     int a;
     ZRealm *realm;

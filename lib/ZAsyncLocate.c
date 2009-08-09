@@ -63,7 +63,8 @@ ZParseLocations(register ZNotice_t *notice,
 		int *nlocs,
 		char **user)
 {
-    char *ptr, *end;
+    const char *ptr;
+    const char *end;
     int i;
 
     ZFlushLocations();    /* This never fails (this function is part of the
