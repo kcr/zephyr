@@ -13,8 +13,10 @@
 
 #include <zephyr/mit-copyright.h>
 #include "zserver.h"
+extern "C" {
 #include <sys/socket.h>
 #include <sys/resource.h>
+}
 
 #ifndef lint
 #ifndef SABER

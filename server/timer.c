@@ -175,7 +175,7 @@ timer_reset(Timer *tmr)
 #define set_timeval(t,s) ((t).tv_sec=(s),(t).tv_usec=0,(t))
 
 static Timer *
-add_timer(Timer *new)
+add_timer(Timer *newtimer)
 {
     int pos;
 
@@ -188,20 +188,20 @@ add_timer(Timer *new)
 	heap = (Timer **) realloc(heap, heap_size * sizeof(Timer *));
     }
     if (!heap) {
-	free(new);
+	free(newtimer);
 	return NULL;
     }
 
     /* Insert the Timer *into the heap. */
     pos = num_timers;
-    while (pos > 0 && new->abstime < TIME(PARENT(pos))) {
+    while (pos > 0 && newtimer->abstime < TIME(PARENT(pos))) {
 	HEAP_ASSIGN(pos, heap[PARENT(pos)]);
 	pos = PARENT(pos);
     }
-    HEAP_ASSIGN(pos, new);
+    HEAP_ASSIGN(pos, newtimer);
     num_timers++;
 
-    return new;
+    return newtimer;
 }
 
 void

@@ -18,8 +18,9 @@ extern "C" {
 #include <internal.h>
 
 #include <arpa/inet.h>
-}
+
 #include "zsrv_err.h"
+}
 
 #include "timer.h"
 #include "zsrv_conf.h"			/* configuration params */

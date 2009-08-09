@@ -315,20 +315,20 @@ sendit(ZNotice_t *notice,
     int any = 0;
     Acl *acl;
     Destination dest;
-    String *class;
+    String *class_name;
 
-    class = make_string(notice->z_class, 1);
+    class_name = make_string(notice->z_class, 1);
     if (realm_bound_for_realm(ZGetRealm(), notice->z_recipient)) {
       ZRealm *rlm;
 
-      acl = class_get_acl(class);
+      acl = class_get_acl(class_name);
       if (acl != NULL) {
 	/* if controlled and not auth, fail */
         if (!auth) {
             syslog(LOG_WARNING, "sendit unauthentic %s from %s",
                    notice->z_class, notice->z_sender);
 	    clt_ack(notice, who, AUTH_FAILED);
-            free_string(class);
+            free_string(class_name);
             return;
         }
 	/* if from foreign realm server, disallow if not realm of sender */
@@ -338,7 +338,7 @@ sendit(ZNotice_t *notice,
 	    syslog(LOG_WARNING, "sendit auth not verifiable %s (%s) from %s",
 		   notice->z_class, rlm->name, notice->z_sender);
 	    clt_ack(notice, who, AUTH_FAILED);
-	    free_string(class);
+	    free_string(class_name);
 	    return;
 	  }
 	}
@@ -347,7 +347,7 @@ sendit(ZNotice_t *notice,
 	    syslog(LOG_WARNING, "sendit unauthorized %s from %s",
 		   notice->z_class, notice->z_sender);
 	    clt_ack(notice, who, AUTH_FAILED);
-	    free_string(class);
+	    free_string(class_name);
 	    return;
 	}
 	/* sender != inst and not auth to send to others --> fail */
@@ -356,7 +356,7 @@ sendit(ZNotice_t *notice,
 	    syslog(LOG_WARNING, "sendit unauth uid %s %s.%s", notice->z_sender,
 		   notice->z_class, notice->z_class_inst);
 	    clt_ack(notice, who, AUTH_FAILED);
-	    free_string(class);
+	    free_string(class_name);
 	    return;
 	}
       }
@@ -371,7 +371,7 @@ sendit(ZNotice_t *notice,
 	send_counter = 1;
 
     /* Send to clients subscribed to the triplet itself. */
-    dest.classname = class;
+    dest.classname = class_name;
     dest.inst = make_string(notice->z_class_inst, 1);
     if (realm_bound_for_realm(ZGetRealm(), notice->z_recipient) &&
 	*notice->z_recipient == '@')
@@ -399,7 +399,7 @@ sendit(ZNotice_t *notice,
     if (send_to_dest(notice, auth, &dest, send_counter, external))
 	any = 1;
 
-    free_string(class);
+    free_string(class_name);
     free_string(dest.recip);
     if (any)
 	ack(notice, who);
