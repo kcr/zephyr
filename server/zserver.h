@@ -198,7 +198,7 @@ enum _Sent_type {
 /* statistics gathering */
 struct _Statistic {
     int			val;
-    char		*str;
+    const char		*str;
 };
 
 /* Function declarations */
@@ -241,9 +241,9 @@ void bdump_get(ZNotice_t *notice, int auth, struct sockaddr_in *who,
 void bdump_send(void);
 void bdump_offer(struct sockaddr_in *who);
 Code_t bdump_send_list_tcp(ZNotice_Kind_t kind, struct sockaddr_in *addr,
-				char *class_name, char *inst, char *opcode,
-				char *sender, char *recip, char **lyst,
-				int num);
+			   const char *class_name, const char *inst,
+			   const char *opcode, const char *sender,
+			   const char *recip, char **lyst, int num);
 int get_tgt(void);
 
 /* found in class.c */

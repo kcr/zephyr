@@ -55,13 +55,14 @@ static void bdump_get_v12(ZNotice_t *, int, struct sockaddr_in *,
 static Code_t get_packet(void *packet, int len, int *retlen);
 static Code_t extract_sin(ZNotice_t *notice, struct sockaddr_in *target);
 static Code_t send_done(void);
-static Code_t send_list(ZNotice_Kind_t kind, int port, char *class_name,
-			     char *inst, char *opcode, char *sender,
-			     char *recip, char **lyst, int num);
+static Code_t send_list(ZNotice_Kind_t kind, int port, const char *class_name,
+			const char *inst, const char *opcode,
+			const char *sender, const char *recip, char **lyst,
+			int num);
 static Code_t send_normal_tcp(ZNotice_Kind_t kind, int port,
-				   char *class_name,
-				   char *inst, char *opcode, char *sender,
-				   char *recip, char *message, int len);
+			      const char *class_name, const char *inst,
+			      const char *opcode, const char *sender,
+			      const char *recip, const char *message, int len);
 static int net_read(FILE *f, char *buf, int len);
 static int net_write(FILE *f, char *buf, int len);
 static int setup_file_pointers(void);
@@ -870,7 +871,7 @@ bdump_send_list_tcp(ZNotice_Kind_t kind,
         }
         packlen = outmsg.length;
         free(pack);
-        pack=malloc(packlen);
+        pack = (char *)malloc(packlen);
         if (!pack)
 	    return ENOMEM;
         memcpy(pack, outmsg.data, packlen);
@@ -1391,11 +1392,11 @@ send_done(void)
 static Code_t
 send_list(ZNotice_Kind_t kind,
 	  int port,
-	  char *class_name,
-	  char *inst,
-	  char *opcode,
-	  char *sender,
-	  char *recip,
+	  const char *class_name,
+	  const char *inst,
+	  const char *opcode,
+	  const char *sender,
+	  const char *recip,
 	  char **lyst,
 	  int num)
 {
@@ -1436,12 +1437,12 @@ send_list(ZNotice_Kind_t kind,
 static Code_t
 send_normal_tcp(ZNotice_Kind_t kind,
 		int port,
-		char *class_name,
-		char *inst,
-		char *opcode,
-		char *sender,
-		char *recip,
-		char *message,
+		const char *class_name,
+		const char *inst,
+		const char *opcode,
+		const char *sender,
+		const char *recip,
+		const char *message,
 		int len)
 {
     ZNotice_t notice;
@@ -1485,7 +1486,7 @@ send_normal_tcp(ZNotice_Kind_t kind,
         }
         packlen = outmsg.length;
         free(pack);
-        pack=malloc(packlen);
+        pack = (char *)malloc(packlen);
         if (!pack)
 	    return ENOMEM;
         memcpy(pack, outmsg.data, packlen);
