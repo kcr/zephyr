@@ -87,10 +87,10 @@ static Code_t add_subscriptions(Client *who, Destlist *subs_queue,
 static Destlist *extract_subscriptions(ZNotice_t *notice);
 static void free_subscriptions(Destlist *subs);
 static void free_subscription(Destlist *sub);
-static char **subscr_marshal_subs(ZNotice_t *notice, int auth,
+static const char **subscr_marshal_subs(ZNotice_t *notice, int auth,
 				  struct sockaddr_in *who,
 				  int *found);
-static Destlist *subscr_copy_def_subs(char *person);
+static Destlist *subscr_copy_def_subs(const char *person);
 static Code_t subscr_realm_sendit(Client *who, Destlist *subs,
 				  ZNotice_t *notice, ZRealm *realm);
 static void subscr_unsub_sendit(Client *who, Destlist *subs, 
@@ -222,13 +222,13 @@ subscr_def_subs(Client *who)
 void
 subscr_reset(void)
 {
-    free(default_notice.z_message);
+    free((void *)default_notice.z_message);
     default_notice.z_message = NULL;
     defaults_read = 0;
 }
 
 static Destlist *
-subscr_copy_def_subs(char *person)
+subscr_copy_def_subs(const char *person)
 {
     int retval, fd;
     struct stat statbuf;
@@ -439,7 +439,7 @@ subscr_sendlist(ZNotice_t *notice,
 		int auth,
 		struct sockaddr_in *who)
 {
-    char **answer;
+    const char **answer;
     int found;
     struct sockaddr_in send_to_who;
     Code_t retval;
@@ -487,13 +487,13 @@ subscr_sendlist(ZNotice_t *notice,
 	free(answer);
 }
 
-static char **
+static const char **
 subscr_marshal_subs(ZNotice_t *notice,
 		    int auth,
 		    struct sockaddr_in *who,
 		    int *found)
 {
-    char **answer = NULL;
+    const char **answer = NULL;
     unsigned short temp;
     Code_t retval;
     Client *client = NULL;
@@ -569,7 +569,7 @@ subscr_marshal_subs(ZNotice_t *notice,
 	/* found is now the number of subscriptions */
 
 	/* coalesce the subscription information into a list of char *'s */
-	answer = (char **) malloc((*found) * NUM_FIELDS * sizeof(char *));
+	answer = (const char **) malloc((*found) * NUM_FIELDS * sizeof(char *));
 	if (answer == NULL) {
 	    syslog(LOG_ERR, "subscr no mem(answer)");
 	    *found = 0;
@@ -784,7 +784,7 @@ subscr_send_subs(Client *client)
 #endif /* HAVE_KRB4 */
 #endif
     char buf2[512];
-    char *list[7 * NUM_FIELDS];
+    const char *list[7 * NUM_FIELDS];
     int num = 0;
     Code_t retval;
 
@@ -922,8 +922,8 @@ static Destlist *
 extract_subscriptions(ZNotice_t *notice)
 {
     Destlist *subs = NULL, *sub;
-    char *recip, *class_name, *classinst;
-    char *cp = notice->z_message;
+    const char *recip, *class_name, *classinst;
+    const char *cp = notice->z_message;
 
     /* parse the data area for the subscriptions */
     while (cp < notice->z_message + notice->z_message_len) {
@@ -998,12 +998,13 @@ subscr_realm_sendit(Client *who,
   ZNotice_t snotice;
   char *pack;
   int packlen;
-  char **text;
+  const char **text;
   Code_t retval;
   char addr[16];          /* xxx.xxx.xxx.xxx max */
   char port[16];
-  
-  if ((text=(char **)malloc((NUM_FIELDS + 2)*sizeof(char *))) == (char **)0) {
+
+  text = (const char **)malloc((NUM_FIELDS + 2) * sizeof(char *));
+  if (text == NULL) {
       syslog(LOG_ERR, "subscr_rlm_sendit malloc");
       return(ENOMEM);
   }
@@ -1142,7 +1143,7 @@ subscr_unsub_sendit(Client *who,
 {
   ZNotice_t unotice;
   Code_t retval;
-  char **list;
+  const char **list;
   char *pack;
   int packlen;
   Destlist *subsp, *subsn;
@@ -1159,7 +1160,8 @@ subscr_unsub_sendit(Client *who,
     }
   }
 
-  if ((list=(char **)malloc((NUM_FIELDS)*sizeof(char *))) == (char **)0) {
+  list = (const char **)malloc((NUM_FIELDS)*sizeof(char *));
+  if (list == NULL) {
       syslog(LOG_ERR, "subscr_unsub_sendit malloc");
       return;
   }
@@ -1204,7 +1206,7 @@ subscr_send_realm_subs(ZRealm *realm)
   int i = 0;
   Destlist *subs, *next;
   char buf[512];
-  char *list[7 * NUM_FIELDS];
+  const char *list[7 * NUM_FIELDS];
   int num = 0;
   Code_t retval;
 
@@ -1264,7 +1266,7 @@ Code_t
 subscr_realm_subs(ZRealm *realm)
 {
   Destlist *subs, *next;
-  char *text[2 + NUM_FIELDS];
+  const char *text[2 + NUM_FIELDS];
   unsigned short num = 0;
   Code_t retval;
   ZNotice_t snotice;
@@ -1347,10 +1349,11 @@ subscr_check_foreign_subs(ZNotice_t *notice,
 {
     Destlist *subs, *next;
     Acl *acl;
-    char **text;
+    const char **text;
     int found = 0;
     ZNotice_t snotice;
-    char *pack, *cp;
+    char *pack;
+    const char *cp;
     int packlen;
     Code_t retval;
     String *sender;
@@ -1362,9 +1365,9 @@ subscr_check_foreign_subs(ZNotice_t *notice,
 	return(ZERR_NONE);
   
     sender = make_string(notice->z_sender, 0);
-    
-    if ((text = (char **)malloc((found * NUM_FIELDS + 2) * sizeof(char *))) 
-	== (char **) 0) {
+
+    text = (const char **)malloc((found * NUM_FIELDS + 2) * sizeof(char *));
+    if (text == NULL) {
 	syslog(LOG_ERR, "subscr_ck_forn_subs no mem(text)");
 	free_string(sender);
 	return(ENOMEM);
@@ -1483,7 +1486,7 @@ Code_t subscr_foreign_user(ZNotice_t *notice,
   Client *client;
   ZNotice_t snotice;
   struct sockaddr_in newwho;
-  char *cp, *tp0, *tp1;
+  const char *cp, *tp0, *tp1;
   char rlm_recipient[REALM_SZ + 1];
   
   tp0 = cp = notice->z_message;

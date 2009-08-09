@@ -1,4 +1,4 @@
-/* 
+/*
   This file contains code related to the zwgcplus extension to zwgc.
   zwgc is copyrighted by the Massachusetts Institute of Technology.
   This file is public domain.
@@ -46,7 +46,7 @@ typedef struct _notnode {
     int fake_notice; /* if TRUE, do not call ZFreeNotice() */
     int refcount;
     struct _notnode *next;
-    char *opcode;
+    const char *opcode;
     char *hname;
 } notnode;
 
@@ -66,7 +66,7 @@ addtimenode(TimeNode *head, TimeNode *node)
     node->next = NULL;
     return node;
   }
-  
+
   if(head->when > node->when) {
 #ifdef DEBUG_TIMEQUEUE
     fprintf(stderr, "adding new timenode at start of queue\n");
@@ -79,7 +79,7 @@ addtimenode(TimeNode *head, TimeNode *node)
   return head;
 }
 
-void 
+void
 handle_timeq_event(TimeNode *event)
 {
   char buf[128];
@@ -104,7 +104,7 @@ handle_timeq_event(TimeNode *event)
 
   event->notice->z_version = "zwgcplus-repeat";
   event->notice->z_opcode = buf;
- 
+
   reprocess_notice(event->notice, pt->hname);
 
 #ifdef DEBUG_TIMEQUEUE
@@ -112,7 +112,7 @@ handle_timeq_event(TimeNode *event)
 #endif
 }
 
-void 
+void
 schedule_event(long secs, char *name, ZNotice_t *notice)
 {
   time_t eventtime = (time(NULL)) + secs;
@@ -146,7 +146,7 @@ schedule_event(long secs, char *name, ZNotice_t *notice)
 #endif
 }
 
-void 
+void
 free_timenode(TimeNode *node)
 {
 #ifdef DEBUG_TIMEQUEUE
@@ -158,7 +158,7 @@ free_timenode(TimeNode *node)
 }
 
 /* returns the number of notices destroyed */
-int 
+int
 destroy_timeq_notice(ZNotice_t *notice, char *name)
 {
   TimeNode *curr = timeq_head;
@@ -189,13 +189,13 @@ destroy_timeq_notice(ZNotice_t *notice, char *name)
 	curr = curr->next;
       }
   }
-  
+
   return ct;
 }
 
-long 
+long
 plus_timequeue_events(void)
-{ 
+{
   /* returns number of seconds to the next event or 0L */
   /* if there are no events remaining to be processed */
 
@@ -222,7 +222,7 @@ plus_timequeue_events(void)
 }
 
 void
-plus_set_hname(ZNotice_t *notice, char *hname) 
+plus_set_hname(ZNotice_t *notice, char *hname)
 {
   notnode *pt;
   int bx;
@@ -236,12 +236,12 @@ plus_set_hname(ZNotice_t *notice, char *hname)
   return;
 }
 
-void 
+void
 plus_queue_notice(ZNotice_t *notice)
 {
   char *val;
   int howlong = 0;
-  
+
 #ifdef DEBUG_TIMEQUEUE
   fprintf(stderr, "plus_queue_notice()\n");
 #endif
@@ -261,7 +261,7 @@ plus_queue_notice(ZNotice_t *notice)
 	destroy_timeq_notice(notice, (char *)NULL);
     }
   }
-  
+
   if(howlong > 0) {
     val = var_get_variable("event_name");
 #ifdef DEBUG_TIMEQUEUE
@@ -271,7 +271,7 @@ plus_queue_notice(ZNotice_t *notice)
   }
 }
 
-int 
+int
 list_hash_fun(ZNotice_t *notice)
 {
     int ix;
@@ -290,7 +290,7 @@ list_hash_fun(ZNotice_t *notice)
 }
 
 /* initialize hash table */
-void 
+void
 init_noticelist(void)
 {
     int ix;
@@ -302,7 +302,7 @@ init_noticelist(void)
     }
 }
 
-void 
+void
 dump_noticelist(void)
 {
     notnode *pt;
@@ -316,7 +316,7 @@ dump_noticelist(void)
 }
 
 /* add notice to table. Either generate a new entry, or increment ref count. */
-void 
+void
 list_add_notice(ZNotice_t *notice)
 {
     notnode *pt;
@@ -342,11 +342,11 @@ list_add_notice(ZNotice_t *notice)
 
     /*fprintf(stderr, "list_add_notice(%p)\n", notice);
     dump_noticelist();*/
-}   
+}
 
-/* remove notice from table. If refcount reaches 0, return 1; if refcount is 
+/* remove notice from table. If refcount reaches 0, return 1; if refcount is
    still positive, return 0; if notice not there, return -1. */
-int 
+int
 list_del_notice(ZNotice_t *notice)
 {
     notnode *pt, **ppt;
@@ -384,7 +384,7 @@ list_del_notice(ZNotice_t *notice)
     return 1;
 }
 
-void 
+void
 set_notice_fake(ZNotice_t *notice, int val)
 {
     notnode *pt;
@@ -397,7 +397,7 @@ set_notice_fake(ZNotice_t *notice, int val)
     }
 }
 
-int 
+int
 get_notice_fake(ZNotice_t *notice)
 {
     notnode *pt;
@@ -408,11 +408,11 @@ get_notice_fake(ZNotice_t *notice)
     if (pt) {
 	return pt->fake_notice;
     }
-    else 
+    else
 	return 0;
 }
 
-int 
+int
 get_list_refcount(ZNotice_t *notice)
 {
     notnode *pt;
@@ -442,13 +442,13 @@ get_stored_notice(void)
     return stored_notice;
 }
 
-void 
+void
 set_stored_notice(ZNotice_t *notice)
 {
     stored_notice = notice;
 }
 
-void 
+void
 plus_retry_notice(ZNotice_t *notice, char ch, int metaflag)
 {
     char buf[128];
@@ -483,13 +483,13 @@ plus_retry_notice(ZNotice_t *notice, char ch, int metaflag)
 	sprintf(buf, "key%s-unknown", tmp);
 
     /* concat the old opcode if they're running in "new" mode */
-    if (zwgcplus == 2 && pt && pt->opcode[0] && 
-	strcmp(pt->opcode, "") != 0) 
+    if (zwgcplus == 2 && pt && pt->opcode[0] &&
+	strcmp(pt->opcode, "") != 0)
       {
 	strcat(buf, " ");
 	strncat(buf, pt->opcode, sizeof(buf)-strlen(buf));
       }
-      
+
     notice->z_version = "zwgcplus-repeat";
     notice->z_opcode = buf;
 

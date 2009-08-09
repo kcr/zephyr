@@ -606,7 +606,7 @@ send_stats(ZNotice_t *notice,
 		     ZVERSIONMINOR);
      newnotice.z_version = version;
 
-     if ((ret = ZFormatRawNoticeList(&newnotice, list, nitems, &bfr,
+     if ((ret = ZFormatRawNoticeList(&newnotice, (const char **)list, nitems, &bfr,
 				     &len)) != ZERR_NONE) {
 	 syslog(LOG_INFO, "Couldn't format stats packet");
      } else {

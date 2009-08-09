@@ -160,23 +160,25 @@ Code_t ZSetVariable(char *var, char *value);
 Code_t ZUnsetVariable(char *var);
 int ZGetWGPort(void);
 Code_t ZSetDestAddr(struct sockaddr_in *);
-Code_t ZFormatNoticeList(ZNotice_t*, char**, int,
-			 char **, int*, Z_AuthProc);
+Code_t ZFormatNoticeList(ZNotice_t *notice, const char **list, int nitems,
+			 char **buffer, int *ret_len, Z_AuthProc cert_routine);
 Code_t ZParseNotice(char*, int, ZNotice_t *);
-Code_t ZReadAscii(char*, int, unsigned char*, int);
-Code_t ZReadAscii32(char *, int, unsigned long *);
-Code_t ZReadAscii16(char *, int, unsigned short *);
+Code_t ZReadAscii(const char *ptr, int len, unsigned char *field, int num);
+Code_t ZReadAscii32(const char *ptr, int len, unsigned long *value_ptr);
+Code_t ZReadAscii16(const char *ptr, int len, unsigned short *value_ptr);
 Code_t ZReadZcode(unsigned char*, unsigned char*, int, int *);
 Code_t ZSendPacket(char*, int, int);
-Code_t ZSendList(ZNotice_t*, char *[], int, Z_AuthProc);
-Code_t ZSrvSendList(ZNotice_t*, char*[], int, Z_AuthProc,
-		    Code_t (*)(ZNotice_t *, char *, int, int));
+Code_t ZSendList(ZNotice_t*, const char *[], int, Z_AuthProc);
+Code_t ZSrvSendList(ZNotice_t *notice, const char *list[], int nitems,
+		    Z_AuthProc cert_routine,
+		    Code_t (* send_routine)(ZNotice_t *, char *, int, int));
 Code_t ZSendNotice(ZNotice_t *, Z_AuthProc);
 Code_t ZSrvSendNotice(ZNotice_t*, Z_AuthProc,
 		      Code_t (*)(ZNotice_t *, char *, int, int));
 Code_t ZFormatNotice(ZNotice_t*, char**, int*, Z_AuthProc);
 Code_t ZFormatSmallNotice(ZNotice_t*, ZPacket_t, int*, Z_AuthProc);
-Code_t ZFormatRawNoticeList(ZNotice_t *, char *[], int, char **, int *);
+Code_t ZFormatRawNoticeList(ZNotice_t *notice, const char *list[], int nitems,
+			    char **buffer, int *ret_len);
 Code_t ZFormatSmallRawNotice(ZNotice_t *, ZPacket_t, int *);
 Code_t ZNewFormatSmallRawNotice(ZNotice_t *, ZPacket_t, int *);
 Code_t ZLocateUser(char *, int *, Z_AuthProc);
@@ -188,8 +190,8 @@ Code_t ZSetServerState(int);
 Code_t ZSetFD(int);
 Code_t ZFormatSmallRawNotice(ZNotice_t*, ZPacket_t, int*);
 int ZCompareUID(ZUnique_Id_t*, ZUnique_Id_t*);
-Code_t ZSrvSendRawList(ZNotice_t*, char*[], int,
-		       Code_t (*)(ZNotice_t *, char *, int, int));
+Code_t ZSrvSendRawList(ZNotice_t *notice , const char*list[], int nitems,
+		       Code_t (*send_routine)(ZNotice_t *, char *, int, int));
 Code_t ZMakeAscii(char*, int, unsigned char*, int);
 Code_t ZMakeAscii32(char *, int, unsigned long);
 Code_t ZMakeAscii16(char *, int, unsigned int);

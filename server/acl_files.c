@@ -7,7 +7,7 @@
  *
  *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
- *	"mit-copyright.h". 
+ *	"mit-copyright.h".
  */
 
 /* Define this if you really want the ACL-writing code included.  */
@@ -60,10 +60,10 @@ static const char rcsid_acl_files_c[] = "$Id$";
 /* If realm is missing, it becomes the local realm */
 /* Canonicalized form is put in canon, which must be big enough to hold
    MAX_PRINCIPAL_SIZE characters */
-void acl_canonicalize_principal(char *principal,
+void acl_canonicalize_principal(const char *principal,
 				char *canon)
 {
-    char *end;
+    const char *end;
     char *dot, *atsign;
     int len;
 
@@ -83,7 +83,7 @@ void acl_canonicalize_principal(char *principal,
 	    dot = NULL;
 	}
     }
-    
+
     /* No such luck */
     end = principal + strlen(principal);
 
@@ -114,7 +114,7 @@ void acl_canonicalize_principal(char *principal,
 	strncpy(canon, atsign, len);
 	canon += len;
 	*canon++ = '\0';
-    } 
+    }
 #ifdef HAVE_KRB4
     else if (krb_get_lrealm(canon, 1) != KSUCCESS) {
 	strcpy(canon, KRB_REALM);
@@ -304,7 +304,7 @@ void
 acl_cache_reset(void)
 {
 	int	i;
-	
+
 	/* See if it's there already */
 	for (i = 0; i < acl_cache_count; i++)
 	    if (acl_cache[i].acl) {
@@ -332,7 +332,7 @@ acl_exact_match(char *acl,
 /* Recognizes wildcards in acl. */
 int
 acl_check(char *acl,
-	  char *principal)
+	  const char *principal)
 {
     char buf[MAX_PRINCIPAL_SIZE];
     char canon[MAX_PRINCIPAL_SIZE];
@@ -356,6 +356,6 @@ acl_check(char *acl,
 	    }
 	}
     }
-       
+
     return(0);
 }

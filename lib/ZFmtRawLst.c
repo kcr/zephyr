@@ -7,7 +7,7 @@
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
- *	"mit-copyright.h". 
+ *	"mit-copyright.h".
  */
 
 #ifndef lint
@@ -18,7 +18,7 @@ static const char rcsid_ZFormatRawNoticeList_c[] = "$Id$";
 
 Code_t
 ZFormatRawNoticeList(ZNotice_t *notice,
-		     char *list[],
+		     const char *list[],
 		     int nitems,
 		     char **buffer,
 		     int *ret_len)
@@ -37,12 +37,12 @@ ZFormatRawNoticeList(ZNotice_t *notice,
 	size += strlen(list[i])+1;
 
     *ret_len = hdrlen+size;
-    
+
     if (!(*buffer = (char *) malloc((unsigned) *ret_len)))
 	return (ENOMEM);
 
     (void) memcpy(*buffer, header, hdrlen);
-    
+
     ptr = *buffer+hdrlen;
 
     for (;nitems;nitems--, list++) {

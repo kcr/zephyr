@@ -32,11 +32,11 @@ static const char rcsid_variables_c[] = "$Id$";
 
 /*
  * fields_data[_length] - these point to the field data that the number
- *                        variables were last set to using 
+ *                        variables were last set to using
  *                        var_set_number_variables_to_fields.
  */
 
-static char *fields_data;
+static const char *fields_data;
 static int fields_data_length = 0;
 
 /*
@@ -57,7 +57,7 @@ static string_dictionary number_variable_dict = NULL;
  */
 
 static int
-is_digits(string text)
+is_digits(const char *text)
 {
     for (; *text; text++)
       if (!isdigit(*text))
@@ -153,8 +153,8 @@ var_get_variable(string name)
  */
 
 void
-var_set_variable(string name,
-		 string value)
+var_set_variable(const char *name,
+		 const char *value)
 {
     string_dictionary_Set(is_number_variable(name) ? number_variable_dict
 			  : non_number_variable_dict, name, value);
@@ -232,7 +232,7 @@ var_set_variable_then_free_value(string name,
  */
 
 void
-var_set_number_variables_to_fields(char *data,
+var_set_number_variables_to_fields(const char *data,
 				   int length)
 {
     fields_data = data;

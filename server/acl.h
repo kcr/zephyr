@@ -7,7 +7,7 @@
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
- *	"mit-copyright.h". 
+ *	"mit-copyright.h".
  */
 
 #include <zephyr/mit-copyright.h>
@@ -15,11 +15,7 @@
 #ifndef	__ACL__
 #define	__ACL__
 
-int acl_add(char *, char *);
-int acl_check(char *, char *);
-int acl_delete(char *, char *);
-int acl_initialize(char *, int);
+int acl_check(char *acl, const char *principal);
 void acl_cache_reset(void);
 
 #endif /* __ACL__ */
-

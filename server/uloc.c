@@ -86,9 +86,9 @@ typedef struct _Location {
 static void ulogin_locate(ZNotice_t *notice, struct sockaddr_in *who,
 			  int auth);
 static void ulogin_flush_user(ZNotice_t *notice);
-static Location *ulogin_find(char *user, struct in_addr *host,
+static Location *ulogin_find(const char *user, struct in_addr *host,
 			     unsigned int port);
-static Location *ulogin_find_user(char *user);
+static Location *ulogin_find_user(const char *user);
 static int ulogin_setup(ZNotice_t *notice, Location *locs,
 			Exposure_type exposure, struct sockaddr_in *who);
 static int ulogin_add_user(ZNotice_t *notice, Exposure_type exposure,
@@ -99,7 +99,7 @@ static Exposure_type ulogin_remove_user(ZNotice_t *notice,
 					int *err_return);
 static void login_sendit(ZNotice_t *notice, int auth,
 			 struct sockaddr_in *who, int external);
-static char **ulogin_marshal_locs(ZNotice_t *notice, int *found, int auth);
+static const char **ulogin_marshal_locs(ZNotice_t *notice, int *found, int auth);
 
 static void free_loc(Location *loc);
 static void ulogin_locate_forward(ZNotice_t *notice, struct sockaddr_in *who,
@@ -410,7 +410,7 @@ uloc_send_locations(void)
 {
     Location *loc;
     int i;
-    char *lyst[NUM_FIELDS];
+    const char *lyst[NUM_FIELDS];
     char *exposure_level;
     Code_t retval;
 
@@ -557,7 +557,7 @@ static int
 ulogin_parse(ZNotice_t *notice,
 	     Location *locs)
 {
-    char *cp, *base;
+    const char *cp, *base;
     int nulls = 0;
 
     if (!notice->z_message_len) {
@@ -593,7 +593,7 @@ ulogin_parse(ZNotice_t *notice,
 
 
 static Location *
-ulogin_find(char *user,
+ulogin_find(const char *user,
 	    struct in_addr *host,
 	    unsigned int port)
 {
@@ -626,7 +626,7 @@ ulogin_find(char *user,
  */
 
 static Location *
-ulogin_find_user(char *user)
+ulogin_find_user(const char *user)
 {
     int i, rlo, rhi;
     int compar;
@@ -802,7 +802,7 @@ ulogin_locate(ZNotice_t *notice,
 	      struct sockaddr_in *who,
 	      int auth)
 {
-    char **answer;
+    const char **answer;
     int found;
     Code_t retval;
     struct sockaddr_in send_to_who;
@@ -837,14 +837,14 @@ ulogin_locate(ZNotice_t *notice,
  * locations in *found.
  */
 
-static char **
+static const char **
 ulogin_marshal_locs(ZNotice_t *notice,
 		    int *found,
 		    int auth)
 {
     Location **matches = (Location **) 0;
     Location *loc;
-    char **answer;
+    const char **answer;
     int i = 0;
     String *inst;
     int local = (auth && realm_sender_in_realm(ZGetRealm(), notice->z_sender));
@@ -910,7 +910,7 @@ ulogin_marshal_locs(ZNotice_t *notice,
 #endif
 
     /* coalesce the location information into a list of char *'s */
-    answer = (char **) malloc((*found) * NUM_FIELDS * sizeof(char *));
+    answer = (const char **) malloc((*found) * NUM_FIELDS * sizeof(char *));
     if (!answer) {
 	syslog(LOG_ERR, "zloc no mem(answer)");
 	*found = 0;
@@ -994,7 +994,7 @@ ulogin_realm_locate(ZNotice_t *notice,
 		    struct sockaddr_in *who,
 		    ZRealm *realm)
 {
-  char **answer;
+  const char **answer;
   int found;
   Code_t retval;
   ZNotice_t lnotice;

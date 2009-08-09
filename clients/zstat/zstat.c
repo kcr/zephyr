@@ -144,7 +144,8 @@ hm_stat(char *host,
 	struct in_addr inaddr;
 	Code_t code;
 
-	char *line[20],*mp;
+	const char *line[20];
+	const char *mp;
 	int i,nf;
 	struct hostent *hp;
 	time_t runtime;
@@ -201,7 +202,8 @@ hm_stat(char *host,
 int
 srv_stat(char *host)
 {
-	char *line[20],*mp;
+        const char *line[20];
+        const char *mp;
 	int sock,i,nf,ret;
 	struct hostent *hp;
 	struct sockaddr_in sin;

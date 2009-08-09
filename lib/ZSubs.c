@@ -8,7 +8,7 @@
  *
  *	Copyright (c) 1987,1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
- *	"mit-copyright.h". 
+ *	"mit-copyright.h".
  */
 
 #include <internal.h>
@@ -20,7 +20,7 @@ static const char rcsid_ZSubscriptions_c[] = "$Id$";
 static Code_t Z_Subscriptions(register ZSubscription_t *sublist,
 			      int nitems, unsigned int port,
 			      char *opcode, int authit);
-static Code_t subscr_sendoff(ZNotice_t *notice, char **lyst, int num,
+static Code_t subscr_sendoff(ZNotice_t *notice, const char **lyst, int num,
 			     int authit);
 
 #ifdef CMU_ZCTL_PUNT
@@ -82,7 +82,7 @@ Z_Subscriptions(register ZSubscription_t *sublist,
     int retval;
     ZNotice_t notice;
     char header[Z_MAXHEADERLEN];
-    char **list;
+    const char **list;
     char *recip;
     int hdrlen;
     int size_avail = Z_MAXPKTLEN-Z_FRAGFUDGE; /* space avail for data,
@@ -91,8 +91,8 @@ Z_Subscriptions(register ZSubscription_t *sublist,
 
     /* nitems = 0 means cancel all subscriptions; still need to allocate a */
     /* array for one item so we can cancel, however. */
-  
-    list = (char **)malloc((unsigned)((nitems==0)?1:nitems)*3*sizeof(char *));
+
+    list = (const char **)malloc((unsigned)((nitems==0)?1:nitems)*3*sizeof(char *));
     if (!list)
         return (ENOMEM);
 
@@ -177,7 +177,7 @@ Z_Subscriptions(register ZSubscription_t *sublist,
 
 static Code_t
 subscr_sendoff(ZNotice_t *notice,
-	       char **lyst,
+	       const char **lyst,
 	       int num,
 	       int authit)
 {
@@ -187,10 +187,10 @@ subscr_sendoff(ZNotice_t *notice,
     retval = ZSendList(notice, lyst, num*3, ZAUTH);
     if (retval != ZERR_NONE && !authit)
 	retval = ZSendList(notice, lyst, num*3, ZNOAUTH);
-	
+
     if (retval != ZERR_NONE)
 	return (retval);
-    if ((retval = ZIfNotice(&retnotice, (struct sockaddr_in *)0, 
+    if ((retval = ZIfNotice(&retnotice, (struct sockaddr_in *)0,
 				ZCompareUIDPred, (char *)&notice->z_uid)) !=
 	ZERR_NONE)
 	return (retval);

@@ -26,7 +26,7 @@
  *        Effects: Returns the # of nulls in data[0]..data[length-1]
  */
 
-extern int count_nulls(char *, int);
+extern int count_nulls(const char *data, int length);
 
 /*
  *    string get_next_field(char **data_p, int *length_p)
@@ -43,7 +43,7 @@ extern int count_nulls(char *, int);
  *                 remain.  (this is the case when *length_p == 0)
  */
 
-extern string get_next_field(char **, int *);
+extern string get_next_field(const char **data_p, int *length);
 
 /*
  *    string get_field(char *data, int length, int num)
@@ -56,7 +56,7 @@ extern string get_next_field(char **, int *);
  *                 "" is returned.
  */
 
-extern string get_field(char *, int, int);
+extern string get_field(const char *data, int length, int num);
 
 /*
  *    string convert_nulls_to_newlines(data, length)
@@ -67,9 +67,9 @@ extern string get_field(char *, int, int);
  *                be freed.
  */
 
-extern string convert_nulls_to_newlines(char *, int);
+extern string convert_nulls_to_newlines(const char *data, int length);
 
 
-extern char *decode_notice(ZNotice_t *, char *);
+extern const char *decode_notice(ZNotice_t *, char *);
 
 #endif

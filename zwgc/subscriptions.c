@@ -55,9 +55,9 @@ init_puntable_dict(void)
 }
 
 static string
-address_to_string(string class,
-		  string instance,
-		  string recipient)
+address_to_string(const char *class,
+		  const char *instance,
+		  const char *recipient)
 {
     string result;
 
@@ -83,9 +83,9 @@ address_to_string(string class,
     return(result);
 }
 
-int puntable_address_p(string class,
-		       string instance,
-		       string recipient)
+int puntable_address_p(const char *class,
+		       const char *instance,
+		       const char *recipient)
 {
     string temp;
     int ret;

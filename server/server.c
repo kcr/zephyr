@@ -76,8 +76,8 @@ static void server_flush(Server *);
 static void hello_respond(struct sockaddr_in *, int, int);
 static void srv_responded(struct sockaddr_in *);
 static void send_msg(struct sockaddr_in *, char *, int);
-static void send_msg_list(struct sockaddr_in *, char *, char **, int,
-			       int);
+static void send_msg_list(struct sockaddr_in *who, char *opcode,
+			  const char **lyst, int num, int auth);
 static void srv_nack_cancel(ZNotice_t *, struct sockaddr_in *);
 static void srv_nack_release(Server *);
 static void srv_nack_renumber (int *);
@@ -535,7 +535,8 @@ void
 server_kill_clt(Client *client)
 {
     int i;
-    char buf[512], *lyst[2];
+    char buf[512];
+    const char *lyst[2];
     ZNotice_t notice;
     ZNotice_t *pnotice; /* speed hack */
     caddr_t pack;
@@ -620,7 +621,7 @@ static Code_t
 extract_addr(ZNotice_t *notice,
 	     struct sockaddr_in *who)
 {
-    char *cp = notice->z_message;
+    const char *cp = notice->z_message;
 
     if (!notice->z_message_len) {
 	syslog(LOG_WARNING, "bad addr pkt");
@@ -672,7 +673,7 @@ admin_dispatch(ZNotice_t *notice,
 	       struct sockaddr_in *who,
 	       Server *server)
 {
-    char *opcode = notice->z_opcode;
+    const char *opcode = notice->z_opcode;
     Code_t status = ZERR_NONE;
 
     if (strcmp(opcode, ADMIN_HELLO) == 0) {
@@ -739,7 +740,7 @@ send_stats(struct sockaddr_in *who)
 {
     int i;
     char buf[BUFSIZ];
-    char **responses;
+    const char **responses;
     int num_resp;
     char *vers, *pkts, *upt;
     ZRealm *realm;
@@ -771,8 +772,8 @@ send_stats(struct sockaddr_in *who)
 	extrafields++;
 #endif /* NEW_COMPAT */
     extrafields += nrealms;
-    responses = (char **) malloc((NUM_FIXED + nservers + extrafields) *
-				 sizeof(char *));
+    responses = (const char **) malloc((NUM_FIXED + nservers + extrafields) *
+				       sizeof(char *));
     responses[0] = vers;
     responses[1] = pkts;
     responses[2] = upt;
@@ -821,7 +822,7 @@ send_stats(struct sockaddr_in *who)
 
     /* Start at one; don't try to free static version string */
     for (i = 1; i < num_resp; i++)
-	free(responses[i]);
+	free((void *)responses[i]);
     free(responses);
 }
 
@@ -1168,7 +1169,7 @@ send_msg(struct sockaddr_in *who,
 static void
 send_msg_list(struct sockaddr_in *who,
 	      char *opcode,
-	      char **lyst,
+	      const char **lyst,
 	      int num,
 	      int auth)
 {

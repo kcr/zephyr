@@ -53,18 +53,18 @@ eval_exprlist_to_string(Node *exprlist)
     string result = string_Copy("");
     string temp;
     int first_time = 1;
-    
+
     for (; exprlist; exprlist=exprlist->next) {
 	if (!first_time)
 	  result = string_Concat2(result, " ");
 	else
 	  first_time = 0;
-	
+
 	temp = eval_expr(exprlist);
 	result = string_Concat2(result, temp);
 	free(temp);
     }
-    
+
     return(result);
 }
 
@@ -79,7 +79,7 @@ eval_exprlist_to_args(Node *exprlist)
 	argc++;
 	result = (char **)realloc(result, (argc+1)*sizeof(char *));
     }
-    
+
     result[argc] = NULL;
     return(result);
 }
@@ -92,7 +92,7 @@ free_args(char **args)
     for (p=args; *p; p++) {
       free(*p);
   }
-	
+
     free(args);
 }
 
@@ -261,7 +261,7 @@ exec_print(Node *node)
     temp = eval_exprlist_to_string(node->d.nodes.first);
     append_buffer(temp);
     free(temp);
-    
+
     return(NOBREAK);
 }
 
@@ -282,7 +282,7 @@ exec_case(Node *node)
     int equal_p;
 
     constant = string_Downcase(eval_expr(node->d.nodes.first));
-   
+
     for (match=node->d.nodes.second; match; match=match->next) {
 	cond = match->d.nodes.first;
 	if (!cond) {  /* default case */
@@ -349,7 +349,7 @@ exec_exec(Node *node)
 	perror("");
 	_exit(errno);
     }
-    
+
     free_args(argv);
     return(NOBREAK);
 }
@@ -420,7 +420,7 @@ static int
 exec_subtree(Node *node)
 {
     int retval = NOBREAK;
-    
+
     for (; node; node=node->next) {
 	retval = (opstuff[node->opcode].exec)(node);
 	if (retval != NOBREAK)
@@ -432,7 +432,7 @@ exec_subtree(Node *node)
 
 /***************************************************************************/
 
-static char *notice_fields;
+static const char *notice_fields;
 static int notice_fields_length = 0;
 static int number_of_fields = 0;
 
@@ -441,12 +441,12 @@ exec_fields(Node *node)
 {
     for (node=node->d.nodes.first; node; node=node->next) {
 	var_set_variable_then_free_value(node->d.string_constant,
-				 get_next_field(&notice_fields,
-						&notice_fields_length));
+					 get_next_field(&notice_fields,
+							&notice_fields_length));
 	if (number_of_fields)
 	  number_of_fields--;
     }
-    
+
     var_set_variable_to_number("number_of_fields", number_of_fields);
 
     return(NOBREAK);

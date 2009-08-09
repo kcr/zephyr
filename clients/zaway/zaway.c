@@ -7,7 +7,7 @@
  *
  *	Copyright (c) 1987, 1993 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
- *	"mit-copyright.h". 
+ *	"mit-copyright.h".
  */
 
 #include <sysdep.h>
@@ -47,18 +47,20 @@ main(int argc,
 	register int retval;
 	struct passwd *pw;
 	register char *ptr;
-	char awayfile[BUFSIZ],*msg[2],*envptr;
+	char awayfile[BUFSIZ];
+	const char *msg[2];
+	char *envptr;
 	int optchar, watch_location;
 	char *cmdline_msg;
 	int nlocs;
 	char *find_message(ZNotice_t *, FILE *);
 	char *charset = NULL;
 	unsigned short zcharset;
-	    
+
 #ifdef _POSIX_VERSION
 	struct sigaction sa;
 #endif
-	
+
 	if ((retval = ZInitialize()) != ZERR_NONE) {
 		com_err(argv[0],retval,"while initializing");
 		exit(1);
@@ -117,14 +119,14 @@ main(int argc,
 				exit(1);
 			}
 			(void) sprintf(awayfile,"%s/.away",pw->pw_dir);
-		} 
+		}
 	}
 
 	fp = fopen(awayfile,"r");
 	if (!fp && argc > optind) {
 		fprintf(stderr,"File %s not found!\n",awayfile);
 		exit(1);
-	} 
+	}
 #ifdef _POSIX_VERSION
 	(void) sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
@@ -201,7 +203,7 @@ main(int argc,
 
 		msg[0] = "Automated reply:";
 		msg[1] = ptr;
-		
+
 		notice.z_message_len = strlen(notice.z_message)+1;
 		if ((retval = ZSendList(&notice,msg,2,ZNOAUTH)) != ZERR_NONE) {
 			com_err(argv[0],retval,"while sending notice");
@@ -218,18 +220,18 @@ find_message(ZNotice_t *notice,
 	char *ptr,*ptr2;
 	char bfr[BUFSIZ],sender[BUFSIZ];
 	int gotone,lastwasnt;
-	
+
 	rewind(fp);
 
 	(void) strcpy(sender,notice->z_sender);
 	ptr2 = strchr(sender,'@');
 	if (ptr2)
 		*ptr2 = '\0';
-	
+
 	ptr = 0;
 	gotone = 0;
 	lastwasnt = 0;
-	
+
 	while (fgets(bfr,sizeof bfr,fp) != (char *)0) {
 		if (*bfr == '>') {
 			if (lastwasnt)
@@ -243,13 +245,13 @@ find_message(ZNotice_t *notice,
 			    (!strcmp(bfr+1,"%") && !ptr))
 				gotone = 1;
 			lastwasnt = 0;
-		} 
+		}
 		else {
 			if (gotone) {
 				if (!ptr) {
 					ptr = malloc((unsigned)(strlen(bfr)+1));
 					*ptr = '\0';
-				} 
+				}
 				else
 					ptr = realloc(ptr,(unsigned)(strlen(bfr)+strlen(ptr)+1));
 				(void) strcat(ptr,bfr);

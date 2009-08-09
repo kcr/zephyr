@@ -49,7 +49,7 @@ extern string var_get_variable(string);
  *                 to have the value value.
  */
 
-extern void var_set_variable(string, string);
+extern void var_set_variable(const char *name, const char *value);
 
 /*
  *    void var_set_variable_to_number(string name; int number)
@@ -91,6 +91,6 @@ extern void var_set_variable_then_free_value(string, string);
  *                 data or var_clear_all_variables is called.
  */
 
-extern void var_set_number_variables_to_fields(char *, int);
+extern void var_set_number_variables_to_fields(const char *data, int length);
 
 #endif

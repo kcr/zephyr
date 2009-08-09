@@ -7,7 +7,7 @@
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
- *	"mit-copyright.h". 
+ *	"mit-copyright.h".
  */
 
 #include <zephyr/mit-copyright.h>
@@ -80,7 +80,7 @@ hash(const char *string)
 
 /* Output a name, replacing newlines with \n and single quotes with \q. */
 void
-dump_quote(char *p, FILE *fp)
+dump_quote(const char *p, FILE *fp)
 {
     for (; *p; p++) {
 	if (*p == '\'') {
@@ -103,7 +103,7 @@ void
 notice_extract_address(ZNotice_t *notice, struct sockaddr_in *addr)
 {
     /*
-     * We get the address out of the uid rather than the 
+     * We get the address out of the uid rather than the
      * Hopefully by the time a server will actually be speaking ipv6, it won't have
      * to worry about talking to other <3.0 realms
      */

@@ -464,7 +464,7 @@ static void
 process_notice(ZNotice_t *notice,
                char *hostname)
 {
-    char *control_opcode;
+    const char *control_opcode;
 
     dprintf("Got a message\n");
 

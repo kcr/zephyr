@@ -19,7 +19,8 @@
 
 extern int zwgc_active;
 
-extern int puntable_address_p(string, string, string);
+extern int puntable_address_p(const char *class, const char *instance,
+			      const char *recipient);
 extern void punt(string, string, string);
 extern void unpunt(string, string, string);
 extern void zwgc_shutdown(void);

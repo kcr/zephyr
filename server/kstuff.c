@@ -260,8 +260,8 @@ ZCheckSrvAuthentication(ZNotice_t *notice,
     krb5_cksumtype cksumtype;
     krb5_data cksumbuf;
     int valid;
-    char *cksum0_base, *cksum1_base = NULL, *cksum2_base;
-    char *x;
+    const char *cksum0_base, *cksum1_base = NULL, *cksum2_base;
+    const char *x;
     unsigned char *asn1_data, *key_data;
     int asn1_len, key_len, cksum0_len = 0, cksum1_len = 0, cksum2_len = 0;
     krb5_flags acflags;
@@ -273,7 +273,7 @@ ZCheckSrvAuthentication(ZNotice_t *notice,
 #define KRB5AUTHENT &authenticator
 #endif
     int len;
-    char *sender;
+    const char *sender;
     char rlmprincipal[MAX_PRINCIPAL_SIZE];
 
     if (!notice->z_auth)
@@ -500,7 +500,7 @@ ZCheckSrvAuthentication(ZNotice_t *notice,
 
       ZChecksum_t our_checksum;
 
-      if (realm == NULL) 
+      if (realm == NULL)
 	  our_checksum = compute_checksum(notice, key_data);
       else
 	  our_checksum = compute_rlm_checksum(notice, key_data);
@@ -644,7 +644,7 @@ compute_checksum(ZNotice_t *notice,
 		 unsigned char *session_key)
 {
     ZChecksum_t checksum;
-    char *cstart, *cend, *hstart = notice->z_packet, *hend = notice->z_message;
+    const char *cstart, *cend, *hstart = notice->z_packet, *hend = notice->z_message;
 
     cstart = notice->z_default_format + strlen(notice->z_default_format) + 1;
     cend = cstart + strlen(cstart) + 1;
@@ -659,7 +659,7 @@ static ZChecksum_t compute_rlm_checksum(ZNotice_t *notice,
 					unsigned char *session_key)
 {
     ZChecksum_t checksum;
-    char *cstart, *cend, *hstart = notice->z_packet;
+    const char *cstart, *cend, *hstart = notice->z_packet;
 
     cstart = notice->z_default_format + strlen(notice->z_default_format) + 1;
     cend = cstart + strlen(cstart) + 1;

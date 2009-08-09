@@ -7,7 +7,7 @@
  *
  *	Copyright (c) 1987, 1990 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
- *	"mit-copyright.h". 
+ *	"mit-copyright.h".
  */
 
 #ifndef lint
@@ -20,7 +20,7 @@ static const char rcsid_ZReadAscii_c[] = "$Id$";
 #define Z_cnvt_xtoi(c)  ((temp=(c)-'0'),(temp<10)?temp:((temp-='A'-'9'-1),(temp<16)?temp:-1))
 
 Code_t
-ZReadAscii(char *ptr,
+ZReadAscii(const char *ptr,
 	   int len,
 	   unsigned char *field,
 	   int num)
@@ -57,7 +57,7 @@ ZReadAscii(char *ptr,
 }
 
 Code_t
-ZReadAscii32(char *ptr,
+ZReadAscii32(const char *ptr,
 	     int len,
 	     unsigned long *value_ptr)
 {
@@ -72,7 +72,7 @@ ZReadAscii32(char *ptr,
 }
 
 Code_t
-ZReadAscii16(char *ptr,
+ZReadAscii16(const char *ptr,
 	     int len,
 	     unsigned short *value_ptr)
 {
@@ -85,4 +85,3 @@ ZReadAscii16(char *ptr,
     *value_ptr = (buf[0] << 8) | buf[1];
     return ZERR_NONE;
 }
-

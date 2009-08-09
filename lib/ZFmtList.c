@@ -7,7 +7,7 @@
  *
  *	Copyright (c) 1987,1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
- *	"mit-copyright.h". 
+ *	"mit-copyright.h".
  */
 
 #include <internal.h>
@@ -19,10 +19,10 @@ static const char rcsid_ZFormatNoticeList_c[] =
 
 Code_t
 ZFormatNoticeList(ZNotice_t *notice,
-		  register char **list,
+		  register const char **list,
 		  int nitems,
 		  char **buffer,
-		  int *ret_len, 
+		  int *ret_len,
 		  Z_AuthProc cert_routine)
 {
     char header[Z_MAXHEADERLEN];

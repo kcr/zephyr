@@ -7,7 +7,7 @@
  *
  *	Copyright (c) 1987 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
- *	"mit-copyright.h". 
+ *	"mit-copyright.h".
  */
 
 #include <zephyr/mit-copyright.h>
@@ -57,7 +57,7 @@ static void access_setup(int first);
  */
 
 int
-access_check(char *sender,
+access_check(const char *sender,
 	     Acl *acl,
 	     Access accesstype)
 {
@@ -191,7 +191,7 @@ access_setup(int first)
 	    }
 	    acl->acl_filename = strsave(class_name);
 	    check_acl(acl);
-		    
+
 	    if (!first) {
 		/* Try to restrict already existing class */
 		retval = class_restrict(class_name, acl);

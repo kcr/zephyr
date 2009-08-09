@@ -243,7 +243,7 @@ void bdump_offer(struct sockaddr_in *who);
 Code_t bdump_send_list_tcp(ZNotice_Kind_t kind, struct sockaddr_in *addr,
 			   const char *class_name, const char *inst,
 			   const char *opcode, const char *sender,
-			   const char *recip, char **lyst, int num);
+			   const char *recip, const char **lyst, int num);
 int get_tgt(void);
 
 /* found in class.c */
@@ -273,7 +273,7 @@ Code_t client_send_clients(void);
 /* found in common.c */
 char *strsave(const char *str);
 unsigned long hash (const char *);
-void dump_quote(char *p, FILE *fp);
+void dump_quote(const char *p, FILE *fp);
 void notice_extract_address(ZNotice_t *notice, struct sockaddr_in *addr);
 
 /* found in dispatch.c */
@@ -354,8 +354,8 @@ void ulogin_relay_locate(ZNotice_t *, struct sockaddr_in *);
 void ulogin_realm_locate(ZNotice_t *, struct sockaddr_in *, ZRealm *);
 
 /* found in realm.c */
-int realm_sender_in_realm(const char *realm, char *sender);
-int realm_bound_for_realm(const char *realm, char *recip);
+int realm_sender_in_realm(const char *realm, const char *sender);
+int realm_bound_for_realm(const char *realm, const char *recip);
 ZRealm *realm_which_realm(struct sockaddr_in *who);
 ZRealm *realm_get_realm_by_name(const char *name);
 ZRealm *realm_get_realm_by_pid(int);
@@ -378,7 +378,7 @@ void realm_dump_realms(FILE *);
 char *get_version(void);
 
 /* found in access.c */
-int access_check(char *, Acl *, Access);
+int access_check(const char *sender, Acl *acl, Access accesstype);
 
 /* global identifiers */
 

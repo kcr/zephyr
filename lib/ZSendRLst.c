@@ -7,7 +7,7 @@
  *
  *	Copyright (c) 1988 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
- *	"mit-copyright.h". 
+ *	"mit-copyright.h".
  */
 
 #ifndef lint
@@ -17,14 +17,14 @@ static const char rcsid_ZSendRawList_c[] = "$Id$";
 #include <internal.h>
 
 Code_t ZSendRawList(ZNotice_t *notice,
-		    char *list[],
+		    const char *list[],
 		    int nitems)
 {
     return(ZSrvSendRawList(notice, list, nitems, Z_XmitFragment));
 }
 
 Code_t ZSrvSendRawList(ZNotice_t *notice,
-		       char *list[],
+		       const char *list[],
 		       int nitems,
 		       Code_t (*send_routine)(ZNotice_t *, char *, int, int))
 {
@@ -33,13 +33,13 @@ Code_t ZSrvSendRawList(ZNotice_t *notice,
     char *buffer;
     int len;
 
-    if ((retval = ZFormatRawNoticeList(notice, list, nitems, &buffer, 
+    if ((retval = ZFormatRawNoticeList(notice, list, nitems, &buffer,
 				       &len)) != ZERR_NONE)
 	return (retval);
 
     if ((retval = ZParseNotice(buffer, len, &newnotice)) != ZERR_NONE)
 	return (retval);
-    
+
     retval = Z_SendFragmentedNotice(&newnotice, len, NULL, send_routine);
 
     free(buffer);

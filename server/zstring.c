@@ -7,7 +7,7 @@
  *
  *	Copyright (c) 1991 by the Massachusetts Institute of Technology.
  *	For copying and distribution information, see the file
- *	"mit-copyright.h". 
+ *	"mit-copyright.h".
  */
 
 #include <zephyr/mit-copyright.h>
@@ -65,7 +65,7 @@ String *
 make_string(const char *s,
 	    int downcase)
 {
-    char *new_s;
+    const char *new_s;
     String *new_z,*hp;
     int i;
 
@@ -78,7 +78,7 @@ make_string(const char *s,
     new_z = find_string(new_s,0);
     if (new_z != NULL) {
 	if (downcase)
-	    free(new_s);
+	    free((void *)new_s);
 	new_z->ref_count++;
 	return(new_z);
     }
@@ -90,7 +90,7 @@ make_string(const char *s,
     new_z = (String *) malloc(sizeof(String));
     new_z->string = new_s;
     new_z->ref_count = 1;
-  
+
     /* Add to beginning of hash table */
     new_z->hash_val = hash(new_s);
     i = new_z->hash_val % STRING_HASH_TABLE_SIZE;
@@ -119,19 +119,19 @@ free_string(String *z)
 	zhash[hash(z->string) % STRING_HASH_TABLE_SIZE] = z->next;
     else
 	z->prev->next = z->next;
-  
+
     if (z->next != NULL)
 	z->next->prev = z->prev;
 
-    free(z->string);
+    free((void *)z->string);
     free(z);
 }
 
 String *
-find_string(char *s,
+find_string(const char *s,
 	    int downcase)
 {
-    char *new_s;
+    const char *new_s;
     String *z;
 
     if (downcase) {
@@ -148,7 +148,7 @@ find_string(char *s,
     }
 
     if (downcase)
-	free(new_s);
+	free((void *)new_s);
 
     return z;
 }
@@ -185,4 +185,3 @@ dup_string(String *z)
     z->ref_count++;
     return z;
 }
-

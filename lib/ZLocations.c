@@ -135,7 +135,7 @@ Z_SendLocation(char *class,
     bptr[1][strlen(bptr[1])-1] = '\0';
     bptr[2] = mytty;
 
-    if ((retval = ZSendList(&notice, bptr, 3, auth)) != ZERR_NONE)
+    if ((retval = ZSendList(&notice, (const char **)bptr, 3, auth)) != ZERR_NONE)
 	return (retval);
 
     retval = Z_WaitForNotice (&retnotice, wait_for_srvack, &notice.z_uid,

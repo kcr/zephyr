@@ -43,7 +43,7 @@ static const char rcsid_notice_c[] = "$Id$";
  */
 
 int
-count_nulls(char *data,
+count_nulls(const char *data,
 	    int length)
 {
     int count = 0;
@@ -71,12 +71,12 @@ count_nulls(char *data,
  */
 
 string
-get_next_field(char **data_p,
+get_next_field(const char **data_p,
 	       int *length_p)
 {
-    char *data = *data_p;
+    const char *data = *data_p;
     int length = *length_p;
-    char *ptr;
+    const char *ptr;
 
     for (ptr=data; length; ptr++, length--)
       if (!*ptr) {
@@ -102,7 +102,7 @@ get_next_field(char **data_p,
  *                 "" is returned.
  */
 
-string get_field(char *data,
+string get_field(const char *data,
 		 int length,
 		 int num)
 {
@@ -136,7 +136,7 @@ string get_field(char *data,
  */
 
 string
-convert_nulls_to_newlines(char *data,
+convert_nulls_to_newlines(const char *data,
 			  int length)
 {
     char *result, *ptr;
@@ -144,7 +144,7 @@ convert_nulls_to_newlines(char *data,
 
     result = (char *) malloc(length+1);
     result[length] = '\0';
-    
+
     for (ptr=result; length; data++, ptr++, length--)
       *ptr = (c = *data) ? c : '\n';
 
@@ -207,7 +207,7 @@ z_kind_to_ascii(ZNotice_Kind_t z_kind)
 	result = "<unknown kind>";
 	break;
     }
-    
+
     return(string_Copy(result));
 }
 
@@ -233,7 +233,7 @@ z_auth_to_ascii(int z_auth)
       case ZAUTH_NO:
 	result = "no";
 	break;
-	
+
       case ZAUTH_YES:
 	result = "yes";
 	break;
@@ -242,7 +242,7 @@ z_auth_to_ascii(int z_auth)
 	result = "unknown";
 	break;
     }
-    
+
     return(string_Copy(result));
 }
 
@@ -252,7 +252,7 @@ z_auth_to_ascii(int z_auth)
  *        Effects:
  */
 
-char *
+const char *
 decode_notice(ZNotice_t *notice,
 	      char *hostname)
 {
@@ -283,7 +283,7 @@ decode_notice(ZNotice_t *notice,
 #ifdef CMU_ZWGCPLUS
     if ((temp=getSelectedText()) != 0)
 	var_set_variable("selection", temp);
-    
+
     var_set_variable("delete_window", "none");
     var_set_variable("event_time", "none");
     var_set_variable("event_name", "event");
@@ -309,7 +309,7 @@ decode_notice(ZNotice_t *notice,
       }
     }
 #endif
-    
+
     /*
      * Convert time & date notice was sent to ascii.  The $time
      * has the format "01:03:52" while $date has the format

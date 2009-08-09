@@ -924,7 +924,7 @@ hostm_dispatch(ZNotice_t *notice,
 	       struct sockaddr_in *who,
 	       Server *server)
 {
-    char *opcode = notice->z_opcode;
+    const char *opcode = notice->z_opcode;
     int i, add = 0, remove = 0;
 
     if (notice->z_kind == HMACK) {
@@ -1000,7 +1000,7 @@ control_dispatch(ZNotice_t *notice,
 		 struct sockaddr_in *who,
 		 Server *server)
 {
-    char *opcode = notice->z_opcode;
+    const char *opcode = notice->z_opcode;
     Client *client;
     Code_t retval;
     int wantdefs;
