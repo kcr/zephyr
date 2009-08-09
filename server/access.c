@@ -62,7 +62,7 @@ access_check(char *sender,
 	     Access accesstype)
 {
     char buf[1024];	/* holds the real acl name */
-    char *prefix;
+    const char *prefix;
     int	flag;
     int retval;
 
@@ -117,8 +117,8 @@ check_acl_type(Acl *acl,
 	       Access accesstype,
 	       int typeflag)
 {
-    char 	buf[1024]; /* holds the real acl name */
-    char	*prefix;
+    char buf[1024]; /* holds the real acl name */
+    const char *prefix;
 
     switch (accesstype) {
       case TRANSMIT:
