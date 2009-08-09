@@ -1551,7 +1551,7 @@ get_packet(void *packet, int len, int *retlen)
     length = ntohs(length);
     if (len < length)
 	return ZSRV_BUFSHORT;
-    result = net_read(input, packet, (int) length);
+    result = net_read(input, (char *)packet, (int) length);
     if (result < length) {
 	if (result < 0) {
 	    return errno;
