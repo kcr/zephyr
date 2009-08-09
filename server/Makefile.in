@@ -19,6 +19,7 @@ BUILDTOP=..
 VPATH=@srcdir@
 LIBTOOL=@LIBTOOL@
 CC=@CC@
+CXX=@CXX@
 INSTALL=@INSTALL@
 
 LIBZEPHYR=${BUILDTOP}/lib/libzephyr.la
@@ -37,10 +38,13 @@ OBJS=	zsrv_err.o access.o acl_files.o bdump.o class.o client.o common.o \
 all: zephyrd
 
 zephyrd: ${OBJS} ${LIBZEPHYR}
-	${LIBTOOL} --mode=link ${CC} ${LDFLAGS} -o $@ ${OBJS} ${LIBS} ${HESIOD_LIBS}
+	${LIBTOOL} --mode=link ${CXX} ${LDFLAGS} -o $@ ${OBJS} ${LIBS} ${HESIOD_LIBS}
 
 zsrv_err.c zsrv_err.h: zsrv_err.et
 	compile_et ${srcdir}/zsrv_err.et
+
+zsrv_err.o: zsrv_err.c zsrv_err.h
+	${CC} -c ${ALL_CFLAGS} $<
 
 version.o: version.h
 
@@ -48,7 +52,7 @@ version.h: always
 	sh ${srcdir}/new_vers.sh
 
 .c.o:
-	${CC} -c ${ALL_CFLAGS} $<
+	${CXX} -c ${ALL_CFLAGS} $<
 
 check:
 

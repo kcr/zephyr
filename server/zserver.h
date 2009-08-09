@@ -12,12 +12,13 @@
  *	"mit-copyright.h".
  */
 
+extern "C" {
 #include <zephyr/mit-copyright.h>
 
 #include <internal.h>
 
 #include <arpa/inet.h>
-
+}
 #include "zsrv_err.h"
 
 #include "timer.h"
@@ -27,7 +28,6 @@
 #include "access.h"
 #include "acl.h"
 #include "utf8proc.h"
-
 
 /* Kerberos-specific library interfaces used only by the server. */
 #ifdef HAVE_KRB5
