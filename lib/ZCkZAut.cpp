@@ -12,6 +12,8 @@
  */
 /* $Header$ */
 
+extern "C" {
+
 #ifndef lint
 static const char rcsid_ZCheckAuthentication_c[] =
     "$Id$";
@@ -44,7 +46,7 @@ Code_t ZCheckZcodeAuthentication(ZNotice_t *notice,
     int valid;
     const char *cksum0_base, *cksum1_base = NULL, *cksum2_base;
     const char *x;
-    unsigned char *asn1_data, *key_data;
+    unsigned char *key_data;
     int asn1_len, key_len, cksum0_len = 0, cksum1_len = 0, cksum2_len = 0;
 #endif
 
@@ -146,12 +148,13 @@ Code_t ZCheckZcodeAuthentication(ZNotice_t *notice,
     /* HOLDING: creds */
 
     cksumbuf.length = cksum0_len + cksum1_len + cksum2_len;
-    cksumbuf.data = malloc(cksumbuf.length);
+    char cksumdata[cksumbuf.length];
+    cksumbuf.data = cksumdata;
     if (!cksumbuf.data) {
 	krb5_free_creds(Z_krb5_ctx, creds);
 	return ZAUTH_NO;
     }
-    /* HOLDING: creds, cksumbuf.data */
+    /* HOLDING: creds */
 
     memcpy(cksumbuf.data, cksum0_base, cksum0_len);
     if (cksum1_len)
@@ -162,29 +165,24 @@ Code_t ZCheckZcodeAuthentication(ZNotice_t *notice,
     /* decode zcoded checksum */
     /* The encoded form is always longer than the original */
     asn1_len = strlen(notice->z_ascii_checksum) + 1;
-    asn1_data = malloc(asn1_len);
+    unsigned char asn1_data[asn1_len];
     if (!asn1_data) {
 	krb5_free_creds(Z_krb5_ctx, creds);
-	free(cksumbuf.data);
 	return ZAUTH_FAILED;
     }
-    /* HOLDING: creds, asn1_data, cksumbuf.data */
+    /* HOLDING: creds */
     result = ZReadZcode((unsigned char *)notice->z_ascii_checksum,
 			asn1_data, asn1_len, &asn1_len);
     if (result != ZERR_NONE) {
 	krb5_free_creds(Z_krb5_ctx, creds);
-	free(asn1_data);
-	free(cksumbuf.data);
 	return ZAUTH_FAILED;
     }
-    /* HOLDING: creds, asn1_data, cksumbuf.data */
+    /* HOLDING: creds */
 
     valid = Z_krb5_verify_cksum(keyblock, &cksumbuf, cksumtype,
 				Z_KEYUSAGE_SRV_CKSUM, asn1_data, asn1_len);
 
-    free(asn1_data);
     krb5_free_creds(Z_krb5_ctx, creds);
-    free(cksumbuf.data);
 
     if (valid)
 	return ZAUTH_YES;
@@ -193,4 +191,6 @@ Code_t ZCheckZcodeAuthentication(ZNotice_t *notice,
 #else /* HAVE_KRB5 */
     return (notice->z_auth ? ZAUTH_YES : ZAUTH_NO);
 #endif
+}
+
 }
