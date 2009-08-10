@@ -805,7 +805,7 @@ clt_ack(ZNotice_t *notice,
     ZNotice_t acknotice;
     ZPacket_t ackpack;
     int packlen;
-    char *sent_name;
+    const char *sent_name;
     Code_t retval;
 
     if (bdumping) {		/* don't ack while dumping */
@@ -1239,12 +1239,12 @@ static char *
 hm_recipient(void)
 {
     static char *recipient;
-    char *realm;
+    const char *realm;
 
     if (recipient)
 	return recipient;
 
-    realm = (char *)ZGetRealm();
+    realm = ZGetRealm();
     if (!realm)
 	realm = "???";
     recipient = (char *) malloc(strlen(realm) + 4);

@@ -123,7 +123,7 @@ u_long npackets;			/* number of packets processed */
 time_t uptime;				/* when we started operations */
 static int nofork;
 struct in_addr my_addr;
-char *bdump_version = "1.2";
+const char *bdump_version = "1.2";
 
 #ifdef HAVE_KRB5
 int bdump_auth_proto = 5;

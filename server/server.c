@@ -75,8 +75,8 @@ srv_nacktab_hashval(int which, ZUnique_Id_t uid) {
 static void server_flush(Server *);
 static void hello_respond(struct sockaddr_in *, int, int);
 static void srv_responded(struct sockaddr_in *);
-static void send_msg(struct sockaddr_in *, char *, int);
-static void send_msg_list(struct sockaddr_in *who, char *opcode,
+static void send_msg(struct sockaddr_in *who, const char *opcode, int auth);
+static void send_msg_list(struct sockaddr_in *who, const char *opcode,
 			  const char **lyst, int num, int auth);
 static void srv_nack_cancel(ZNotice_t *, struct sockaddr_in *);
 static void srv_nack_release(Server *);
@@ -401,14 +401,14 @@ server_reset(void)
 }
 
 /* note: these must match the order given in zserver.h */
-static char *
+static const char *
 srv_states[] = {
     "SERV_UP",
     "SERV_TARDY",
     "SERV_DEAD",
     "SERV_STARTING"
 };
-static char *
+static const char *
 rlm_states[] = {
     "REALM_UP",
     "REALM_TARDY",
@@ -1111,7 +1111,7 @@ server_shutdown(void)
 
 static void
 send_msg(struct sockaddr_in *who,
-	 char *opcode,
+	 const char *opcode,
 	 int auth)
 {
     ZNotice_t notice;
@@ -1168,7 +1168,7 @@ send_msg(struct sockaddr_in *who,
 
 static void
 send_msg_list(struct sockaddr_in *who,
-	      char *opcode,
+	      const char *opcode,
 	      const char **lyst,
 	      int num,
 	      int auth)
@@ -1236,7 +1236,7 @@ server_forward(ZNotice_t *notice,
 	    continue;
 	}
 
-	pack = malloc(sizeof(ZPacket_t));
+	pack = (char *)malloc(sizeof(ZPacket_t));
 	if (!pack) {
 	    syslog(LOG_CRIT, "srv_fwd malloc");
 	    abort();
@@ -1456,7 +1456,7 @@ server_queue(Server *server,
 	syslog(LOG_CRIT, "update_queue malloc");
 	abort();
     }
-    pending->packet = pack;
+    pending->packet = (char *)pack;
     pending->len = len;
     pending->auth = auth;
     pending->who = *who;

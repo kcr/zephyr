@@ -411,7 +411,7 @@ uloc_send_locations(void)
     Location *loc;
     int i;
     const char *lyst[NUM_FIELDS];
-    char *exposure_level;
+    const char *exposure_level;
     Code_t retval;
 
     for (i = 0, loc = locations; i < num_locs; i++, loc++) {

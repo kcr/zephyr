@@ -804,8 +804,8 @@ subscr_send_subs(Client *client)
 	retval = ZMakeAscii(buf, sizeof(buf), bufp, Z_keylen(client->session_keyblock));
     } else {
 #endif
-	bufp = malloc(Z_keylen(client->session_keyblock) + 8); /* + enctype
-								+ length */
+	bufp = (unsigned char *)malloc(Z_keylen(client->session_keyblock) + 8);
+	/* + enctype + length */
 	if (bufp == NULL) {
 	    syslog(LOG_WARNING, "subscr_send_subs: cannot allocate memory for keyblock: %m");
 	    return errno;

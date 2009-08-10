@@ -165,7 +165,7 @@ ReadKerberosData(int fd, int *size, char **data, int *proto) {
 	return ZSRV_LEN;
     }
 
-    *data = malloc(len);
+    *data = (char *)malloc(len);
     if (! *data) {
 	syslog(LOG_WARNING, "ReadKerberosData: failure allocating %d bytes: %m", len);
 	return errno;
@@ -209,7 +209,7 @@ GetKrb5Data(int fd, krb5_data *data) {
         return ZSRV_LEN;
     }
     data->length = atoi(p+3);
-    data->data = malloc(data->length);
+    data->data = (char *)malloc(data->length);
     if (! data->data) {
        data->length = 0;
        return errno;
@@ -289,7 +289,7 @@ ZCheckSrvAuthentication(ZNotice_t *notice,
 #endif
 
     len = strlen(notice->z_ascii_authent)+1;
-    authbuf = malloc(len);
+    authbuf = (unsigned char *)malloc(len);
 
     /* Read in the authentication data. */
     if (ZReadZcode((unsigned char *)notice->z_ascii_authent,
@@ -518,7 +518,7 @@ ZCheckSrvAuthentication(ZNotice_t *notice,
     /* HOLDING: authctx, authenticator */
 
     cksumbuf.length = cksum0_len + cksum1_len + cksum2_len;
-    cksumbuf.data = malloc(cksumbuf.length);
+    cksumbuf.data = (char *)malloc(cksumbuf.length);
     if (!cksumbuf.data) {
         krb5_free_keyblock(Z_krb5_ctx, keyblock);
         krb5_auth_con_free(Z_krb5_ctx, authctx);
@@ -536,7 +536,7 @@ ZCheckSrvAuthentication(ZNotice_t *notice,
     /* decode zcoded checksum */
     /* The encoded form is always longer than the original */
     asn1_len = strlen(notice->z_ascii_checksum) + 1;
-    asn1_data = malloc(asn1_len);
+    asn1_data = (unsigned char *)malloc(asn1_len);
     if (!asn1_data) {
         krb5_free_keyblock(Z_krb5_ctx, keyblock);
         krb5_auth_con_free(Z_krb5_ctx, authctx);
