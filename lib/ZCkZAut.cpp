@@ -12,14 +12,14 @@
  */
 /* $Header$ */
 
-extern "C" {
-
 #ifndef lint
 static const char rcsid_ZCheckAuthentication_c[] =
     "$Id$";
 #endif
 
-#include <internal.h>
+#include <internal++>
+
+extern "C" {
 
 #if defined(HAVE_KRB5) && !HAVE_KRB5_FREE_DATA
 #define krb5_free_data(ctx, dat) free((dat)->data)
@@ -38,7 +38,6 @@ Code_t ZCheckZcodeAuthentication(ZNotice_t *notice,
 {
 #ifdef HAVE_KRB5
     krb5_error_code result;
-    krb5_creds *creds;
     krb5_keyblock *keyblock;
     krb5_enctype enctype;
     krb5_cksumtype cksumtype;
@@ -60,24 +59,27 @@ Code_t ZCheckZcodeAuthentication(ZNotice_t *notice,
     if (!notice->z_ascii_checksum)
         return (ZAUTH_NO);
 
-
 #ifdef HAVE_KRB5
-    result = ZGetCreds(&creds);
+    class credsp : public Zpcleaner<krb5_creds> {
+    public:
+	credsp(krb5_error_code &result) {
+	    result = ZGetCreds(&pointer);
+	}
+	~credsp() {
+	    krb5_free_creds(Z_krb5_ctx, pointer);
+	}
+    } creds(result);
 
     if (result)
 	return (ZAUTH_NO);
-    /* HOLDING: creds */
 
     /* Figure out what checksum type to use */
     keyblock = Z_credskey(creds);
     key_data = Z_keydata(keyblock);
     key_len = Z_keylen(keyblock);
     result = Z_ExtractEncCksum(keyblock, &enctype, &cksumtype);
-    if (result) {
-	krb5_free_creds(Z_krb5_ctx, creds);
+    if (result)
 	return (ZAUTH_FAILED);
-    }
-    /* HOLDING: creds */
 
     /* Assemble the things to be checksummed */
     /* first part is from start of packet through z_default_format:
@@ -140,21 +142,15 @@ Code_t ZCheckZcodeAuthentication(ZNotice_t *notice,
 
 	our_checksum = z_quad_cksum((unsigned char *)cksum0_base, NULL, cksum0_len, 0,
 				    key_data);
-	if (our_checksum == notice->z_checksum) {
-	    krb5_free_creds(Z_krb5_ctx, creds);
+	if (our_checksum == notice->z_checksum)
 	    return ZAUTH_YES;
-	}
     }
-    /* HOLDING: creds */
 
     cksumbuf.length = cksum0_len + cksum1_len + cksum2_len;
     char cksumdata[cksumbuf.length];
     cksumbuf.data = cksumdata;
-    if (!cksumbuf.data) {
-	krb5_free_creds(Z_krb5_ctx, creds);
+    if (!cksumbuf.data)
 	return ZAUTH_NO;
-    }
-    /* HOLDING: creds */
 
     memcpy(cksumbuf.data, cksum0_base, cksum0_len);
     if (cksum1_len)
@@ -166,23 +162,14 @@ Code_t ZCheckZcodeAuthentication(ZNotice_t *notice,
     /* The encoded form is always longer than the original */
     asn1_len = strlen(notice->z_ascii_checksum) + 1;
     unsigned char asn1_data[asn1_len];
-    if (!asn1_data) {
-	krb5_free_creds(Z_krb5_ctx, creds);
-	return ZAUTH_FAILED;
-    }
-    /* HOLDING: creds */
+
     result = ZReadZcode((unsigned char *)notice->z_ascii_checksum,
 			asn1_data, asn1_len, &asn1_len);
-    if (result != ZERR_NONE) {
-	krb5_free_creds(Z_krb5_ctx, creds);
+    if (result != ZERR_NONE)
 	return ZAUTH_FAILED;
-    }
-    /* HOLDING: creds */
 
     valid = Z_krb5_verify_cksum(keyblock, &cksumbuf, cksumtype,
 				Z_KEYUSAGE_SRV_CKSUM, asn1_data, asn1_len);
-
-    krb5_free_creds(Z_krb5_ctx, creds);
 
     if (valid)
 	return ZAUTH_YES;

@@ -1,0 +1,32 @@
+// -*- C++ -*-
+
+#ifndef __INTERNALPLUSLUS__
+#define __INERNALPLUSPLUS__
+
+extern "C" {
+#include <internal.h>
+}
+
+template<typename T> class Zcleaner {
+public:
+    T contents;
+    inline operator T() {
+	return contents;
+    }
+    inline T *operator &() {
+	return &contents;
+    }
+};
+
+template<typename T>class Zpcleaner {
+public:
+    T *pointer;
+    inline operator T *() {
+	return pointer;
+    }
+    inline T *operator ->() {
+	return pointer;
+    }
+};
+
+#endif

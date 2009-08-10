@@ -11,11 +11,11 @@
  *	For copying and distribution information, see the file
  *	"mit-copyright.h".
  */
-
-extern "C" {
 #include <zephyr/mit-copyright.h>
 
-#include <internal.h>
+#include <internal++>
+
+extern "C" {
 
 #include <arpa/inet.h>
 
