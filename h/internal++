@@ -7,6 +7,19 @@ extern "C" {
 #include <internal.h>
 }
 
+#include <exception>
+
+class com_except : public std::exception {
+public:
+    long code;
+    com_except(long error_code) : exception() {
+	code = error_code;
+    }
+    virtual const char* what() const throw() {
+	return error_message(code);
+    }
+};
+
 template<typename T> class Zcleaner {
 public:
     T contents;
