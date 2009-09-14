@@ -414,6 +414,7 @@ notice_handler(ZNotice_t *notice)
                      sizeof(struct sockaddr_in6) :
                      sizeof(notice->z_sender_sockaddr), ARES_NI_LOOKUPHOST,
                      notice_callback, notice);
+<<<<<<< HEAD
 #else
     ret = getnameinfo((const struct sockaddr *)&(notice->z_sender_sockaddr),
 		      notice->z_sender_sockaddr.sa.sa_family == AF_INET ?
@@ -424,6 +425,13 @@ notice_handler(ZNotice_t *notice)
 		      node, sizeof(node), NULL, 0, 0);
     if (ret != 0)
 	strcpy(node, "?");
+=======
+
+#else
+    getnameinfo((const struct sockaddr *)&(notice->z_sender_sockaddr),
+                sizeof(notice->z_sender_sockaddr),
+                node, sizeof(node), NULL, 0, 0);
+>>>>>>> 2784065... stop using MAXHOSTNAMELEN in a variety of places.  Also nuke-trailing-whitespace.
 
     process_notice(notice, node);
 #ifdef CMU_ZWGCPLUS
