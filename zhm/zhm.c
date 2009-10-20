@@ -50,9 +50,9 @@ static void detach(void);
 static void send_stats(ZNotice_t *, struct sockaddr_in *);
 static char *strsave(const char *);
 
-extern void send_flush_notice(char *);
+extern void send_flush_notice(const char *);
 extern void server_manager(ZNotice_t *);
-extern void send_boot_notice(char *);
+extern void send_boot_notice(const char *);
 extern void find_next_server(char *);
 extern int optind;
 

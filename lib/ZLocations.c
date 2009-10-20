@@ -19,6 +19,7 @@ static const char rcsid_ZLocations_c[] =
 #include <internal.h>
 
 #include <pwd.h>
+#include <time.h>
 
 static char host[NS_MAXDNAME], mytty[MAXPATHLEN];
 static int location_info_set = 0;
@@ -59,7 +60,7 @@ ZInitLocationInfo(char *hostname,
 }
 
 Code_t
-ZSetLocation(char *exposure)
+ZSetLocation(const char *exposure)
 {
     return (Z_SendLocation(LOGIN_CLASS, exposure, ZAUTH,
 			   "$sender logged in to $1 on $3 at $2"));
@@ -114,7 +115,8 @@ Z_SendLocation(const char *class,
     int retval;
     time_t ourtime;
     ZNotice_t notice, retnotice;
-    char *bptr[3];
+    const char *bptr[3];
+    char *p;
     short wg_port = ZGetWGPort();
 
     if (!location_info_set)
@@ -133,11 +135,16 @@ Z_SendLocation(const char *class,
 
     bptr[0] = host;
     ourtime = time((time_t *)0);
-    bptr[1] = ctime(&ourtime);
-    bptr[1][strlen(bptr[1])-1] = '\0';
+    p = strdup(ctime(&ourtime));
+    if (p == NULL)
+	return ENOMEM;
+    p[strlen(p) - 1] = '\0';
+    bptr[1] = p;
     bptr[2] = mytty;
 
-    if ((retval = ZSendList(&notice, bptr, 3, auth)) != ZERR_NONE)
+    retval = ZSendList(&notice, bptr, 3, auth);
+    free(p);
+    if (retval != ZERR_NONE)
 	return (retval);
 
     retval = Z_WaitForNotice (&retnotice, wait_for_srvack, &notice.z_uid,

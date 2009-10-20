@@ -183,7 +183,7 @@ flush_locations(int argc,
 
 void
 wgc_control(int argc,
-	    char *argv[])
+	    const char *argv[])
 {
 	int retval;
 	short newport;
@@ -302,8 +302,8 @@ void
 set_var(int argc, char *argv[])
 {
 	int retval,setting_exp,i;
-	char *exp_level = NULL;
-	char *newargv[1];
+	const char *exp_level = NULL;
+	const char *newargv[1];
 	char varcat[BUFSIZ];
 
 	if (argc < 2) {
@@ -381,7 +381,7 @@ void
 do_hide(int argc,
 	char *argv[])
 {
-	char *exp_level = NULL;
+	const char *exp_level = NULL;
 	Code_t retval;
 
 	if (argc != 1) {

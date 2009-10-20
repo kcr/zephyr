@@ -66,7 +66,7 @@ Z_RetSubs(register ZNotice_t *notice,
 	register int i;
 	int retval,nrecv,gimmeack;
 	ZNotice_t retnotice;
-	char *ptr,*end,*ptr2;
+	char *ptr, *end, *ptr2, *p;
 	ZSubscription_t *list = __subscriptions_list;
 
 	retval = ZFlushSubscriptions();
@@ -143,36 +143,32 @@ Z_RetSubs(register ZNotice_t *notice,
 
 		ptr = retnotice.z_message;
 		for (i = 0; i < __subscriptions_num; i++) {
-			list[i].zsub_class = (char *)
-			    malloc(strlen(ptr) + 1);
-			if (!list[i].zsub_class) {
-				ZFreeNotice(&retnotice);
-				return (ENOMEM);
-			}
-			strcpy(list[i].zsub_class, ptr);
-			ptr += strlen(ptr)+1;
-			list[i].zsub_classinst = (char *)
-			    malloc(strlen(ptr) + 1);
-			if (!list[i].zsub_classinst) {
-				ZFreeNotice(&retnotice);
-				return (ENOMEM);
-			}
-			strcpy(list[i].zsub_classinst, ptr);
-			ptr += strlen(ptr)+1;
-			ptr2 = ptr;
-			list[i].zsub_recipient = (char *)
-			    malloc(strlen(ptr2) + 2);
-			if (!list[i].zsub_recipient) {
-				ZFreeNotice(&retnotice);
-				return (ENOMEM);
-			}
-			if (*ptr2 == '@' || *ptr2 == 0) {
-				*list[i].zsub_recipient = '*';
-				strcpy(list[i].zsub_recipient + 1, ptr2);
-			} else {
-				strcpy(list[i].zsub_recipient, ptr2);
-			}
-			ptr += strlen(ptr)+1;
+		    list[i].zsub_class = strdup(ptr);
+		    if (!list[i].zsub_class) {
+			ZFreeNotice(&retnotice);
+			return (ENOMEM);
+		    }
+		    ptr += strlen(ptr)+1;
+		    list[i].zsub_classinst = strdup(ptr);
+		    if (!list[i].zsub_classinst) {
+			ZFreeNotice(&retnotice);
+			return (ENOMEM);
+		    }
+		    ptr += strlen(ptr) + 1;
+		    ptr2 = ptr;
+		    p = malloc(strlen(ptr2) + 2);
+		    if (!p) {
+			ZFreeNotice(&retnotice);
+			return (ENOMEM);
+		    }
+		    if (*ptr2 == '@' || *ptr2 == 0) {
+			*p = '*';
+			strcpy(p + 1, ptr2);
+		    } else {
+			strcpy(p, ptr2);
+		    }
+		    list[i].zsub_recipient = p;
+		    ptr += strlen(ptr) + 1;
 		}
 		ZFreeNotice(&retnotice);
 	}

@@ -118,9 +118,9 @@ typedef struct _ZNotice_t {
 
 /* Subscription structure */
 typedef struct _ZSubscriptions_t {
-    char	*zsub_recipient;
-    char	*zsub_class;
-    char	*zsub_classinst;
+    const char	*zsub_recipient;
+    const char	*zsub_class;
+    const char	*zsub_classinst;
 } ZSubscription_t;
 
 /* Function return code */
@@ -155,12 +155,12 @@ Code_t ZMakeZcodeAuthentication(ZNotice_t*, char *,int, int*);
 Code_t ZMakeZcodeRealmAuthentication(ZNotice_t*, char *,int, int*, char*);
 
 char *ZGetSender(void);
-char *ZGetVariable(char *);
-Code_t ZSetVariable(char *var, char *value);
-Code_t ZUnsetVariable(char *var);
+char *ZGetVariable(const char *);
+Code_t ZSetVariable(const char *var, const char *value);
+Code_t ZUnsetVariable(const char *var);
 int ZGetWGPort(void);
 Code_t ZSetDestAddr(struct sockaddr_in *);
-Code_t ZFormatNoticeList(ZNotice_t*, char**, int,
+Code_t ZFormatNoticeList(ZNotice_t*, const char**, int,
 			 char **, int*, Z_AuthProc);
 Code_t ZParseNotice(char*, int, ZNotice_t *);
 Code_t ZReadAscii(char*, int, unsigned char*, int);
@@ -168,8 +168,8 @@ Code_t ZReadAscii32(char *, int, unsigned long *);
 Code_t ZReadAscii16(char *, int, unsigned short *);
 Code_t ZReadZcode(unsigned char*, unsigned char*, int, int *);
 Code_t ZSendPacket(char*, int, int);
-Code_t ZSendList(ZNotice_t*, char *[], int, Z_AuthProc);
-Code_t ZSrvSendList(ZNotice_t*, char*[], int, Z_AuthProc,
+Code_t ZSendList(ZNotice_t*, const char *[], int, Z_AuthProc);
+Code_t ZSrvSendList(ZNotice_t*, const char*[], int, Z_AuthProc,
 		    Code_t (*)(ZNotice_t *, char *, int, int));
 Code_t ZSendNotice(ZNotice_t *, Z_AuthProc);
 Code_t ZSrvSendNotice(ZNotice_t*, Z_AuthProc,
@@ -200,7 +200,7 @@ Code_t ZCheckAuthentication(ZNotice_t*, struct sockaddr_in*);
 Code_t ZCheckZcodeAuthentication(ZNotice_t*, struct sockaddr_in*);
 Code_t ZCheckZcodeRealmAuthentication(ZNotice_t*, struct sockaddr_in*, char *realm);
 Code_t ZInitLocationInfo(char *hostname, char *tty);
-Code_t ZSetLocation(char *exposure);
+Code_t ZSetLocation(const char *exposure);
 Code_t ZUnsetLocation(void);
 Code_t ZFlushMyLocations(void);
 const char *ZParseExposureLevel(const char *text);

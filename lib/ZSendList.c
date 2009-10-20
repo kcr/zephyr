@@ -17,7 +17,7 @@ static const char rcsid_ZSendList_c[] = "$Id$";
 #include <internal.h>
 
 Code_t ZSendList(ZNotice_t *notice,
-		 char *list[],
+		 const char *list[],
 		 int nitems,
 		 Z_AuthProc cert_routine)
 {
@@ -26,7 +26,7 @@ Code_t ZSendList(ZNotice_t *notice,
 
 Code_t
 ZSrvSendList(ZNotice_t *notice,
-	     char *list[],
+	     const char *list[],
 	     int nitems,
 	     Z_AuthProc cert_routine,
 	     Code_t (*send_routine)(ZNotice_t *, char *, int, int))

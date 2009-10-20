@@ -60,10 +60,10 @@ static const char rcsid_acl_files_c[] = "$Id$";
 /* If realm is missing, it becomes the local realm */
 /* Canonicalized form is put in canon, which must be big enough to hold
    MAX_PRINCIPAL_SIZE characters */
-void acl_canonicalize_principal(char *principal,
+void acl_canonicalize_principal(const char *principal,
 				char *canon)
 {
-    char *end;
+    const char *end;
     char *dot, *atsign;
     int len;
 
@@ -171,7 +171,7 @@ destroy_hash(struct hashtbl *h)
 
 /* Compute hash value for a string */
 static unsigned int
-hashval(char *s)
+hashval(const char *s)
 {
     unsigned hv;
 
@@ -217,7 +217,7 @@ add_hash(struct hashtbl *h,
 /* Returns nonzero if el is in h */
 static int
 check_hash(struct hashtbl *h,
-	   char *el)
+	   const char *el)
 {
     unsigned hv;
 
@@ -242,7 +242,7 @@ static int acl_cache_next = 0;
 /* Returns < 0 if unsuccessful in loading acl */
 /* Returns index into acl_cache otherwise */
 /* Note that if acl is already loaded, this is just a lookup */
-int acl_load(char *name)
+int acl_load(const char *name)
 {
     int i;
     FILE *f;
@@ -319,8 +319,8 @@ acl_cache_reset(void)
 /* Returns nonzero if it can be determined that acl contains principal */
 /* Principal is not canonicalized, and no wildcarding is done */
 int
-acl_exact_match(char *acl,
-		char *principal)
+acl_exact_match(const char *acl,
+		const char *principal)
 {
     int idx;
 
@@ -331,8 +331,8 @@ acl_exact_match(char *acl,
 /* Returns nonzero if it can be determined that acl contains principal */
 /* Recognizes wildcards in acl. */
 int
-acl_check(char *acl,
-	  char *principal)
+acl_check(const char *acl,
+	  const char *principal)
 {
     char buf[MAX_PRINCIPAL_SIZE];
     char canon[MAX_PRINCIPAL_SIZE];

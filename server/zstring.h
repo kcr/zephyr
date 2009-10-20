@@ -22,7 +22,7 @@ typedef struct _String
   struct _String *next, *prev;		/* for linking in hash table */
 } String;
 
-String *make_string(char *s, int downcase);
+String *make_string(const char *s, int downcase);
 void free_string(String *z);
 String *find_string(char *s, int downcase);
 String *dup_string(String *z);

@@ -52,7 +52,7 @@ main(int argc,
     char hostname[NS_MAXDNAME];
     char msgbuff[BUFSIZ], message[Z_MAXPKTLEN], *ptr;
     char scratch[BUFSIZ];
-    char *msg[N_FIELD_CNT];
+    const char *msg[N_FIELD_CNT];
 #ifdef HAVE_KRB4
     char tkt_filename[MAXPATHLEN];
     char rlm[REALM_SZ];

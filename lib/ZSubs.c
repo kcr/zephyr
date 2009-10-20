@@ -20,7 +20,7 @@ static const char rcsid_ZSubscriptions_c[] = "$Id$";
 static Code_t Z_Subscriptions(register ZSubscription_t *sublist,
 			      int nitems, unsigned int port,
 			      const char *opcode, int authit);
-static Code_t subscr_sendoff(ZNotice_t *notice, char **lyst, int num,
+static Code_t subscr_sendoff(ZNotice_t *notice, const char **lyst, int num,
 			     int authit);
 
 #ifdef CMU_ZCTL_PUNT
@@ -82,8 +82,8 @@ Z_Subscriptions(register ZSubscription_t *sublist,
     int retval;
     ZNotice_t notice;
     char header[Z_MAXHEADERLEN];
-    char **list;
-    char *recip;
+    const char **list;
+    const char *recip;
     int hdrlen;
     int size_avail = Z_MAXPKTLEN-Z_FRAGFUDGE; /* space avail for data,
 						 adjusted below */
@@ -92,7 +92,7 @@ Z_Subscriptions(register ZSubscription_t *sublist,
     /* nitems = 0 means cancel all subscriptions; still need to allocate a */
     /* array for one item so we can cancel, however. */
   
-    list = (char **)malloc((unsigned)((nitems==0)?1:nitems)*3*sizeof(char *));
+    list = (const char **)malloc((unsigned)((nitems==0)?1:nitems)*3*sizeof(char *));
     if (!list)
         return (ENOMEM);
 
@@ -177,7 +177,7 @@ Z_Subscriptions(register ZSubscription_t *sublist,
 
 static Code_t
 subscr_sendoff(ZNotice_t *notice,
-	       char **lyst,
+	       const char **lyst,
 	       int num,
 	       int authit)
 {

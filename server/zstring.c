@@ -62,31 +62,27 @@ static char *zdowncase(const char* s)
 }
 
 String *
-make_string(char *s,
+make_string(const char *s,
 	    int downcase)
 {
     char *new_s;
     String *new_z,*hp;
     int i;
 
-    if (downcase) {
+    if (downcase)
 	new_s = zdowncase(s);
-    } else {
-	new_s = s;
-    }
+    else
+	new_s = strsave(s);
 
     new_z = find_string(new_s,0);
     if (new_z != NULL) {
-	if (downcase)
-	    free(new_s);
+	free(new_s);
 	new_z->ref_count++;
 	return(new_z);
     }
 
     /* Initialize new String */
 
-    if (!downcase)
-	new_s = strsave(s);
     new_z = (String *) malloc(sizeof(String));
     new_z->string = new_s;
     new_z->ref_count = 1;

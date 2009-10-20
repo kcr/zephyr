@@ -19,7 +19,7 @@ static const char rcsid_ZFormatNoticeList_c[] =
 
 Code_t
 ZFormatNoticeList(ZNotice_t *notice,
-		  register char **list,
+		  register const char **list,
 		  int nitems,
 		  char **buffer,
 		  int *ret_len, 

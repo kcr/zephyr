@@ -29,12 +29,13 @@ static const char rcsid_zwrite_c[] = "$Id$";
 #define MAXRECIPS 100
 
 int nrecips, msgarg, verbose, quiet, nodot, cc;
-char *whoami, *inst, *class, *opcode, *realm, *recips[MAXRECIPS];
+const char *whoami, *inst, *class, *opcode, *realm;
+char *recips[MAXRECIPS];
 Z_AuthProc auth;
 void un_tabify(char **, int *);
 
 char *fix_filsrv_inst(char *);
-void usage(char *);
+void usage(const char *);
 void send_off(ZNotice_t *, int);
 
 int
@@ -455,7 +456,7 @@ send_off(ZNotice_t *notice, int real)
 } 
 
 void
-usage(char *s)
+usage(const char *s)
 {
     fprintf(stderr,
 	    "Usage: %s [-a] [-o] [-d] [-v] [-q] [-n] [-t] [-u] [-l]\n\

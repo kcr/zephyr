@@ -51,13 +51,13 @@ char copyright[] =
 char origlogin[20];
 char tempfile[40];
 char *whenleave;
-char *reminder_message = NULL;
+const char *reminder_message = NULL;
 char buff[100];
 int use_zephyr=1, oldpid;
 
 void usage(void);
 void doalarm(long);
-void bother(long, char *);
+void bother(long, const char *);
 void delay(long);
 int gethm(char *, int *, int*);
 
@@ -212,7 +212,7 @@ void
 doalarm(long nmins)
 {
 	time_t daytime;
-	char *msg1, *msg2, *msg3, *msg4;
+	const char *msg1, *msg2, *msg3, *msg4;
 	register int i;
 	long slp1, slp2, slp3, slp4;
 	long seconds, gseconds;
@@ -312,7 +312,7 @@ doalarm(long nmins)
 
 void
 bother(long slp,
-       char *msg)
+       const char *msg)
 {
       ZNotice_t notice;
       ZNotice_t retnotice;

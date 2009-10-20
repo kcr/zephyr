@@ -21,11 +21,11 @@ static const char rcsid_ZVariables_c[] = "$Id$";
 #include <pwd.h>
 
 static int get_localvarfile(char *bfr);
-static char *get_varval(char *fn, char *val);
-static int varline(char *bfr, char *var);
+static char *get_varval(const char *fn, const char *val);
+static int varline(char *bfr, const char *var);
 
 char *
-ZGetVariable(char *var)
+ZGetVariable(const char *var)
 {
     char varfile[128], *ret;
 
@@ -40,7 +40,7 @@ ZGetVariable(char *var)
 }
 
 Code_t
-ZSetVariable(char *var, char *value)
+ZSetVariable(const char *var, const char *value)
 {
     int written;
     FILE *fpin, *fpout;
@@ -79,7 +79,7 @@ ZSetVariable(char *var, char *value)
 }	
 
 Code_t
-ZUnsetVariable(char *var)
+ZUnsetVariable(const char *var)
 {
     FILE *fpin, *fpout;
     char varfile[128], varfilebackup[128], varbfr[512];
@@ -136,7 +136,7 @@ get_localvarfile(char *bfr)
 } 
 	
 static char *
-get_varval(char *fn, char *var)
+get_varval(const char *fn, const char *var)
 {
     FILE *fp;
     static char varbfr[512];
@@ -161,7 +161,7 @@ get_varval(char *fn, char *var)
 /* If the variable in the line bfr[] is the same as var, return index to
    the variable value, else return 0. */
 static int
-varline(char *bfr, char *var)
+varline(char *bfr, const char *var)
 {
     register char *cp;
 	

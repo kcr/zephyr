@@ -198,7 +198,7 @@ enum _Sent_type {
 /* statistics gathering */
 struct _Statistic {
     int			val;
-    char		*str;
+    const char		*str;
 };
 
 /* Function declarations */
@@ -241,9 +241,9 @@ void bdump_get(ZNotice_t *notice, int auth, struct sockaddr_in *who,
 void bdump_send(void);
 void bdump_offer(struct sockaddr_in *who);
 Code_t bdump_send_list_tcp(ZNotice_Kind_t kind, struct sockaddr_in *addr,
-				char *class_name, char *inst, char *opcode,
-				char *sender, char *recip, char **lyst,
-				int num);
+			   const char *class_name, const char *inst, const char *opcode,
+			   const char *sender, const char *recip, char **lyst,
+			   int num);
 int get_tgt(void);
 
 /* found in class.c */
@@ -354,8 +354,8 @@ void ulogin_relay_locate(ZNotice_t *, struct sockaddr_in *);
 void ulogin_realm_locate(ZNotice_t *, struct sockaddr_in *, ZRealm *);
 
 /* found in realm.c */
-int realm_sender_in_realm(const char *realm, char *sender);
-int realm_bound_for_realm(const char *realm, char *recip);
+int realm_sender_in_realm(const char *realm, const char *sender);
+int realm_bound_for_realm(const char *realm, const char *recip);
 ZRealm *realm_which_realm(struct sockaddr_in *who);
 ZRealm *realm_get_realm_by_name(char *name);
 ZRealm *realm_get_realm_by_pid(int);
@@ -378,7 +378,7 @@ void realm_dump_realms(FILE *);
 char *get_version(void);
 
 /* found in access.c */
-int access_check(char *, Acl *, Access);
+int access_check(const char *, Acl *, Access);
 
 /* global identifiers */
 

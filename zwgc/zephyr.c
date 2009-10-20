@@ -139,7 +139,7 @@ handle_zephyr_input(void (*notice_handler)(ZNotice_t *))
 void zephyr_init(void (*notice_handler)(ZNotice_t *))
 {
     char *temp;
-    char *exposure;
+    const char *exposure;
     char *tty = NULL;
     FILE *port_file;
 
@@ -203,7 +203,7 @@ void zephyr_init(void (*notice_handler)(ZNotice_t *))
     /*
      * Set $realm to our realm and $user to our zephyr username:
      */
-    var_set_variable("realm", (char *)ZGetRealm()); /* XXX should propagate the
+    var_set_variable("realm", ZGetRealm()); /* XXX should propagate the
 						     * const */
     var_set_variable("user", ZGetSender());
 

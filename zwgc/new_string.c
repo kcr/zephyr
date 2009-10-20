@@ -44,7 +44,7 @@ static const char rcsid_new_string_c[] = "$Id$";
 #include "new_memory.h"
 
 #define string_Length(s) strlen(s)
-typedef char *string;
+typedef const char *string;
 
 /*
  *    string string_CreateFromData(char *data, int length):
@@ -58,7 +58,7 @@ typedef char *string;
 
 string string__CreateFromData(char *data, int length)
 {
-    string result;
+    char *result;
 
     assert(length>=0);
 

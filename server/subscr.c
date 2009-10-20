@@ -90,7 +90,7 @@ static void free_subscription(Destlist *sub);
 static char **subscr_marshal_subs(ZNotice_t *notice, int auth,
 				  struct sockaddr_in *who,
 				  int *found);
-static Destlist *subscr_copy_def_subs(char *person);
+static Destlist *subscr_copy_def_subs(const char *person);
 static Code_t subscr_realm_sendit(Client *who, Destlist *subs,
 				  ZNotice_t *notice, ZRealm *realm);
 static void subscr_unsub_sendit(Client *who, Destlist *subs, 
@@ -228,7 +228,7 @@ subscr_reset(void)
 }
 
 static Destlist *
-subscr_copy_def_subs(char *person)
+subscr_copy_def_subs(const char *person)
 {
     int retval, fd;
     struct stat statbuf;

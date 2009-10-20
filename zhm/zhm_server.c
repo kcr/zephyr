@@ -42,7 +42,7 @@ void new_server(char *);
 /* Argument is whether we are actually booting, or just attaching
  * after a server switch */
 void
-send_boot_notice(char *op)
+send_boot_notice(const char *op)
 {
      ZNotice_t notice;
      Code_t ret;
@@ -73,7 +73,7 @@ send_boot_notice(char *op)
 
 /* Argument is whether we are detaching or really going down */
 void
-send_flush_notice(char *op)
+send_flush_notice(const char *op)
 {
      ZNotice_t notice;
      Code_t ret;

@@ -242,7 +242,7 @@ realm_send_realms(void)
 }
 
 int
-realm_bound_for_realm(const char *realm, char *recip)
+realm_bound_for_realm(const char *realm, const char *recip)
 {
     char *rlm = NULL;
     int remote = strcmp(ZGetRealm(), realm);
@@ -260,7 +260,7 @@ realm_bound_for_realm(const char *realm, char *recip)
 }
 
 int
-realm_sender_in_realm(const char *realm, char *sender)
+realm_sender_in_realm(const char *realm, const char *sender)
 {
     char *rlm = NULL;
     int remote = strcmp(ZGetRealm(), realm);
@@ -699,7 +699,7 @@ realm_ulocate_dispatch(ZNotice_t *notice,
 		       Server *server,
 		       ZRealm *realm)
 {
-    register char *opcode = notice->z_opcode;
+    register const char *opcode = notice->z_opcode;
 
     if (!auth) {
 	syslog(LOG_WARNING, "unauth locate msg from %s (%s/%s/%s)",
@@ -733,7 +733,7 @@ realm_control_dispatch(ZNotice_t *notice,
 		       Server *server,
 		       ZRealm *realm)
 {
-    register char *opcode = notice->z_opcode;
+    register const char *opcode = notice->z_opcode;
     Code_t status;
 
     if (!auth) {

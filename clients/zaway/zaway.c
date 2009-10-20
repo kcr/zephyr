@@ -47,7 +47,8 @@ main(int argc,
 	register int retval;
 	struct passwd *pw;
 	register char *ptr;
-	char awayfile[BUFSIZ],*msg[2],*envptr;
+	char awayfile[BUFSIZ], *envptr;
+	const char *msg[2];
 	int optchar, watch_location;
 	char *cmdline_msg;
 	int nlocs;

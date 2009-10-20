@@ -57,12 +57,12 @@ static void access_setup(int first);
  */
 
 int
-access_check(char *sender,
+access_check(const char *sender,
 	     Acl *acl,
 	     Access accesstype)
 {
     char buf[1024];	/* holds the real acl name */
-    char *prefix;
+    const char *prefix;
     int	flag;
     int retval;
 
@@ -118,7 +118,7 @@ check_acl_type(Acl *acl,
 	       int typeflag)
 {
     char 	buf[1024]; /* holds the real acl name */
-    char	*prefix;
+    const char	*prefix;
 
     switch (accesstype) {
       case TRANSMIT:

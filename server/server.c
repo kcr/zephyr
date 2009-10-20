@@ -75,8 +75,8 @@ srv_nacktab_hashval(int which, ZUnique_Id_t uid) {
 static void server_flush(Server *);
 static void hello_respond(struct sockaddr_in *, int, int);
 static void srv_responded(struct sockaddr_in *);
-static void send_msg(struct sockaddr_in *, char *, int);
-static void send_msg_list(struct sockaddr_in *, char *, char **, int,
+static void send_msg(struct sockaddr_in *, const char *, int);
+static void send_msg_list(struct sockaddr_in *, const char *, char **, int,
 			       int);
 static void srv_nack_cancel(ZNotice_t *, struct sockaddr_in *);
 static void srv_nack_release(Server *);
@@ -401,14 +401,14 @@ server_reset(void)
 }
 
 /* note: these must match the order given in zserver.h */
-static char *
+static const char *
 srv_states[] = {
     "SERV_UP",
     "SERV_TARDY",
     "SERV_DEAD",
     "SERV_STARTING"
 };
-static char *
+static const char *
 rlm_states[] = {
     "REALM_UP",
     "REALM_TARDY",
@@ -672,7 +672,7 @@ admin_dispatch(ZNotice_t *notice,
 	       struct sockaddr_in *who,
 	       Server *server)
 {
-    char *opcode = notice->z_opcode;
+    const char *opcode = notice->z_opcode;
     Code_t status = ZERR_NONE;
 
     if (strcmp(opcode, ADMIN_HELLO) == 0) {
@@ -1110,7 +1110,7 @@ server_shutdown(void)
 
 static void
 send_msg(struct sockaddr_in *who,
-	 char *opcode,
+	 const char *opcode,
 	 int auth)
 {
     ZNotice_t notice;
@@ -1167,7 +1167,7 @@ send_msg(struct sockaddr_in *who,
 
 static void
 send_msg_list(struct sockaddr_in *who,
-	      char *opcode,
+	      const char *opcode,
 	      char **lyst,
 	      int num,
 	      int auth)

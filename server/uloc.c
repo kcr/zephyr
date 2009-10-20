@@ -86,9 +86,9 @@ typedef struct _Location {
 static void ulogin_locate(ZNotice_t *notice, struct sockaddr_in *who,
 			  int auth);
 static void ulogin_flush_user(ZNotice_t *notice);
-static Location *ulogin_find(char *user, struct in_addr *host,
+static Location *ulogin_find(const char *user, struct in_addr *host,
 			     unsigned int port);
-static Location *ulogin_find_user(char *user);
+static Location *ulogin_find_user(const char *user);
 static int ulogin_setup(ZNotice_t *notice, Location *locs,
 			Exposure_type exposure, struct sockaddr_in *who);
 static int ulogin_add_user(ZNotice_t *notice, Exposure_type exposure,
@@ -411,7 +411,7 @@ uloc_send_locations(void)
     Location *loc;
     int i;
     char *lyst[NUM_FIELDS];
-    char *exposure_level;
+    const char *exposure_level;
     Code_t retval;
 
     for (i = 0, loc = locations; i < num_locs; i++, loc++) {
@@ -593,7 +593,7 @@ ulogin_parse(ZNotice_t *notice,
 
 
 static Location *
-ulogin_find(char *user,
+ulogin_find(const char *user,
 	    struct in_addr *host,
 	    unsigned int port)
 {
@@ -626,7 +626,7 @@ ulogin_find(char *user,
  */
 
 static Location *
-ulogin_find_user(char *user)
+ulogin_find_user(const char *user)
 {
     int i, rlo, rhi;
     int compar;

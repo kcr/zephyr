@@ -25,9 +25,10 @@ ZFlushSubscriptions(void)
 		return (ZERR_NONE);
 
 	for (i=0;i<__subscriptions_num;i++) {
-		free(__subscriptions_list[i].zsub_class);
-		free(__subscriptions_list[i].zsub_classinst);
-		free(__subscriptions_list[i].zsub_recipient);
+	    /* XXX we know we can free these because Z_RetSubs allocates them */
+	    free((char *)__subscriptions_list[i].zsub_class);
+	    free((char *)__subscriptions_list[i].zsub_classinst);
+	    free((char *)__subscriptions_list[i].zsub_recipient);
 	}
 	
 	free((char *)__subscriptions_list);
