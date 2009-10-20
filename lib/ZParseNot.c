@@ -22,7 +22,7 @@ static const char rcsid_ZParseNotice_c[] =
 #include <arpa/inet.h>
 
 inline static int
-_bad_packet(int line, char *where, ZNotice_t *notice, char *what) {
+_bad_packet(int line, char *where, ZNotice_t *notice, const char *what) {
     if (__Zephyr_server) {
 	syslog(LOG_ERR, "ZParseNotice: bad packet (%s) from %s.%d at line %d",
 	       what, inet_ntoa(notice->z_uid.zuid_addr), notice->z_port, line);

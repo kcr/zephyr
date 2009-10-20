@@ -23,6 +23,8 @@ static const char rcsid_ZLocations_c[] =
 static char host[NS_MAXDNAME], mytty[MAXPATHLEN];
 static int location_info_set = 0;
 
+Code_t Z_SendLocation(const char *class, const char *opcode, Z_AuthProc, const char *format);
+
 Code_t
 ZInitLocationInfo(char *hostname,
 		  char *tty)
@@ -76,8 +78,8 @@ ZFlushMyLocations(void)
     return (Z_SendLocation(LOGIN_CLASS, LOGIN_USER_FLUSH, ZAUTH, ""));
 }
 
-char *
-ZParseExposureLevel(char *text)
+const char *
+ZParseExposureLevel(const char *text)
 {
     if (!strcasecmp(text, EXPOSE_NONE))
 	return (EXPOSE_NONE);
@@ -104,10 +106,10 @@ wait_for_srvack(ZNotice_t *notice, void *uid)
 }
 
 Code_t
-Z_SendLocation(char *class,
-	       char *opcode,
+Z_SendLocation(const char *class,
+	       const char *opcode,
 	       Z_AuthProc auth,
-	       char *format)
+	       const char *format)
 {
     int retval;
     time_t ourtime;

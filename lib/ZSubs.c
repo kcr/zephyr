@@ -19,7 +19,7 @@ static const char rcsid_ZSubscriptions_c[] = "$Id$";
 
 static Code_t Z_Subscriptions(register ZSubscription_t *sublist,
 			      int nitems, unsigned int port,
-			      char *opcode, int authit);
+			      const char *opcode, int authit);
 static Code_t subscr_sendoff(ZNotice_t *notice, char **lyst, int num,
 			     int authit);
 
@@ -75,7 +75,7 @@ static Code_t
 Z_Subscriptions(register ZSubscription_t *sublist,
 		int nitems,
 		unsigned int port,
-		char *opcode,
+		const char *opcode,
 		int authit)
 {
     register int i, j;

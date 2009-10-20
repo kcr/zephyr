@@ -46,6 +46,7 @@ ZMakeAuthentication(register ZNotice_t *notice,
     ZChecksum_t checksum;
     CREDENTIALS cred;
     C_Block *session;
+    char *ascii_authent;
 
     result = krb_mk_req(&authent, SERVER_SERVICE,
 			SERVER_INSTANCE, __Zephyr_realm, 0);
@@ -60,20 +61,22 @@ ZMakeAuthentication(register ZNotice_t *notice,
 
     notice->z_auth = 1;
     notice->z_authent_len = authent.length;
-    notice->z_ascii_authent = (char *)malloc((unsigned)authent.length*3);
+    ascii_authent = (char *)malloc((unsigned)authent.length*3);
     /* zero length authent is an error, so malloc(0) is not a problem */
-    if (!notice->z_ascii_authent)
+    if (!ascii_authent)
 	return (ENOMEM);
-    if ((result = ZMakeAscii(notice->z_ascii_authent,
+    if ((result = ZMakeAscii(ascii_authent,
 			     authent.length*3,
 			     authent.dat,
 			     authent.length)) != ZERR_NONE) {
-	free(notice->z_ascii_authent);
+	free(ascii_authent);
 	return (result);
     }
+    notice->z_ascii_authent = ascii_authent;
     result = Z_FormatRawHeader(notice, buffer, buffer_len, len, &cstart,
 			       &cend);
-    free(notice->z_ascii_authent);
+    notice->z_ascii_authent = NULL;
+    free(ascii_authent);
     notice->z_authent_len = 0;
     if (result)
 	return(result);
@@ -124,6 +127,7 @@ ZMakeZcodeRealmAuthentication(register ZNotice_t *notice,
     krb5_data *authent;
     char *cksum_start, *cstart, *cend;
     int cksum_len, zcode_len, phdr_adj;
+    char *ascii_authent;
 
     result = ZGetCredsRealm(&creds, realm);
     if (result)
@@ -157,27 +161,29 @@ ZMakeZcodeRealmAuthentication(register ZNotice_t *notice,
     notice->z_auth = 1;
     notice->z_authent_len = authent->length;
     zcode_len = authent->length * 2 + 2; /* 2x growth plus Z and null */
-    notice->z_ascii_authent = (char *)malloc(zcode_len);
-    if (!notice->z_ascii_authent) {
+    ascii_authent = (char *)malloc(zcode_len);
+    if (!ascii_authent) {
 	krb5_free_data(Z_krb5_ctx, authent);
 	krb5_free_creds(Z_krb5_ctx, creds);
 	return (ENOMEM);
     }
-    /* HOLDING: creds, authent, notice->z_ascii_authent */
-    result = ZMakeZcode(notice->z_ascii_authent, zcode_len,
+    /* HOLDING: creds, authent, ascii_authent */
+    result = ZMakeZcode(ascii_authent, zcode_len,
 			(unsigned char *)authent->data, authent->length);
     krb5_free_data(Z_krb5_ctx, authent);
     if (result) {
-	free(notice->z_ascii_authent);
+	free(ascii_authent);
 	krb5_free_creds(Z_krb5_ctx, creds);
 	return (result);
     }
-    /* HOLDING: creds, notice->z_ascii_authent */
+    /* HOLDING: creds, ascii_authent */
 
     /* format the notice header, with a zero checksum */
+    notice->z_ascii_authent = ascii_authent;
     result = Z_NewFormatRawHeader(notice, buffer, buffer_len, phdr_len,
 				  &cksum_start, &cksum_len, &cstart, &cend);
-    free(notice->z_ascii_authent);
+    notice->z_ascii_authent = NULL;
+    free(ascii_authent);
     notice->z_authent_len = 0;
     if (result) {
 	krb5_free_creds(Z_krb5_ctx, creds);

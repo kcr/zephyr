@@ -17,7 +17,7 @@
 static const char rcsid_ZMakeAscii_c[] = "$Id$";
 #endif
 
-static char *itox_chars = "0123456789ABCDEF";
+static const char *itox_chars = "0123456789ABCDEF";
 
 Code_t
 ZMakeAscii(register char *ptr,

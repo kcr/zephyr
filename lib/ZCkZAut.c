@@ -42,8 +42,8 @@ Code_t ZCheckZcodeAuthentication(ZNotice_t *notice,
     krb5_cksumtype cksumtype;
     krb5_data cksumbuf;
     int valid;
-    char *cksum0_base, *cksum1_base = NULL, *cksum2_base;
-    char *x;
+    const char *cksum0_base, *cksum1_base = NULL, *cksum2_base;
+    const char *x;
     unsigned char *asn1_data, *key_data;
     int asn1_len, key_len, cksum0_len = 0, cksum1_len = 0, cksum2_len = 0;
 #endif

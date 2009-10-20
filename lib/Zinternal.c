@@ -107,7 +107,7 @@ void *__Z_debug_print_closure;
 
 #define min(a,b) ((a)<(b)?(a):(b))
 
-static int Z_AddField(char **ptr, char *field, char *end);
+static int Z_AddField(char **ptr, const char *field, char *end);
 static int find_or_insert_uid(ZUnique_Id_t *uid, ZNotice_Kind_t kind);
 static Code_t Z_ZcodeFormatRawHeader(ZNotice_t *, char *, int, int *, char **,
 				     int *, char **, char **, int cksumtype);
@@ -1117,7 +1117,7 @@ Z_FormatRawHeader(ZNotice_t *notice,
 
 static int
 Z_AddField(char **ptr,
-	   char *field,
+	   const char *field,
 	   char *end)
 {
     register int len;
