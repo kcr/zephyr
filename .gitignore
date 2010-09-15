@@ -32,3 +32,7 @@ TAGS
 /krb5/*
 /no-krb/*
 /debian/libzephyr4-krb5.files
+/config.log
+/config.status
+/h/config.h
+/libtool
