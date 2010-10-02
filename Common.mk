@@ -31,6 +31,21 @@ clean_common:
 .PHONY: install
 install: install_common
 install_common: $(_BIN) $(_LSBIN) $(_LIBS) $(_MAN1) $(_MAN8)
+	${ENSUREDIR} ${DESTDIR}${prefix} 755
+	${ENSUREDIR} ${DESTDIR}${exec_prefix} 755
+	${ENSUREDIR} ${DESTDIR}${bindir} 755
+	${ENSUREDIR} ${DESTDIR}${libdir} 755
+	${ENSUREDIR} ${DESTDIR}${datadir} 755
+	${ENSUREDIR} ${DESTDIR}${datadir}/zephyr 755
+	${ENSUREDIR} ${DESTDIR}${sysconfdir} 755
+	${ENSUREDIR} ${DESTDIR}${sysconfdir}/zephyr/acl 755
+	${ENSUREDIR} ${DESTDIR}${sbindir} 755
+	${ENSUREDIR} ${DESTDIR}${includedir} 755
+	${ENSUREDIR} ${DESTDIR}${includedir}/zephyr 755
+	${ENSUREDIR} ${DESTDIR}${mandir} 755
+	${ENSUREDIR} ${DESTDIR}${mandir}/man1 755
+	${ENSUREDIR} ${DESTDIR}${mandir}/man3 755
+	${ENSUREDIR} ${DESTDIR}${mandir}/man8 755
 	$(LIBTOOL) --mode=install $(INSTALL) -m 755 $(_BIN) $(DESTDIR)$(bindir)
 	$(LIBTOOL) --mode=install $(INSTALL) -m 755 $(_LSBIN) $(DESTDIR)$(lsbindir)
 	$(LIBTOOL) --mode=install $(INSTALL) -m 755 $(_SBIN) $(DESTDIR)$(sbindir)
@@ -39,3 +54,4 @@ install_common: $(_BIN) $(_LSBIN) $(_LIBS) $(_MAN1) $(_MAN8)
 	$(INSTALL) -m 644 $(_MAN8) $(DESTDIR)$(mandir)/man8
 	$(INSTALL) -m 644 $(_DATA) $(DESTDIR)$(datadir)/zephyr
 	$(INSTALL) -m 644 $(_SYSCONF) $(DESTDIR)$(sysconfdir)/zephyr
+	${INSTALL} -m 644 $(_INCLUDE) ${DESTDIR}${includedir}/zephyr

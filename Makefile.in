@@ -68,26 +68,6 @@ include zwgc/Rules.mk
 dir := clients
 include clients/Rules.mk
 
-install:
-	${ENSUREDIR} ${DESTDIR}${prefix} 755
-	${ENSUREDIR} ${DESTDIR}${exec_prefix} 755
-	${ENSUREDIR} ${DESTDIR}${bindir} 755
-	${ENSUREDIR} ${DESTDIR}${libdir} 755
-	${ENSUREDIR} ${DESTDIR}${datadir} 755
-	${ENSUREDIR} ${DESTDIR}${datadir}/zephyr 755
-	${ENSUREDIR} ${DESTDIR}${sysconfdir} 755
-	${ENSUREDIR} ${DESTDIR}${sysconfdir}/zephyr/acl 755
-	${ENSUREDIR} ${DESTDIR}${sbindir} 755
-	${ENSUREDIR} ${DESTDIR}${includedir} 755
-	${ENSUREDIR} ${DESTDIR}${includedir}/zephyr 755
-	${ENSUREDIR} ${DESTDIR}${mandir} 755
-	${ENSUREDIR} ${DESTDIR}${mandir}/man1 755
-	${ENSUREDIR} ${DESTDIR}${mandir}/man3 755
-	${ENSUREDIR} ${DESTDIR}${mandir}/man8 755
-	${INSTALL} -m 644 ${srcdir}/h/zephyr/mit-copyright.h \
-		${DESTDIR}${includedir}/zephyr
-	${INSTALL} -m 644 ${srcdir}/h/zephyr/zephyr.h \
-		${DESTDIR}${includedir}/zephyr
-	${INSTALL} -m 644 h/zephyr/zephyr_err.h ${DESTDIR}${includedir}/zephyr
+_INCLUDE := $(_INCLUDE) ${srcdir}/h/zephyr/mit-copyright.h ${srcdir}/h/zephyr/zephyr.h
 
 include Common.mk

@@ -25,6 +25,7 @@ _LIBCLEAN := $(LIB_OBJS)
 _LIBS := $(_LIBS) $(d)/libzephyr.la
 _MAN1 := $(_MAN1) $(srcdir)/$(d)/zephyr.1
 _CLEAN := $(d)/zephyr_err.[ch] ${BUILDTOP}/h/zephyr/zephyr_err.h
+_INCLUDE := $(d)/zephyr_err.h
 
 $(d)/libzephyr.la: ${LIB_OBJS}
 	${LIBTOOL} --mode=link ${CC} -rpath ${libdir} -version-info 4:0:0 \
