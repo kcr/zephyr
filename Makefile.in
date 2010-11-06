@@ -22,7 +22,6 @@ VPATH:=@srcdir@
 LIBTOOL:=./libtool
 CC:=@CC@
 INSTALL:=@INSTALL@
-RANLIB:=@RANLIB@
 YACC=@YACC@
 
 BUILDTOP := .

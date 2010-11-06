@@ -1,5 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(server/server.c)
+AC_INIT([zephyr],[__DEV__])
+AC_CONFIG_MACRO_DIR([m4])
 
 test -d h || mkdir h
 test -d h/zephyr || mkdir h/zephyr
@@ -18,7 +19,6 @@ AC_PROG_CC
 AC_PROG_YACC
 AC_PROG_LEX
 AC_PROG_INSTALL
-AC_PROG_RANLIB
 AC_PROG_LIBTOOL
 
 AC_MSG_CHECKING(location of temporary directory)
@@ -168,9 +168,52 @@ AC_SUBST(KRB5_LIBS)
 
 AC_SUBST(LIBZEPHYR_LIBS)
 
-ATHENA_HESIOD
-ATHENA_REGEXP
-ATHENA_UTIL_COM_ERR
+AC_ARG_WITH(hesiod,
+	[  --with-hesiod=PREFIX    Use Hesiod],
+	[hesiod="$withval"], [hesiod=no])
+if test "$hesiod" != no; then
+	AC_CHECK_FUNC(res_send, :, AC_CHECK_LIB(resolv, res_send))
+        if test "$hesiod" != yes; then
+        	CPPFLAGS="$CPPFLAGS -I$hesiod/include"
+        	LDFLAGS="$LDFLAGS -L$hesiod/lib"
+        fi
+        AC_CHECK_LIB(hesiod, hes_resolve, :,
+	     [AC_MSG_ERROR(Hesiod library not found)],$LIBS)
+	HESIOD_LIBS="-lhesiod"
+	AC_DEFINE(HAVE_HESIOD)
+fi
+
+AC_SUBST(HESIOD_LIBS)
+
+AC_ARG_WITH(regex,
+	[  --with-regex=PREFIX     Use installed regex library],
+	[regex="$withval"], [regex=no])
+if test "$regex" != no; then
+	if test "$regex" != yes; then
+		CPPFLAGS="$CPPFLAGS -I$regex/include"
+		LDFLAGS="$LDFLAGS -L$regex/lib"
+	fi
+	AC_CHECK_LIB(regex, regcomp, REGEX_LIBS=-lregex,
+		     [AC_MSG_ERROR(regex library not found)])
+else
+	AC_CHECK_FUNC(regcomp, :,
+		      [AC_MSG_ERROR(can't find POSIX regexp support)])
+fi
+AC_SUBST(REGEX_LIBS)
+
+AC_ARG_WITH(com_err,
+	[  --with-com_err=PREFIX   Specify location of com_err],
+	[com_err="$withval"], [com_err=yes])
+if test "$com_err" != no; then
+	if test "$com_err" != yes; then
+		CPPFLAGS="$CPPFLAGS -I$com_err/include"
+		LDFLAGS="$LDFLAGS -L$com_err/lib"
+	fi
+	AC_CHECK_LIB(com_err, com_err, :,
+		     [AC_MSG_ERROR(com_err library not found)])
+else
+	AC_MSG_ERROR(This package requires com_err.)
+fi
 
 AC_ARG_WITH(ss,
 	[  --with-ss=PREFIX        Specify location of ss (requires com_err)],
