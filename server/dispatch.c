@@ -553,16 +553,24 @@ xmit(ZNotice_t *notice,
 
     if (auth && client) {
 	/* we are distributing authentic and we have a pointer to auth info */
-#if defined(HAVE_KRB5)
-	retval = ZFormatAuthenticNoticeV5(notice, noticepack, packlen,
-					  &packlen, client->session_keyblock);
-#elif defined(HAVE_KRB4)
-	retval = ZFormatAuthenticNotice(notice, noticepack, packlen,
-					&packlen, client->session_key);
-#else /* !HAVE_KRB4 */
-	notice->z_auth = 1;
-	retval = ZFormatSmallRawNotice(notice, noticepack, &packlen);
-#endif /* HAVE_KRB4 */
+#ifdef HAVE_KRB5
+	if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+	    __Zephyr_authtype == ZAUTHTYPE_KRB45)
+	    retval = ZFormatAuthenticNoticeV5(notice, noticepack, packlen,
+					      &packlen, client->session_keyblock);
+	else
+#endif
+#ifdef HAVE_KRB4
+	if (__Zephyr_authtype == ZAUTHTYPE_KRB4)
+	    retval = ZFormatAuthenticNotice(notice, noticepack, packlen,
+					    &packlen, client->session_key);
+	else
+#endif /* !HAVE_KRB4 */
+        {
+	    notice->z_auth = 1;
+	    retval = ZFormatSmallRawNotice(notice, noticepack, &packlen);
+	}
+
 	if (retval != ZERR_NONE)
 	    syslog(LOG_ERR, "xmit auth/raw format: %s", error_message(retval));
     } else {
@@ -1047,26 +1055,33 @@ control_dispatch(ZNotice_t *notice,
 	    return ZERR_NONE;
 	}
 #ifdef HAVE_KRB5
-        if (client->session_keyblock) {
-             krb5_free_keyblock_contents(Z_krb5_ctx, client->session_keyblock);
-             retval = krb5_copy_keyblock_contents(Z_krb5_ctx, ZGetSession(),
-                                         client->session_keyblock);
-        } else {
-             retval = krb5_copy_keyblock(Z_krb5_ctx, ZGetSession(),
-                                &client->session_keyblock);
-        }
-        if (retval) {
-             syslog(LOG_WARNING, "keyblock copy failed in subscr: %s",
-                    error_message(retval));
-             if (server == me_server)
-                  nack(notice, who);
-             return ZERR_NONE;
-        }
-#else
-#ifdef HAVE_KRB4
-	/* in case it's changed */
-	memcpy(client->session_key, ZGetSession(), sizeof(C_Block));
+	if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+	    __Zephyr_authtype == ZAUTHTYPE_KRB45) {
+	    if (client->session_keyblock) {
+		krb5_free_keyblock_contents(Z_krb5_ctx, client->session_keyblock);
+		retval = krb5_copy_keyblock_contents(Z_krb5_ctx, ZGetSession(),
+						     client->session_keyblock);
+	    } else {
+		retval = krb5_copy_keyblock(Z_krb5_ctx, ZGetSession(),
+					    &client->session_keyblock);
+	    }
+	    if (retval) {
+		syslog(LOG_WARNING, "keyblock copy failed in subscr: %s",
+		       error_message(retval));
+		if (server == me_server)
+		    nack(notice, who);
+		return ZERR_NONE;
+	    }
+	}
 #endif
+#if defined(HAVE_KRB5) && defined(HAVE_KRB4)
+	else
+#endif
+#ifdef HAVE_KRB4
+	if (__Zephyr_authtype == ZAUTHTYPE_KRB4) {
+	    /* in case it's changed */
+	    memcpy(client->session_key, ZGetSession(), sizeof(C_Block));
+	}
 #endif
 	retval = subscr_subscribe(client, notice, server);
 	if (retval != ZERR_NONE) {

@@ -17,10 +17,6 @@ static const char rcsid_ZCheckAuthentication_c[] =
 
 #include <internal.h>
 
-#if defined(HAVE_KRB5) && !HAVE_KRB5_FREE_DATA
-#define krb5_free_data(ctx, dat) free((dat)->data)
-#endif
-
 /* Check authentication of the notice.
    If it looks authentic but fails the Kerberos check, return -1.
    If it looks authentic and passes the Kerberos check, return 1.
@@ -33,12 +29,17 @@ Code_t
 ZCheckAuthentication(ZNotice_t *notice,
 		     struct sockaddr_in *from)
 {
-#if defined(HAVE_KRB4) && !defined(HAVE_KRB5)
+#ifdef HAVE_KRB4
     int result;
     ZChecksum_t our_checksum;
     C_Block *session;
     CREDENTIALS cred;
+#endif
 
+    if (__Zephyr_authtype != ZAUTHTYPE_KRB4)
+	return ZCheckZcodeAuthentication(notice, from);
+
+#ifdef HAVE_KRB4
     /* If the value is already known, return it. */
     if (notice->z_checked_auth != ZAUTH_UNSET)
 	return (notice->z_checked_auth);
@@ -61,7 +62,5 @@ ZCheckAuthentication(ZNotice_t *notice,
 
     /* if mismatched checksum, then the packet was corrupted */
     return ((our_checksum == notice->z_checksum) ? ZAUTH_YES : ZAUTH_FAILED);
-#else
-    return ZCheckZcodeAuthentication(notice, from);
 #endif
 } 

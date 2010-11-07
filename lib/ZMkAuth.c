@@ -36,9 +36,6 @@ ZMakeAuthentication(register ZNotice_t *notice,
 		    int buffer_len,
 		    int *len)
 {
-#ifdef HAVE_KRB5
-    return ZMakeZcodeAuthentication(notice, buffer, buffer_len, len/*?XXX*/);
-#else
 #ifdef HAVE_KRB4
     int result;
     KTEXT_ST authent;
@@ -46,56 +43,64 @@ ZMakeAuthentication(register ZNotice_t *notice,
     ZChecksum_t checksum;
     CREDENTIALS cred;
     C_Block *session;
+#endif
 
-    result = krb_mk_req(&authent, SERVER_SERVICE,
-			SERVER_INSTANCE, __Zephyr_realm, 0);
-    if (result != MK_AP_OK)
-	return (result+krb_err_base);
-    result = krb_get_cred(SERVER_SERVICE, SERVER_INSTANCE,
-			  __Zephyr_realm, &cred);
-    if (result != KSUCCESS)
-	return (result+krb_err_base);
+#ifdef HAVE_KRB5
+    if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+        __Zephyr_authtype == ZAUTHTYPE_KRB45)
+        return ZMakeZcodeAuthentication(notice, buffer, buffer_len, len/*?XXX*/);
+#endif
+#ifdef HAVE_KRB4
+    if (__Zephyr_authtype == ZAUTHTYPE_KRB4) {
+        result = krb_mk_req(&authent, SERVER_SERVICE,
+                            SERVER_INSTANCE, __Zephyr_realm, 0);
+        if (result != MK_AP_OK)
+            return (result+krb_err_base);
+        result = krb_get_cred(SERVER_SERVICE, SERVER_INSTANCE,
+                              __Zephyr_realm, &cred);
+        if (result != KSUCCESS)
+            return (result+krb_err_base);
 
-    session = (C_Block *)cred.session;
+        session = (C_Block *)cred.session;
 
-    notice->z_auth = 1;
-    notice->z_authent_len = authent.length;
-    notice->z_ascii_authent = (char *)malloc((unsigned)authent.length*3);
-    /* zero length authent is an error, so malloc(0) is not a problem */
-    if (!notice->z_ascii_authent)
-	return (ENOMEM);
-    if ((result = ZMakeAscii(notice->z_ascii_authent,
-			     authent.length*3,
-			     authent.dat,
-			     authent.length)) != ZERR_NONE) {
-	free(notice->z_ascii_authent);
-	return (result);
+        notice->z_auth = 1;
+        notice->z_authent_len = authent.length;
+        notice->z_ascii_authent = (char *)malloc((unsigned)authent.length*3);
+        /* zero length authent is an error, so malloc(0) is not a problem */
+        if (!notice->z_ascii_authent)
+            return (ENOMEM);
+        if ((result = ZMakeAscii(notice->z_ascii_authent,
+                                 authent.length*3,
+                                 authent.dat,
+                                 authent.length)) != ZERR_NONE) {
+            free(notice->z_ascii_authent);
+            return (result);
+        }
+        result = Z_FormatRawHeader(notice, buffer, buffer_len, len, &cstart,
+                                   &cend);
+        free(notice->z_ascii_authent);
+        notice->z_authent_len = 0;
+        if (result)
+            return(result);
+
+        /* Compute a checksum over the header and message. */
+        checksum = des_quad_cksum((unsigned char *)buffer, NULL, cstart - buffer, 0, session);
+        checksum ^= des_quad_cksum((unsigned char *)cend, NULL, buffer + *len - cend, 0,
+                                   session);
+        checksum ^= des_quad_cksum((unsigned char *)notice->z_message, NULL, notice->z_message_len,
+                                   0, session);
+        notice->z_checksum = checksum;
+        ZMakeAscii32(cstart, buffer + buffer_len - cstart, checksum);
+
+        return (ZERR_NONE);
     }
-    result = Z_FormatRawHeader(notice, buffer, buffer_len, len, &cstart,
-			       &cend);
-    free(notice->z_ascii_authent);
-    notice->z_authent_len = 0;
-    if (result)
-	return(result);
-
-    /* Compute a checksum over the header and message. */
-    checksum = des_quad_cksum((unsigned char *)buffer, NULL, cstart - buffer, 0, session);
-    checksum ^= des_quad_cksum((unsigned char *)cend, NULL, buffer + *len - cend, 0,
-			       session);
-    checksum ^= des_quad_cksum((unsigned char *)notice->z_message, NULL, notice->z_message_len,
-			       0, session);
-    notice->z_checksum = checksum;
-    ZMakeAscii32(cstart, buffer + buffer_len - cstart, checksum);
-
-    return (ZERR_NONE);
-#else
+#endif
+    /* ZAUTHTYPE_NONE */
     notice->z_checksum = 0;
     notice->z_auth = 1;
     notice->z_authent_len = 0;
     notice->z_ascii_authent = "";
     return (Z_FormatRawHeader(notice, buffer, buffer_len, len, NULL, NULL));
-#endif
-#endif
 }
 
 /* only used by server? */
@@ -111,10 +116,10 @@ ZMakeZcodeAuthentication(register ZNotice_t *notice,
 
 Code_t
 ZMakeZcodeRealmAuthentication(register ZNotice_t *notice,
-			       char *buffer,
-			       int buffer_len,
-			       int *phdr_len,
-			       char *realm)
+                               char *buffer,
+                               int buffer_len,
+                               int *phdr_len,
+                               char *realm)
 {
 #ifdef HAVE_KRB5
     krb5_error_code result;
@@ -124,67 +129,72 @@ ZMakeZcodeRealmAuthentication(register ZNotice_t *notice,
     krb5_data *authent;
     char *cksum_start, *cstart, *cend;
     int cksum_len, zcode_len, phdr_adj;
-
-    notice->z_ascii_authent = NULL;
-
-    result = ZGetCredsRealm(&creds, realm);
-
-    keyblock = Z_credskey(creds);
-
-    authent = (krb5_data *)malloc(sizeof(krb5_data));
-    if (authent == NULL)
-	result = ENOMEM;
-    authent->data = NULL; /* so that we can blithely krb5_fre_data_contents on
-			     the way out */
-
-    if (!result)
-	result = krb5_auth_con_init(Z_krb5_ctx, &authctx);
-
-    if (!result) {
-	result = krb5_mk_req_extended(Z_krb5_ctx, &authctx, 0 /* options */,
-				      0 /* in_data */, creds, authent);
-	krb5_auth_con_free(Z_krb5_ctx, authctx);
-    }
-    if (!result || result == KRB5KRB_AP_ERR_TKT_EXPIRED) {
-	notice->z_auth = 1;
-	if (result == 0) {
-	    notice->z_authent_len = authent->length;
-	} else {
-	    notice->z_authent_len = 0;
-	    result = 0;
-	}
-	zcode_len = notice->z_authent_len * 2 + 2; /* 2x growth plus Z and null */
-	notice->z_ascii_authent = (char *)malloc(zcode_len);
-	if (notice->z_ascii_authent == NULL)
-	    result = ENOMEM;
-    }
-    if (!result)
-	result = ZMakeZcode(notice->z_ascii_authent, zcode_len,
-			    (unsigned char *)authent->data, notice->z_authent_len);
-
-    /* format the notice header, with a zero checksum */
-    if (!result)
-	result = Z_NewFormatRawHeader(notice, buffer, buffer_len, phdr_len,
-				      &cksum_start, &cksum_len, &cstart, &cend);
-    notice->z_authent_len = 0;
-    if (!result)
-	result = Z_InsertZcodeChecksum(keyblock, notice, buffer, cksum_start,
-				       cksum_len, cstart, cend, buffer_len,
-				       &phdr_adj, 0);
-    if (!result) 
-	*phdr_len += phdr_adj;
-
-    if (notice->z_ascii_authent != NULL)
-	free(notice->z_ascii_authent);
-    krb5_free_data_contents(Z_krb5_ctx, authent);
-    if (authent != NULL)
-	free(authent);
-    if (creds != NULL)
-	krb5_free_creds(Z_krb5_ctx, creds);
-    return result;
-#else /* HAVE_KRB5 */
-    return ZERR_INTERNAL;
 #endif
+
+#ifdef HAVE_KRB5
+    if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+        __Zephyr_authtype == ZAUTHTYPE_KRB45) {
+        notice->z_ascii_authent = NULL;
+
+        result = ZGetCredsRealm(&creds, realm);
+
+        keyblock = Z_credskey(creds);
+
+        authent = (krb5_data *)malloc(sizeof(krb5_data));
+        if (authent == NULL)
+            result = ENOMEM;
+        authent->data = NULL; /* so that we can blithely krb5_fre_data_contents on
+                                 the way out */
+
+        if (!result)
+            result = krb5_auth_con_init(Z_krb5_ctx, &authctx);
+
+        if (!result) {
+            result = krb5_mk_req_extended(Z_krb5_ctx, &authctx, 0 /* options */,
+                                      0 /* in_data */, creds, authent);
+            krb5_auth_con_free(Z_krb5_ctx, authctx);
+        }
+        if (!result || result == KRB5KRB_AP_ERR_TKT_EXPIRED) {
+            notice->z_auth = 1;
+            if (result == 0) {
+                notice->z_authent_len = authent->length;
+            } else {
+                notice->z_authent_len = 0;
+                result = 0;
+            }
+            zcode_len = notice->z_authent_len * 2 + 2; /* 2x growth plus Z and null */
+            notice->z_ascii_authent = (char *)malloc(zcode_len);
+            if (notice->z_ascii_authent == NULL)
+                result = ENOMEM;
+        }
+        if (!result)
+            result = ZMakeZcode(notice->z_ascii_authent, zcode_len,
+                                (unsigned char *)authent->data, authent->length);
+
+        /* format the notice header, with a zero checksum */
+        if (!result)
+            result = Z_NewFormatRawHeader(notice, buffer, buffer_len, phdr_len,
+                                          &cksum_start, &cksum_len, &cstart, &cend);
+        notice->z_authent_len = 0;
+        if (!result)
+            result = Z_InsertZcodeChecksum(keyblock, notice, buffer, cksum_start,
+                                           cksum_len, cstart, cend, buffer_len,
+                                           &phdr_adj, 0);
+        if (!result) 
+            *phdr_len += phdr_adj;
+
+        if (notice->z_ascii_authent != NULL)
+            free(notice->z_ascii_authent);
+        krb5_free_data_contents(Z_krb5_ctx, authent);
+        if (authent != NULL)
+            free(authent);
+        if (creds != NULL)
+            krb5_free_creds(Z_krb5_ctx, creds);
+        return result;
+    }
+#endif
+    /* not KRB5 auth */
+    return ZERR_INTERNAL;
 }
 
 #ifdef HAVE_KRB5

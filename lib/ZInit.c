@@ -38,14 +38,6 @@ static const char rcsid_ZInitialize_c[] =
 static int z_get_host_realm_replacement(char *, char ***);
 #endif
 
-#if defined(HAVE_KRB5)
-int Zauthtype = 5;
-#elif defined(HAVE_KRB4)
-int Zauthtype = 4;
-#else
-int Zauthtype = 0;
-#endif
-
 Code_t
 ZInitialize(void)
 {
@@ -59,12 +51,11 @@ ZInitialize(void)
     ZNotice_t notice;
 #ifdef HAVE_KRB5
     char **krealms = NULL;
-#else
+#endif
 #ifdef HAVE_KRB4
     char *krealm = NULL;
     int krbval;
     char d1[ANAME_SZ], d2[INST_SZ];
-#endif
 #endif
 
     /* On OS X you don't need to initialize the Kerberos error tables
@@ -106,8 +97,11 @@ ZInitialize(void)
     __Q_Head = NULL;
 
 #ifdef HAVE_KRB5
-    if ((code = krb5_init_context(&Z_krb5_ctx)))
-        return(code);
+    if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+        __Zephyr_authtype == ZAUTHTYPE_KRB45) {
+        if (code = krb5_init_context(&Z_krb5_ctx))
+            return(code);
+    }
 #endif
 
     /* if the application is a server, there might not be a zhm.  The
@@ -116,68 +110,77 @@ ZInitialize(void)
 
     servaddr.s_addr = INADDR_NONE;
     if (! __Zephyr_server) {
-       if ((code = ZOpenPort(NULL)) != ZERR_NONE)
-	  return(code);
+        if ((code = ZOpenPort(NULL)) != ZERR_NONE)
+            return(code);
 
-       if ((code = ZhmStat(NULL, &notice)) != ZERR_NONE)
-	  return(code);
+        if ((code = ZhmStat(NULL, &notice)) != ZERR_NONE)
+           return(code);
 
-       ZClosePort();
+        ZClosePort();
 
-       /* the first field, which is NUL-terminated, is the server name.
-	  If this code ever support a multiplexing zhm, this will have to
-	  be made smarter, and probably per-message */
+        /* the first field, which is NUL-terminated, is the server name.
+           If this code ever support a multiplexing zhm, this will have to
+           be made smarter, and probably per-message */
 
 #ifdef HAVE_KRB5
+        if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+            __Zephyr_authtype == ZAUTHTYPE_KRB45) {
 #ifndef KRB5_REFERRAL_REALM
-       code = krb5_get_host_realm(Z_krb5_ctx, notice.z_message, &krealms);
-       if (code)
-	 return(code);
+            code = krb5_get_host_realm(Z_krb5_ctx, notice.z_message, &krealms);
+            if (code)
+                return(code);
 #else
-       code = z_get_host_realm_replacement(notice.z_message, &krealms);
+            code = z_get_host_realm_replacement(notice.z_message, &krealms);
 #endif
-#else
+        }
+#endif
 #ifdef HAVE_KRB4
-       krealm = krb_realmofhost(notice.z_message);
+        if (__Zephyr_authtype == ZAUTHTYPE_KRB4)
+            krealm = krb_realmofhost(notice.z_message);
 #endif
-#endif
-       hostent = gethostbyname(notice.z_message);
-       if (hostent && hostent->h_addrtype == AF_INET)
-	   memcpy(&servaddr, hostent->h_addr, sizeof(servaddr));
+        hostent = gethostbyname(notice.z_message);
+        if (hostent && hostent->h_addrtype == AF_INET)
+            memcpy(&servaddr, hostent->h_addr, sizeof(servaddr));
 
-       ZFreeNotice(&notice);
+        ZFreeNotice(&notice);
     }
 
+    /* XXX more conditional formatting party fouls */
 #ifdef HAVE_KRB5
-    if (krealms) {
-      strcpy(__Zephyr_realm, krealms[0]);
-      krb5_free_host_realm(Z_krb5_ctx, krealms);
-    } else {
-      char *p; /* XXX define this somewhere portable */
-      /* XXX check ticket file here */
-      code = krb5_get_default_realm(Z_krb5_ctx, &p);
-      if (code)
-	return code;
-      strcpy(__Zephyr_realm, p);
+    if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+        __Zephyr_authtype == ZAUTHTYPE_KRB45) {
+        if (krealms) {
+            strcpy(__Zephyr_realm, krealms[0]);
+            krb5_free_host_realm(Z_krb5_ctx, krealms);
+        } else {
+            char *p; /* XXX define this somewhere portable */
+            /* XXX check ticket file here */
+            code = krb5_get_default_realm(Z_krb5_ctx, &p);
+            strcpy(__Zephyr_realm, p);
 #ifdef HAVE_KRB5_FREE_DEFAULT_REALM
-      krb5_free_default_realm(Z_krb5_ctx, p);
+	    krb5_free_default_realm(Z_krb5_ctx, p);
 #else
-      free(p);
+            free(p);
 #endif
-    }
-#else
+            if (code)
+                return code;
+        }
+    } else
+#endif
 #ifdef HAVE_KRB4
-    if (krealm) {
-	strcpy(__Zephyr_realm, krealm);
-    } else if ((krb_get_tf_fullname(TKT_FILE, d1, d2, __Zephyr_realm)
-		!= KSUCCESS) &&
-	       ((krbval = krb_get_lrealm(__Zephyr_realm, 1)) != KSUCCESS)) {
-	return (krbval);
+    if (__Zephyr_authtype == ZAUTHTYPE_KRB4) {
+        if (krealm) {
+            strcpy(__Zephyr_realm, krealm);
+        } else if ((krb_get_tf_fullname(TKT_FILE, d1, d2, __Zephyr_realm)
+                    != KSUCCESS) &&
+                   ((krbval = krb_get_lrealm(__Zephyr_realm, 1)) != KSUCCESS)) {
+            return (krbval);
+        }
+    } else
+#endif
+    {
+        strcpy(__Zephyr_realm, "local-realm");
     }
-#else
-    strcpy(__Zephyr_realm, "local-realm");
-#endif
-#endif
 
     __My_addr.s_addr = INADDR_NONE;
     if (servaddr.s_addr != INADDR_NONE) {

@@ -346,7 +346,7 @@ class libZephyr(object):
         self._lib = ctypes.cdll.LoadLibrary(library_path)
 
         # grab the Zauthtype variable
-        self.Zauthtype = ctypes.c_int.in_dll(self._lib, 'Zauthtype').value
+        self.Zauthtype = ctypes.c_int.in_dll(self._lib, '__Zephyr_authtype').value
         
         # generic bindings?
         for funcname in self.testable_funcs:

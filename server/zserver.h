@@ -121,10 +121,9 @@ struct _Client {
     Destlist		*subs	;	/* subscriptions */
 #ifdef HAVE_KRB5
     krb5_keyblock       *session_keyblock;
-#else
+#endif
 #ifdef HAVE_KRB4
     C_Block		session_key;	/* session key for this client */
-#endif /* HAVE_KRB4 */
 #endif
     String		*principal;	/* krb principal of user */
     int			last_send;	/* Counter for last sent packet. */

@@ -240,12 +240,12 @@ SendKrb5Data(int fd, krb5_data *data) {
 }
 #endif
 
-Code_t
-ZCheckSrvAuthentication(ZNotice_t *notice,
-			struct sockaddr_in *from,
-			char *realm)
-{
 #ifdef HAVE_KRB5
+static Code_t
+ZCheckSrvAuthentication5(ZNotice_t *notice,
+			 struct sockaddr_in *from,
+			 char *realm)
+{
     unsigned char *authbuf;
     krb5_principal princ;
     krb5_data packet;
@@ -284,7 +284,8 @@ ZCheckSrvAuthentication(ZNotice_t *notice,
         return ZAUTH_FAILED;
 
 #ifdef HAVE_KRB4
-    if (notice->z_ascii_authent[0] != 'Z' && realm == NULL)
+    if (__Zephyr_authtype == ZAUTH_KRB54 &&
+	notice->z_ascii_authent[0] != 'Z' && realm == NULL)
       return ZCheckAuthentication4(notice, from);
 #endif
 
@@ -577,12 +578,22 @@ ZCheckSrvAuthentication(ZNotice_t *notice,
         return (ZAUTH_YES);
     else
         return (ZAUTH_FAILED);
-#else
-    return (notice->z_auth) ? ZAUTH_YES : ZAUTH_NO;
+}
+#undef KRB5AUTHENT
 #endif
+
+Code_t
+ZCheckSrvAuthentication(ZNotice_t *notice,
+			struct sockaddr_in *from,
+			char *realm) {
+#ifdef HAVE_KRB5
+    if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+	__Zephyr_authtype == ZAUTHTYPE_KRB45)
+	return ZCheckSrvAuthentication5(notice, from, realm);
+#endif
+    return (notice->z_auth) ? ZAUTH_YES : ZAUTH_NO;
 }
 
-#undef KRB5AUTHENT
 
 #if defined(HAVE_KRB4) && defined(HAVE_KRB5)
 static Code_t

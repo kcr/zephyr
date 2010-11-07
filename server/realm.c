@@ -98,8 +98,10 @@ realm_expand_realm(char *realmname)
 
     /* First, look for an exact match (case insensitive) */
 #if defined(HAVE_KRB4) || defined(HAVE_KRB5)
-    if (!strcasecmp(ZGetRealm(), realmname))
-	return(ZGetRealm());
+    if (__Zephyr_authtype != ZAUTHTYPE_NONE) {
+	if (!strcasecmp(ZGetRealm(), realmname))
+	    return(ZGetRealm());
+    }
 #endif
 
     for (realm = otherrealms, a = 0; a < nrealms; a++, realm++)
@@ -108,8 +110,10 @@ realm_expand_realm(char *realmname)
 
     /* No exact match. See if there's a partial match */
 #if defined(HAVE_KRB4) || defined(HAVE_KRB5)
-    if (!strncasecmp(ZGetRealm(), realmname, strlen(realmname)))
-	return(ZGetRealm());
+    if (__Zephyr_authtype != ZAUTHTYPE_NONE) {
+	if (!strncasecmp(ZGetRealm(), realmname, strlen(realmname)))
+	    return(ZGetRealm());
+    }
 #endif
 
     for (realm = otherrealms, a = 0; a < nrealms; a++, realm++)
@@ -535,10 +539,9 @@ realm_init(void)
 	memset(&client->addr, 0, sizeof(struct sockaddr_in));
 #ifdef HAVE_KRB5
         client->session_keyblock = NULL;
-#else
+#endif
 #ifdef HAVE_KRB4
 	memset(&client->session_key, 0, sizeof(client->session_key));
-#endif
 #endif
 	snprintf(rlmprinc, MAX_PRINCIPAL_SIZE, "%s.%s@%s", SERVER_SERVICE, SERVER_INSTANCE,
 		rlm->name);
@@ -598,12 +601,15 @@ realm_deathgram(Server *server)
 	       (server) ? server->addr_str : "nothing", realm->name));
 
 #ifdef HAVE_KRB5
-	if (!ticket_lookup(realm->name))
-	    if ((retval = ticket_retrieve(realm)) != ZERR_NONE) {
-		syslog(LOG_WARNING, "rlm_deathgram failed: %s",
-		       error_message(retval));
-		return;
-	    }
+	if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+	    __Zephyr_authtype == ZAUTHTYPE_KRB45) {
+	    if (!ticket_lookup(realm->name))
+		if ((retval = ticket_retrieve(realm)) != ZERR_NONE) {
+		    syslog(LOG_WARNING, "realm_deathgram: ticket_retrieve: %s",
+			   error_message(retval));
+		    return;
+		}
+	}
 #endif
 
 	if ((retval = ZFormatNotice(&snotice, &pack, &packlen, ZCAUTH))
@@ -663,12 +669,15 @@ realm_wakeup(void)
 	    snotice.z_message_len = 0;
 
 #ifdef HAVE_KRB5
-	    if (!ticket_lookup(realm->name))
-		if ((retval = ticket_retrieve(realm)) != ZERR_NONE) {
-		    syslog(LOG_WARNING, "rlm_wakeup failed: %s",
-			   error_message(retval));
-		    continue;
-		}
+	    if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+		__Zephyr_authtype == ZAUTHTYPE_KRB45) {
+		if (!ticket_lookup(realm->name))
+		    if ((retval = ticket_retrieve(realm)) != ZERR_NONE) {
+			syslog(LOG_WARNING, "realm_wakeup: ticket_retrieve: %s",
+			       error_message(retval));
+			continue;
+		    }
+	    }
 #endif
 
 	    if ((retval = ZFormatNotice(&snotice, &pack, &packlen, ZAUTH))
@@ -864,27 +873,29 @@ realm_handoff(ZNotice_t *notice,
 #ifdef HAVE_KRB5
     Code_t retval;
 
-    if (!auth) {
-	zdbug((LOG_DEBUG, "realm_sendit unauthentic to realm %s",
-	       realm->name));
-	realm_sendit(notice, who, auth, realm, ack_to_sender);
-	return;
-    }
+    if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+        __Zephyr_authtype == ZAUTHTYPE_KRB45) {
+        if (!auth) {
+            zdbug((LOG_DEBUG, "realm_handoff unauthentic to realm %s",
+                   realm->name));
+            realm_sendit(notice, who, auth, realm, ack_to_sender);
+            return;
+        }
 
-    if (!ticket_lookup(realm->name))
-	if ((retval = ticket_retrieve(realm)) != ZERR_NONE) {
-	    syslog(LOG_WARNING, "rlm_handoff failed: %s",
-		   error_message(retval));
-	    realm_sendit(notice, who, auth, realm, ack_to_sender);
-	    return;
-	}
+        if (!ticket_lookup(realm->name))
+            if ((retval = ticket_retrieve(realm)) != ZERR_NONE) {
+                syslog(LOG_WARNING, "realm_handoff: ticket_retrieve: %s",
+                       error_message(retval));
+                realm_sendit(notice, who, auth, realm, ack_to_sender);
+                return;
+            }
 
-    zdbug((LOG_DEBUG, "realm_sendit to realm %s auth %d", realm->name, auth));
-    /* valid ticket available now, send the message */
-    retval = realm_sendit_auth(notice, who, auth, realm, ack_to_sender);
-#else /* HAVE_KRB4 */
+        zdbug((LOG_DEBUG, "realm_handoff to realm %s auth %d", realm->name, auth));
+        /* valid ticket available now, send the message */
+        retval = realm_sendit_auth(notice, who, auth, realm, ack_to_sender);
+    } else
+#endif
     realm_sendit(notice, who, auth, realm, ack_to_sender);
-#endif /* HAVE_KRB4 */
 }
 
 static void
@@ -1057,7 +1068,6 @@ realm_dump_realms(FILE *fp)
 }
 
 #ifdef HAVE_KRB5
-
 static Code_t
 realm_auth_sendit_nacked(char *buffer, ZRealm *realm,
 			 ZUnique_Id_t uid, int ack_to_sender,

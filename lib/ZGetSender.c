@@ -29,39 +29,44 @@ ZGetSender(void)
     krb5_principal principal;
     char *prname;
     int result;
-#else    
+#endif
 #ifdef HAVE_KRB4
     char pname[ANAME_SZ], pinst[INST_SZ], prealm[REALM_SZ];
 #endif 
-#endif
 
     /* Return it if already cached */
     if (sender)
 	return (sender);
 
 #ifdef HAVE_KRB5
-    result = krb5_cc_default(Z_krb5_ctx, &ccache);
-    if (!result) {
-      result = krb5_cc_get_principal(Z_krb5_ctx, ccache, &principal);
-      if (!result) {
-	krb5_unparse_name(Z_krb5_ctx, principal, &prname);
-	sender = strdup(prname);
-	krb5_free_principal(Z_krb5_ctx, principal);
-	return sender;
-      }
-      krb5_cc_close(Z_krb5_ctx, ccache);
-    } 
-#else
-#ifdef HAVE_KRB4
-    if (krb_get_tf_fullname((char *)TKT_FILE, pname, pinst, prealm) == KSUCCESS)
-    {
-        sender = malloc(ANAME_SZ+INST_SZ+REALM_SZ+3);
-	if (sender)
-	  (void) sprintf(sender, "%s%s%s@%s", pname, (pinst[0]?".":""),
-			 pinst, prealm);
-	return (sender);
+    if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+        __Zephyr_authtype == ZAUTHTYPE_KRB45) {
+        result = krb5_cc_default(Z_krb5_ctx, &ccache);
+        if (!result) {
+            result = krb5_cc_get_principal(Z_krb5_ctx, ccache, &principal);
+        }
+        if (!result) {
+            krb5_unparse_name(Z_krb5_ctx, principal, &prname);
+            sender = strdup(prname);
+            krb5_free_principal(Z_krb5_ctx, principal);
+        }
+        if (ccache)
+            krb5_cc_close(Z_krb5_ctx, ccache);
+        if (!result && sender != NULL)
+            return sender;
     }
 #endif
+#ifdef HAVE_KRB4
+    if (__Zephyr_authtype == ZAUTHTYPE_KRB4) {
+        if (krb_get_tf_fullname((char *)TKT_FILE, pname, pinst, prealm) == KSUCCESS)
+            {
+                sender = malloc(ANAME_SZ+INST_SZ+REALM_SZ+3);
+                if (sender)
+                    (void) sprintf(sender, "%s%s%s@%s", pname, (pinst[0]?".":""),
+                                   pinst, prealm);
+                return (sender);
+            }
+    }
 #endif
 
     /* XXX a uid_t is a u_short (now),  but getpwuid
@@ -71,6 +76,6 @@ ZGetSender(void)
 	return ("unknown");
     sender = malloc(strlen(pw->pw_name) + strlen(__Zephyr_realm) + 2);
     if (sender)
-      (void) sprintf(sender, "%s@%s", pw->pw_name, __Zephyr_realm);
+        sprintf(sender, "%s@%s", pw->pw_name, __Zephyr_realm);
     return (sender);
 }

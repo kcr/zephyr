@@ -71,36 +71,29 @@ static Code_t transmit_tcp(char *pack, int packlen);
 
 #ifdef HAVE_KRB5
 static int des_service_decrypt(unsigned char *in, unsigned char *out);
-#endif
-#ifdef HAVE_KRB5
 static long ticket5_time;
+#ifndef HAVE_KRB4
+krb5_keyblock	*server_key;
+#endif
+static krb5_auth_context bdump_ac;
+
 #define TKT5LIFETIME 8*60*60
 #define tkt5_lifetime(val) (val)
 #endif
 
 #ifdef HAVE_KRB4
+extern C_Block	serv_key;
+extern Sched	serv_ksched;
 static long ticket_time;
 
 #define TKTLIFETIME	120
 #define tkt_lifetime(val) ((long) val * 5L * 60L)
-
-#endif /* HAVE_KRB4 */
-
-#if defined(HAVE_KRB4)
-extern C_Block	serv_key;
-extern Sched	serv_ksched;
-#endif
-#if defined(HAVE_KRB5) && !defined(HAVE_KRB4)
-krb5_keyblock	*server_key;
 #endif
 
 static Timer *bdump_timer;
 static int live_socket = -1;
 static FILE *input, *output;
 static struct sockaddr_in bdump_sin;
-#ifdef HAVE_KRB5
-static krb5_auth_context bdump_ac;
-#endif
 
 int bdumping;
 int bdump_concurrent;
@@ -120,65 +113,66 @@ bdump_offer(struct sockaddr_in *who)
 {
     Code_t retval;
     char buf[512], *addr, *lyst[2];
-#if !defined(HAVE_KRB4) && !defined(HAVE_KRB5)
     int bdump_port = IPPORT_RESERVED - 1;
-#endif /* !HAVE_KRB4 */
 
     zdbug((LOG_DEBUG, "bdump_offer"));
 
 #if defined(HAVE_KRB4) || defined(HAVE_KRB5)
-    /*
-     * when using kerberos server-server authentication, we can
-     * use any random local address
-     */
-    bdump_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (bdump_socket < 0) {
-	syslog(LOG_ERR,"bdump_offer: socket: %m");
-	bdump_socket = -1;
-	return;
-    }
-    memset(&bdump_sin, 0, sizeof(bdump_sin));
-    /* a port field of 0 makes the UNIX
-     * kernel choose an appropriate port/address pair */
+    if (__Zephyr_authtype != ZAUTHTYPE_NONE) {
+        /*
+         * when using kerberos server-server authentication, we can
+         * use any random local address
+         */
+        bdump_socket = socket(AF_INET, SOCK_STREAM, 0);
+        if (bdump_socket < 0) {
+            syslog(LOG_ERR,"bdump_offer: socket: %m");
+            bdump_socket = -1;
+            return;
+        }
+        memset(&bdump_sin, 0, sizeof(bdump_sin));
+        /* a port field of 0 makes the UNIX
+         * kernel choose an appropriate port/address pair */
 
-    bdump_sin.sin_port = 0;
-    bdump_sin.sin_addr = my_addr;
-    bdump_sin.sin_family = AF_INET;
-    retval = bind(bdump_socket, (struct sockaddr *) &bdump_sin,
-		  sizeof(bdump_sin));
-    if (retval < 0) {
-	syslog(LOG_ERR, "bdump_offer: bind: %m");
-	close(bdump_socket);
-	bdump_socket = -1;
-	return;
-    }
-    if (!bdump_sin.sin_port) {
-	unsigned int len = sizeof(bdump_sin);
+        bdump_sin.sin_port = 0;
+        bdump_sin.sin_addr = my_addr;
+        bdump_sin.sin_family = AF_INET;
+        retval = bind(bdump_socket, (struct sockaddr *) &bdump_sin,
+                      sizeof(bdump_sin));
+        if (retval < 0) {
+            syslog(LOG_ERR, "bdump_offer: bind: %m");
+            close(bdump_socket);
+            bdump_socket = -1;
+            return;
+        }
+        if (!bdump_sin.sin_port) {
+            unsigned int len = sizeof(bdump_sin);
 
-	if (getsockname(bdump_socket,
-			(struct sockaddr *) &bdump_sin, &len) < 0) {
-	    syslog(LOG_ERR, "bdump_offer: getsockname: %m");
-	    close(bdump_socket);
-	    bdump_socket = -1;
-	    return;
-	}
+            if (getsockname(bdump_socket,
+                            (struct sockaddr *) &bdump_sin, &len) < 0) {
+                syslog(LOG_ERR, "bdump_offer: getsockname: %m");
+                close(bdump_socket);
+                bdump_socket = -1;
+                return;
+            }
+        }
+    } else
+#endif
+    {
+        /*
+         * when not using HAVE_KRB4, we can't use any old port, we use
+         * Internet reserved ports instead (rresvport)
+         */
+        bdump_socket = rresvport(&bdump_port);
+        if (bdump_socket < 0) {
+            syslog(LOG_ERR,"bdump_offer: socket: %m");
+            bdump_socket = -1;
+            return;
+        }
+        memset(&bdump_sin, 0, sizeof(bdump_sin));
+        bdump_sin.sin_port = htons((unsigned short) bdump_port);
+        bdump_sin.sin_addr = my_addr;
+        bdump_sin.sin_family = AF_INET;
     }
-#else  /* !HAVE_KRB4 */
-    /*
-     * when not using HAVE_KRB4, we can't use any old port, we use
-     * Internet reserved ports instead (rresvport)
-     */
-    bdump_socket = rresvport(&bdump_port);
-    if (bdump_socket < 0) {
-	syslog(LOG_ERR,"bdump_offer: socket: %m");
-	bdump_socket = -1;
-	return;
-    }
-    memset(&bdump_sin, 0, sizeof(bdump_sin));
-    bdump_sin.sin_port = htons((unsigned short) bdump_port);
-    bdump_sin.sin_addr = my_addr;
-    bdump_sin.sin_family = AF_INET;
-#endif				/* HAVE_KRB4 */
 
     listen(bdump_socket, 1);
 
@@ -242,9 +236,7 @@ bdump_send(void)
     krb5_data k5data;
     krb5_keytab kt;
 #endif
-#if !defined(HAVE_KRB4) && !defined(HAVE_KRB5)
-    unsigned short fromport;
-#endif /* HAVE_KRB4 */
+    unsigned short fromport = 0;
 
     zdbug((LOG_DEBUG, "bdump_send"));
 
@@ -258,16 +250,14 @@ bdump_send(void)
 		   sizeof(on)) < 0)
 	syslog(LOG_WARNING, "bdump_send: setsockopt (SO_KEEPALIVE): %m");
 
-#if !defined(HAVE_KRB4) && !defined(HAVE_KRB5)
-    fromport = ntohs(from.sin_port);
-#endif
+    if (__Zephyr_authtype == ZAUTHTYPE_NONE)
+	fromport = ntohs(from.sin_port);
 
 #ifdef _POSIX_VERSION
     sigemptyset(&action.sa_mask);
     action.sa_flags = 0;
     action.sa_handler = SIG_IGN;
     sigaction(SIGPIPE, &action, NULL);
-
 #else
     signal(SIGPIPE, SIG_IGN);	/* so we can detect failures */
 #endif
@@ -298,159 +288,160 @@ bdump_send(void)
 
     /* Now begin the brain dump. */
 #if defined(HAVE_KRB5) || defined(HAVE_KRB4)
-    retval = ReadKerberosData(live_socket, &len, &data, &proto);
+    if (__Zephyr_authtype != ZAUTHTYPE_NONE) {
+        retval = ReadKerberosData(live_socket, &len, &data, &proto);
 
-    if (retval != 0) {
-	syslog(LOG_ERR, "bdump_send: ReadKerberosData: %s",
-	       error_message(retval));
-	cleanup(server);
-	return;
-    }
+        if (retval != 0) {
+            syslog(LOG_ERR, "bdump_send: ReadKerberosData: %s",
+                   error_message(retval));
+            cleanup(server);
+            return;
+        }
 
-    syslog(LOG_DEBUG, "bdump_send: got %d bytes of authenticator for protocol %d", len, proto);
+        syslog(LOG_DEBUG, "bdump_send: got %d bytes of authenticator for protocol %d", len, proto);
 
-    if (get_tgt()) {
-	syslog(LOG_ERR, "bdump_send: get_tgt failed");
-	cleanup(server);
-	return;
-    }
+        if (get_tgt()) {
+            syslog(LOG_ERR, "bdump_send: get_tgt failed");
+            cleanup(server);
+            return;
+        }
 
-    switch(proto) {
+        switch(proto) {
 #ifdef HAVE_KRB5
-    case 5:
-	/* "server" side */
-	retval = krb5_build_principal(Z_krb5_ctx, &principal,
-				      strlen(ZGetRealm()),
-				      ZGetRealm(),
-				      SERVER_KRB5_SERVICE, SERVER_INSTANCE,
-				      NULL);
-	if (retval) {
-	    syslog(LOG_ERR, "bdump_send: krb5_build_principal: %s",
-		   error_message(retval));
-	    cleanup(server);
-	    return;
-	}
+        case 5:
+            /* "server" side */
+            retval = krb5_build_principal(Z_krb5_ctx, &principal,
+                                          strlen(ZGetRealm()),
+                                          ZGetRealm(),
+                                          SERVER_KRB5_SERVICE, SERVER_INSTANCE,
+                                          NULL);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_send: krb5_build_principal: %s",
+                       error_message(retval));
+                cleanup(server);
+                return;
+            }
 
+            retval = krb5_auth_con_init(Z_krb5_ctx, &bdump_ac);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_send: krb5_auth_con_init: %s",
+                       error_message(retval));
+                cleanup(server);
+                return;
+            }
 
-	retval = krb5_auth_con_init(Z_krb5_ctx, &bdump_ac);
-	if (retval) {
-	    syslog(LOG_ERR, "bdump_send: krb5_auth_con_init: %s",
-		   error_message(retval));
-	    cleanup(server);
-	    return;
-	}
+            retval = krb5_auth_con_setflags(Z_krb5_ctx, bdump_ac,
+                                            KRB5_AUTH_CONTEXT_DO_SEQUENCE);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_send: krb5_auth_con_setflags: %s",
+                       error_message(retval));
+                cleanup(server);
+                return;
+            }
 
-	retval = krb5_auth_con_setflags(Z_krb5_ctx, bdump_ac,
-					KRB5_AUTH_CONTEXT_DO_SEQUENCE);
-	if (retval) {
-	    syslog(LOG_ERR, "bdump_send: krb5_auth_con_setflags: %s",
-		   error_message(retval));
-	    cleanup(server);
-	    return;
-	}
+            retval = krb5_auth_con_genaddrs(Z_krb5_ctx, bdump_ac, live_socket,
+                                            KRB5_AUTH_CONTEXT_GENERATE_LOCAL_FULL_ADDR|KRB5_AUTH_CONTEXT_GENERATE_REMOTE_FULL_ADDR);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_send: krb5_auth_con_genaddrs: %s", error_message(retval));
+                cleanup(server);
+                return;
+            }
 
-	retval = krb5_auth_con_genaddrs(Z_krb5_ctx, bdump_ac, live_socket,
-                                       KRB5_AUTH_CONTEXT_GENERATE_LOCAL_FULL_ADDR|KRB5_AUTH_CONTEXT_GENERATE_REMOTE_FULL_ADDR);
-	if (retval) {
-	    syslog(LOG_ERR, "bdump_send: krb5_auth_con_genaddrs: %s", error_message(retval));
-	    cleanup(server);
-	    return;
-	}
+            /* Get the "client" krb_ap_req */
 
-	/* Get the "client" krb_ap_req */
+            memset((char *)&k5data, 0, sizeof(krb5_data));
+            k5data.length = len;
+            k5data.data = data;
 
-	memset((char *)&k5data, 0, sizeof(krb5_data));
-	k5data.length = len;
-	k5data.data = data;
+            /* resolve keytab */
+            retval = krb5_kt_resolve(Z_krb5_ctx, keytab_file, &kt);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_send: cannot resolve keytab: %s",
+                       error_message(retval));
+                krb5_kt_close(Z_krb5_ctx, kt);
+                cleanup(server);
+                return;
+            }
 
-	/* resolve keytab */
-	retval = krb5_kt_resolve(Z_krb5_ctx, keytab_file, &kt);
-	if (retval) {
-	    syslog(LOG_ERR, "bdump_send: cannot resolve keytab: %s",
-		   error_message(retval));
-	    krb5_kt_close(Z_krb5_ctx, kt);
-	    cleanup(server);
-	    return;
-	}
+            retval = krb5_rd_req(Z_krb5_ctx, &bdump_ac, &k5data, principal, kt, NULL, NULL);
+            krb5_free_principal(Z_krb5_ctx, principal);
+            krb5_kt_close(Z_krb5_ctx, kt);
+            free(k5data.data);
+            memset((char *)&k5data, 0, sizeof(krb5_data));
+            if (retval) {
+                syslog(LOG_ERR, "bdump_send: mutual authentication failed: %s",
+                       error_message(retval));
+                cleanup(server);
+                return;
+            }
 
-	retval = krb5_rd_req(Z_krb5_ctx, &bdump_ac, &k5data, principal, kt, NULL, NULL);
-	krb5_free_principal(Z_krb5_ctx, principal);
-	krb5_kt_close(Z_krb5_ctx, kt);
-	free(k5data.data);
-	memset((char *)&k5data, 0, sizeof(krb5_data));
-	if (retval) {
-	     syslog(LOG_ERR, "bdump_send: mutual authentication failed: %s",
-	            error_message(retval));
-	     cleanup(server);
-	     return;
-	}
+            /* Now send back our auth packet */
 
-	/* Now send back our auth packet */
-
-	retval = krb5_mk_rep(Z_krb5_ctx, bdump_ac, &k5data);
-	if (retval) {
-	    syslog(LOG_ERR, "bdump_send: krb5_mk_rep: %s", error_message(retval));
-	    cleanup(server);
-	    return;
-	}
-	retval = SendKrb5Data(live_socket, &k5data);
-	if (retval) {
-	     syslog(LOG_ERR, "bdump_send: cannot send authenticator: %s",
-	            error_message(retval));
-	     krb5_free_data_contents(Z_krb5_ctx, &k5data);
-	     cleanup(server);
-	     return;
-	}
-	krb5_free_data_contents(Z_krb5_ctx, &k5data);
-	break;
+            retval = krb5_mk_rep(Z_krb5_ctx, bdump_ac, &k5data);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_send: krb5_mk_rep: %s", error_message(retval));
+                cleanup(server);
+                return;
+            }
+            retval = SendKrb5Data(live_socket, &k5data);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_send: cannot send authenticator: %s",
+                       error_message(retval));
+                krb5_free_data_contents(Z_krb5_ctx, &k5data);
+                cleanup(server);
+                return;
+            }
+            krb5_free_data_contents(Z_krb5_ctx, &k5data);
+            break;
 #endif  /* HAVE_KRB5 */
 #ifdef HAVE_KRB4
-    case 4:
-	/* here to krb_rd_req from GetKerberosData candidate for refactoring
-	   back into kstuff.c */
-	(void) strcpy(instance, "*"); 		/* let Kerberos fill it in */
+        case 4:
+            /* here to krb_rd_req from GetKerberosData candidate for refactoring
+               back into kstuff.c */
+            (void) strcpy(instance, "*");               /* let Kerberos fill it in */
 
-	ticket.length = len;
-	memcpy(&ticket.dat, data, MIN(len, sizeof(ticket.dat)));
-	retval = krb_rd_req(&ticket, SERVER_SERVICE, instance,
-			    from.sin_addr.s_addr, &kdata, srvtab_file);
-	/*
-	retval = GetKerberosData(live_socket, from.sin_addr, &kdata,
-				 SERVER_SERVICE, srvtab_file);
-	*/
-	if (retval != KSUCCESS) {
-	    syslog(LOG_ERR, "bdump_send: getkdata: %s",
-		   error_message(retval));
-	    cleanup(server);
-	    return;
-	}
-	if (strcmp(kdata.pname, SERVER_SERVICE) ||
-	    strcmp(kdata.pinst, SERVER_INSTANCE) ||
-	    strcmp(kdata.prealm, ZGetRealm())) {
-	    syslog(LOG_ERR, "bdump_send: peer not zephyr: %s.%s@%s",
-		   kdata.pname, kdata.pinst, kdata.prealm);
-	    cleanup(server);
-	    return;
-	}
-	/* authenticate back */
-	retval = SendKerberosData(live_socket, &ticket, SERVER_SERVICE,
-				  SERVER_INSTANCE);
-	if (retval != 0) {
-	    syslog(LOG_ERR,"bdump_send: SendKerberosData: %s",
-		   error_message (retval));
-	    cleanup(server);
-	    return;
-	}
-	break;
+            ticket.length = len;
+            memcpy(&ticket.dat, data, MIN(len, sizeof(ticket.dat)));
+            retval = krb_rd_req(&ticket, SERVER_SERVICE, instance,
+                                from.sin_addr.s_addr, &kdata, srvtab_file);
+            /*
+              retval = GetKerberosData(live_socket, from.sin_addr, &kdata,
+                                 SERVER_SERVICE, srvtab_file);
+            */
+            if (retval != KSUCCESS) {
+                syslog(LOG_ERR, "bdump_send: getkdata: %s",
+                       error_message(retval));
+                cleanup(server);
+                return;
+            }
+            if (strcmp(kdata.pname, SERVER_SERVICE) ||
+                strcmp(kdata.pinst, SERVER_INSTANCE) ||
+                strcmp(kdata.prealm, ZGetRealm())) {
+                syslog(LOG_ERR, "bdump_send: peer not zephyr: %s.%s@%s",
+                       kdata.pname, kdata.pinst, kdata.prealm);
+                cleanup(server);
+                return;
+            }
+            /* authenticate back */
+            retval = SendKerberosData(live_socket, &ticket, SERVER_SERVICE,
+                                      SERVER_INSTANCE);
+            if (retval != 0) {
+                syslog(LOG_ERR,"bdump_send: SendKerberosData: %s",
+                       error_message (retval));
+                cleanup(server);
+                return;
+            }
+            break;
 #endif /* HAVE_KRB4 */
+	}
     }
-#else /* HAVE_KRB4 || HAVE_KRB5 */
-    if (fromport > IPPORT_RESERVED || fromport < IPPORT_RESERVED / 2) {
-	syslog(LOG_ERR, "bdump_send: bad port from peer: %d", fromport);
-	cleanup(server);
-	return;
+#endif
+    if (__Zephyr_authtype == ZAUTHTYPE_NONE &&
+        (fromport > IPPORT_RESERVED || fromport < IPPORT_RESERVED / 2)) {
+        syslog(LOG_ERR, "bdump_send: bad port from peer: %d", fromport);
+        cleanup(server);
+        return;
     }
-#endif /* HAVE_KRB4 || HAVE_KRB5 */
     retval = setup_file_pointers();
     if (retval != 0) {
 	syslog (LOG_WARNING, "bdump_send: can't set up file pointers: %s",
@@ -510,7 +501,6 @@ bdump_get_v12 (ZNotice_t *notice,
 #ifdef _POSIX_VERSION
     struct sigaction action;
 #endif
-#if defined(HAVE_KRB4) || defined(HAVE_KRB5)
 #ifdef HAVE_KRB5
     krb5_creds creds;
     krb5_creds *credsp;
@@ -522,9 +512,7 @@ bdump_get_v12 (ZNotice_t *notice,
     KTEXT_ST ticket;
     AUTH_DAT kdata;
 #endif
-#else  /* !HAVE_KRB4 && !HAVE_KRB5 */
     int reserved_port = IPPORT_RESERVED - 1;
-#endif /* !HAVE_KRB4 && !HAVE_KRB5 */
 
     bdumping = 1;
     server->dumping = 1;
@@ -553,7 +541,7 @@ bdump_get_v12 (ZNotice_t *notice,
 
     retval = extract_sin(notice, &from);
     if (retval != ZERR_NONE) {
-	syslog(LOG_ERR, "bdump_get: sin: %s", error_message(retval));
+        syslog(LOG_ERR, "bdump_get_v12: sin: %s", error_message(retval));
 #ifdef _POSIX_VERSION
 	action.sa_handler = SIG_DFL;
 	sigaction(SIGPIPE, &action, NULL);
@@ -564,200 +552,208 @@ bdump_get_v12 (ZNotice_t *notice,
 	server->dumping = 0;
 	return;
     }
-#if !defined(HAVE_KRB4) && !defined(HAVE_KRB5)
-    if (ntohs(from.sin_port) > IPPORT_RESERVED ||
-	ntohs(from.sin_port) < IPPORT_RESERVED / 2) {
-	syslog(LOG_ERR, "bdump_get: port not reserved: %d",
-	       ntohs(from.sin_port));
-	cleanup(server);
-	return;
+    if (__Zephyr_authtype == ZAUTHTYPE_NONE) {
+        if (ntohs(from.sin_port) > IPPORT_RESERVED ||
+            ntohs(from.sin_port) < IPPORT_RESERVED / 2) {
+            syslog(LOG_ERR, "bdump_get_v12: port not reserved: %d",
+                   ntohs(from.sin_port));
+            cleanup(server);
+            return;
+        }
+        live_socket = rresvport(&reserved_port);
     }
-    live_socket = rresvport(&reserved_port);
-#else  /* !HAVE_KRB4 && !HAVE_KRB5 */
-    live_socket = socket(AF_INET, SOCK_STREAM, 0);
-#endif /* !HAVE_KRB4 && !HAVE_KRB5 */
+#if defined(HAVE_KRB4) || defined(HAVE_KRB5)
+    else {
+	live_socket = socket(AF_INET, SOCK_STREAM, 0);
+    }
+#endif
     if (live_socket < 0) {
-	syslog(LOG_ERR, "bdump_get: socket: %m");
+        syslog(LOG_ERR, "bdump_get_v12: socket: %m");
 	cleanup(server);
 	return;
     }
     if (connect(live_socket, (struct sockaddr *) &from, sizeof(from))) {
-	syslog(LOG_ERR, "bdump_get: connect: %m");
+        syslog(LOG_ERR, "bdump_get_v12: connect: %m");
 	cleanup(server);
 	return;
     }
     if (setsockopt(live_socket, SOL_SOCKET, SO_KEEPALIVE, (char *)&on,
 		   sizeof(on)) < 0)
-	syslog(LOG_WARNING, "bdump_get: setsockopt (SO_KEEPALIVE): %m");
+        syslog(LOG_WARNING, "bdump_get_v12: setsockopt (SO_KEEPALIVE): %m");
 
-    zdbug((LOG_DEBUG, "bdump_get: connected"));
+    zdbug((LOG_DEBUG, "bdump_get_v12: connected"));
 
     /* Now begin the brain dump. */
 #if defined(HAVE_KRB4) || defined(HAVE_KRB5)
-    if (get_tgt()) {
-	syslog(LOG_ERR, "bdump_get: get_tgt failed");
-	cleanup(server);
-	return;
-    }
-    switch(bdump_auth_proto) {
+    if (__Zephyr_authtype != ZAUTHTYPE_NONE) {
+        if (get_tgt()) {
+            syslog(LOG_ERR, "bdump_get_v12: get_tgt failed");
+            cleanup(server);
+            return;
+        }
+        switch(bdump_auth_proto) {
 #ifdef HAVE_KRB5
-    case 5: /* "client" side */
- 	memset((char *)&creds, 0, sizeof(creds));
+        case 5: /* "client" side */
+            memset((char *)&creds, 0, sizeof(creds));
 
-	retval = krb5_build_principal(Z_krb5_ctx, &principal,
-				      strlen(ZGetRealm()),
-				      ZGetRealm(),
-				      SERVER_KRB5_SERVICE, SERVER_INSTANCE,
-				      NULL);
-	if (retval) {
-	    syslog(LOG_ERR, "bdump_get: krb5_build_principal: %s",
-		   error_message(retval));
-	    cleanup(server);
-	    return;
-	}
+            retval = krb5_build_principal(Z_krb5_ctx, &principal,
+                                          strlen(ZGetRealm()),
+                                          ZGetRealm(),
+                                          SERVER_KRB5_SERVICE, SERVER_INSTANCE,
+                                          NULL);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_get_v12: krb5_build_principal: %s",
+                       error_message(retval));
+                cleanup(server);
+                return;
+            }
 
-	retval = krb5_copy_principal(Z_krb5_ctx, principal, &creds.server);
-	if (retval) {
-	    syslog(LOG_ERR, "bdump_get: krb5_copy_principal (server): %s",
-		   error_message(retval));
-	    krb5_free_principal(Z_krb5_ctx, principal);
-	    cleanup(server);
-	    return;
-	}
+            retval = krb5_copy_principal(Z_krb5_ctx, principal, &creds.server);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_get_v12: krb5_copy_principal (server): %s",
+                       error_message(retval));
+                krb5_free_principal(Z_krb5_ctx, principal);
+                cleanup(server);
+                return;
+            }
 
-	retval = krb5_copy_principal(Z_krb5_ctx, principal, &creds.client);
-	krb5_free_principal(Z_krb5_ctx, principal);
-	if (retval) {
-	    syslog(LOG_ERR, "bdump_get: krb5_copy_principal (client): %s",
-		   error_message(retval));
-	    krb5_free_cred_contents(Z_krb5_ctx, &creds);
-	    cleanup(server);
-	    return;
-	}
+            retval = krb5_copy_principal(Z_krb5_ctx, principal, &creds.client);
+            krb5_free_principal(Z_krb5_ctx, principal);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_get_v12: krb5_copy_principal (client): %s",
+                       error_message(retval));
+                krb5_free_cred_contents(Z_krb5_ctx, &creds);
+                cleanup(server);
+                return;
+            }
 
-	retval = krb5_get_credentials(Z_krb5_ctx, 0, Z_krb5_ccache,
-				      &creds, &credsp);
-	krb5_free_cred_contents(Z_krb5_ctx, &creds);
-	if (retval) {
-	    syslog(LOG_ERR, "bdump_get: krb5_get_credentials: %s", error_message(retval));
-	    cleanup(server);
-	    return;
-	}
+            retval = krb5_get_credentials(Z_krb5_ctx, 0, Z_krb5_ccache,
+                                          &creds, &credsp);
+            krb5_free_cred_contents(Z_krb5_ctx, &creds);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_get_v12: krb5_get_credentials: %s", error_message(retval));
+                cleanup(server);
+                return;
+            }
 
-	retval = krb5_auth_con_init(Z_krb5_ctx, &bdump_ac);
-	if (retval) {
-	    syslog(LOG_ERR, "bdump_get: krb5_auth_con_init: %s", error_message(retval));
-	    krb5_free_creds(Z_krb5_ctx, credsp);
-	    cleanup(server);
-	    return;
-	}
+            retval = krb5_auth_con_init(Z_krb5_ctx, &bdump_ac);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_get_v12: krb5_auth_con_init: %s", error_message(retval));
+                krb5_free_creds(Z_krb5_ctx, credsp);
+                cleanup(server);
+                return;
+            }
 
-	retval = krb5_auth_con_setflags(Z_krb5_ctx, bdump_ac, KRB5_AUTH_CONTEXT_DO_SEQUENCE);
-	if (retval) {
-	    syslog(LOG_ERR, "bdump_get: krb5_auth_con_setflags: %s", error_message(retval));
-	    krb5_free_creds(Z_krb5_ctx, credsp);
-	    cleanup(server);
-	    return;
-	}
+            retval = krb5_auth_con_setflags(Z_krb5_ctx, bdump_ac, KRB5_AUTH_CONTEXT_DO_SEQUENCE);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_get_v12: krb5_auth_con_setflags: %s", error_message(retval));
+                krb5_free_creds(Z_krb5_ctx, credsp);
+                cleanup(server);
+                return;
+            }
 
-	retval = krb5_auth_con_genaddrs(Z_krb5_ctx, bdump_ac, live_socket,
-		KRB5_AUTH_CONTEXT_GENERATE_LOCAL_FULL_ADDR|KRB5_AUTH_CONTEXT_GENERATE_REMOTE_FULL_ADDR);
-	if (retval) {
-	    syslog(LOG_ERR, "bdump_get: krb5_auth_con_genaddrs: %s", error_message(retval));
-	    krb5_free_creds(Z_krb5_ctx, credsp);
-	    cleanup(server);
-	    return;
-	}
+            retval = krb5_auth_con_genaddrs(Z_krb5_ctx, bdump_ac, live_socket,
+                                            KRB5_AUTH_CONTEXT_GENERATE_LOCAL_FULL_ADDR|
+                                            KRB5_AUTH_CONTEXT_GENERATE_REMOTE_FULL_ADDR);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_get_v12: krb5_auth_con_genaddrs: %s", error_message(retval));
+                krb5_free_creds(Z_krb5_ctx, credsp);
+                cleanup(server);
+                return;
+            }
 
-	memset((char *)&data, 0, sizeof(krb5_data));
-	retval = krb5_mk_req_extended(Z_krb5_ctx, &bdump_ac, AP_OPTS_MUTUAL_REQUIRED|AP_OPTS_USE_SUBKEY,
-				 NULL, credsp, &data);
-	if (retval) {
-	    syslog(LOG_ERR, "bdump_get: krb5_mk_req_ext: %s", error_message(retval));
-	    krb5_free_creds(Z_krb5_ctx, credsp);
-	    cleanup(server);
-	    return;
-	}
-        retval = SendKrb5Data(live_socket, &data);
-        krb5_free_creds(Z_krb5_ctx, credsp);
-        if (retval) {
-             syslog(LOG_ERR, "bdump_get: cannot send authenticator: %s",
-                    error_message(retval));
-             krb5_free_data_contents(Z_krb5_ctx, &data);
-             cleanup(server);
-             return;
-        }
-        krb5_free_data_contents(Z_krb5_ctx, &data);
-	memset((char *)&data, 0, sizeof(krb5_data));
-        retval = GetKrb5Data(live_socket, &data);
-        if (retval) {
-             syslog(LOG_ERR, "bdump_get: cannot get auth response: %s",
-                    error_message(retval));
-             cleanup(server);
-             return;
-        }
-        retval = krb5_rd_rep(Z_krb5_ctx, bdump_ac, &data, &rep);
-        free(data.data);
-        memset((char *)&data, 0, sizeof(krb5_data));
-        if (retval) {
-             syslog(LOG_ERR, "bdump_get: mutual authentication failed: %s",
-                    error_message(retval));
-             cleanup(server);
-             return;
-        }
-	break;
+            memset((char *)&data, 0, sizeof(krb5_data));
+            retval = krb5_mk_req_extended(Z_krb5_ctx, &bdump_ac,
+                                          AP_OPTS_MUTUAL_REQUIRED
+                                          |AP_OPTS_USE_SUBKEY,
+                                          NULL, credsp, &data);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_get_v12: krb5_mk_req_ext: %s", error_message(retval));
+                krb5_free_creds(Z_krb5_ctx, credsp);
+                cleanup(server);
+                return;
+            }
+            retval = SendKrb5Data(live_socket, &data);
+            krb5_free_creds(Z_krb5_ctx, credsp);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_get_v12: cannot send authenticator: %s",
+                       error_message(retval));
+                krb5_free_data_contents(Z_krb5_ctx, &data);
+                cleanup(server);
+                return;
+            }
+            krb5_free_data_contents(Z_krb5_ctx, &data);
+            memset((char *)&data, 0, sizeof(krb5_data));
+            retval = GetKrb5Data(live_socket, &data);
+            if (retval) {
+                syslog(LOG_ERR, "bdump_get_v12: cannot get auth response: %s",
+                       error_message(retval));
+                cleanup(server);
+                return;
+            }
+            retval = krb5_rd_rep(Z_krb5_ctx, bdump_ac, &data, &rep);
+            free(data.data);
+            memset((char *)&data, 0, sizeof(krb5_data));
+            if (retval) {
+                syslog(LOG_ERR, "bdump_get_v12: mutual authentication failed: %s",
+                       error_message(retval));
+                cleanup(server);
+                return;
+            }
+            break;
 #endif
 #ifdef HAVE_KRB4
-    case 4:
-	/* send an authenticator */
-	retval = SendKerberosData(live_socket, &ticket, SERVER_SERVICE,
-				  SERVER_INSTANCE);
-	if (retval != 0) {
-	    syslog(LOG_ERR,"bdump_get: %s", error_message(retval));
-	    cleanup(server);
-	    return;
-	}
-	zdbug((LOG_DEBUG, "bdump_get: SendKerberosData ok"));
+        case 4:
+            /* send an authenticator */
+            retval = SendKerberosData(live_socket, &ticket, SERVER_SERVICE,
+                                      SERVER_INSTANCE);
+            if (retval != 0) {
+                syslog(LOG_ERR,"bdump_get_v12: %s", error_message(retval));
+                cleanup(server);
+                return;
+            }
+            zdbug((LOG_DEBUG, "bdump_get_v12: SendKerberosData ok"));
 
-	/* get his authenticator */
-	retval = GetKerberosData(live_socket, from.sin_addr, &kdata,
-				 SERVER_SERVICE, srvtab_file);
-	if (retval != KSUCCESS) {
-	    syslog(LOG_ERR, "bdump_get getkdata: %s",error_message(retval));
-	    cleanup(server);
-	    return;
-	}
+            /* get his authenticator */
+            retval = GetKerberosData(live_socket, from.sin_addr, &kdata,
+                                     SERVER_SERVICE, srvtab_file);
+            if (retval != KSUCCESS) {
+                syslog(LOG_ERR, "bdump_get_v12: getkdata: %s",error_message(retval));
+                cleanup(server);
+                return;
+            }
 
-	if (strcmp(kdata.pname, SERVER_SERVICE) ||
-	    strcmp(kdata.pinst, SERVER_INSTANCE) ||
-	    strcmp(kdata.prealm, ZGetRealm())) {
-	    syslog(LOG_ERR, "bdump_get: peer not zephyr in lrealm: %s.%s@%s",
-		   kdata.pname, kdata.pinst,kdata.prealm);
-	    cleanup(server);
-	    return;
-	}
-	break;
+            if (strcmp(kdata.pname, SERVER_SERVICE) ||
+                strcmp(kdata.pinst, SERVER_INSTANCE) ||
+                strcmp(kdata.prealm, ZGetRealm())) {
+                syslog(LOG_ERR, "bdump_get_v12: peer not zephyr in lrealm: %s.%s@%s",
+                       kdata.pname, kdata.pinst,kdata.prealm);
+                cleanup(server);
+                return;
+            }
+            break;
 #endif /* HAVE_KRB4 */
+        }
     }
 #endif /* defined(HAVE_KRB4) || defined(HAVE_KRB5) */
     retval = setup_file_pointers();
     if (retval != 0) {
-	syslog(LOG_WARNING, "bdump_get: can't set up file pointers: %s",
+        syslog(LOG_WARNING, "bdump_get_v12: can't set up file pointers: %s",
 	       error_message (retval));
 	cleanup(server);
 	return;
     }
     retval = bdump_recv_loop(server);
     if (retval != ZERR_NONE) {
-	syslog(LOG_WARNING, "bdump_get: bdump_recv_loop failed: %s",
+        syslog(LOG_WARNING, "bdump_get_v12: bdump_recv_loop failed: %s",
 	       error_message(retval));
 	cleanup(server);
 	return;
     }
-    zdbug((LOG_DEBUG,"bdump_get: gbdl ok"));
+    zdbug((LOG_DEBUG,"bdump_get_v12: gbdl ok"));
     retval = bdump_send_loop(server);
     if (retval != ZERR_NONE) {
-	syslog(LOG_WARNING, "bdump_send_loop failed: %s",
+        syslog(LOG_WARNING, "bdump_get_v12: bdump_send_loop failed: %s",
 	       error_message(retval));
 	cleanup(server);
 	return;
@@ -769,7 +765,6 @@ bdump_get_v12 (ZNotice_t *notice,
     server->state = SERV_UP;
     timer_reset(server->timer);
     server->timer = timer_set_rel(0L, server_timo, server);
-
 
     zdbug((LOG_DEBUG,"cleanup gbd"));
 
@@ -836,7 +831,9 @@ transmit_tcp(char *pack, int packlen)
     }
 
 #ifdef HAVE_KRB5
-    if (bdump_ac) {
+    if ((__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+         __Zephyr_authtype == ZAUTHTYPE_KRB45) &&
+        bdump_ac) {
         indata.length = packlen;
         indata.data = pack;
         memset(&outmsg, 0, sizeof(krb5_data));
@@ -844,7 +841,7 @@ transmit_tcp(char *pack, int packlen)
         retval = krb5_mk_priv(Z_krb5_ctx, bdump_ac, &indata, &outmsg, NULL);
 
         if (retval != ZERR_NONE)
-	    goto cleanup;
+            goto cleanup;
 
         packlen = outmsg.length;
         pack = outmsg.data;
@@ -877,8 +874,10 @@ transmit_tcp(char *pack, int packlen)
 
  cleanup:
 #ifdef HAVE_KRB5
-    if (bdump_ac)
-	krb5_free_data_contents(Z_krb5_ctx, &outmsg);
+    if ((__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+         __Zephyr_authtype == ZAUTHTYPE_KRB45) &&
+        bdump_ac)
+        krb5_free_data_contents(Z_krb5_ctx, &outmsg);
 #endif
 
     return retval;
@@ -948,9 +947,11 @@ shutdown_file_pointers(void)
 	close(live_socket);
 	live_socket = -1;
 #ifdef HAVE_KRB5
-	if (bdump_ac)
-		krb5_auth_con_free(Z_krb5_ctx, bdump_ac);
-	bdump_ac = NULL;
+        if ((__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+             __Zephyr_authtype == ZAUTHTYPE_KRB45) &&
+            bdump_ac)
+                krb5_auth_con_free(Z_krb5_ctx, bdump_ac);
+        bdump_ac = NULL;
 #endif
     }
 }
@@ -996,7 +997,6 @@ unsigned int enctypes[] = {ENCTYPE_DES_CBC_CRC,
 			   0};
 #endif
 
-
 int
 get_tgt(void)
 {
@@ -1006,140 +1006,147 @@ get_tgt(void)
     krb5_keytab_entry kt_ent;
 #endif
 #ifdef HAVE_KRB4
-    /* MIT Kerberos 4 get_svc_in_tkt() requires instance to be writable and
-     * at least INST_SZ bytes long. */
-    static char buf[INST_SZ + 1] = SERVER_INSTANCE;
+    if (__Zephyr_authtype == ZAUTHTYPE_KRB4 ||
+        __Zephyr_authtype == ZAUTHTYPE_KRB45) {
+        /* MIT Kerberos 4 get_svc_in_tkt() requires instance to be writable and
+         * at least INST_SZ bytes long. */
+        static char buf[INST_SZ + 1] = SERVER_INSTANCE;
 
-    /* have they expired ? */
-    if (ticket_time < NOW - tkt_lifetime(TKTLIFETIME) + (15L * 60L)) {
-	/* +15 for leeway */
+        /* have they expired ? */
+        if (ticket_time < NOW - tkt_lifetime(TKTLIFETIME) + (15L * 60L)) {
+            /* +15 for leeway */
 
-	zdbug((LOG_DEBUG,"get new tickets: %d %d %d", ticket_time, NOW,
-	       NOW - tkt_lifetime(TKTLIFETIME) + 15L));
+            zdbug((LOG_DEBUG, "get_tgt: %d %d %d", ticket_time, NOW,
+                   NOW - tkt_lifetime(TKTLIFETIME) + 15L));
 
-	dest_tkt();
+            dest_tkt();
 
-	retval = krb_get_svc_in_tkt(SERVER_SERVICE, buf, (char *)ZGetRealm(),
-				    "krbtgt", (char *)ZGetRealm(),
-				    TKTLIFETIME, srvtab_file);
-	if (retval != KSUCCESS) {
-	    syslog(LOG_ERR,"get_tgt: krb_get_svc_in_tkt: %s",
-		   error_message(retval));
-	    ticket_time = 0;
-	    return(1);
-	} else {
-	    ticket_time = NOW;
-	}
+            retval = krb_get_svc_in_tkt(SERVER_SERVICE, buf, (char *)ZGetRealm(),
+                                        "krbtgt", (char *)ZGetRealm(),
+                                        TKTLIFETIME, srvtab_file);
+            if (retval != KSUCCESS) {
+                syslog(LOG_ERR,"get_tgt: krb_get_svc_in_tkt: %s",
+                       error_message(retval));
+                ticket_time = 0;
+                return(1);
+            } else {
+                ticket_time = NOW;
+            }
 
-	retval = read_service_key(SERVER_SERVICE, SERVER_INSTANCE,
-				  (char *)ZGetRealm(), 0 /*kvno*/,
-				  srvtab_file, (char *)serv_key);
-	if (retval != KSUCCESS) {
-	    syslog(LOG_ERR, "get_tgt: read_service_key: %s",
-		   error_message(retval));
-	    return 1;
-	}
-	des_key_sched(serv_key, serv_ksched.s);
-	got_des = 1;
+            retval = read_service_key(SERVER_SERVICE, SERVER_INSTANCE,
+                                      (char *)ZGetRealm(), 0 /*kvno*/,
+                                      srvtab_file, (char *)serv_key);
+            if (retval != KSUCCESS) {
+                syslog(LOG_ERR, "get_tgt: read_service_key: %s",
+                       error_message(retval));
+                return 1;
+            }
+            des_key_sched(serv_key, serv_ksched.s);
+            got_des = 1;
+        }
     }
 #endif
 #ifdef HAVE_KRB5
-    /* XXX */
-    if (ticket5_time < NOW - tkt5_lifetime(TKT5LIFETIME) + (15L * 60L)) {
-	krb5_keytab kt;
-	krb5_get_init_creds_opt opt;
-	krb5_creds cred;
-	krb5_principal principal;
+    if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+        __Zephyr_authtype == ZAUTHTYPE_KRB45) {
+        /* XXX */
+        if (ticket5_time < NOW - tkt5_lifetime(TKT5LIFETIME) + (15L * 60L)) {
+            krb5_keytab kt;
+            krb5_get_init_creds_opt opt;
+            krb5_creds cred;
+            krb5_principal principal;
 
-	memset(&cred, 0, sizeof(cred));
+            memset(&cred, 0, sizeof(cred));
 
-	retval = krb5_build_principal(Z_krb5_ctx, &principal,
-				      strlen(ZGetRealm()),
-				      ZGetRealm(),
-				      SERVER_KRB5_SERVICE, SERVER_INSTANCE,
-				      NULL);
-	if (retval) {
-	    syslog(LOG_ERR, "get_tgt: krb5_build_principal: %s",
-		   error_message(retval));
-	    return 1;
-	}
+            retval = krb5_build_principal(Z_krb5_ctx, &principal,
+                                          strlen(ZGetRealm()),
+                                          ZGetRealm(),
+                                          SERVER_KRB5_SERVICE, SERVER_INSTANCE,
+                                          NULL);
+            if (retval) {
+                syslog(LOG_ERR, "get_tgt: krb5_build_principal: %s",
+                       error_message(retval));
+                return 1;
+            }
 
-	krb5_get_init_creds_opt_init (&opt);
-	krb5_get_init_creds_opt_set_tkt_life (&opt, TKT5LIFETIME);
+            krb5_get_init_creds_opt_init (&opt);
+            krb5_get_init_creds_opt_set_tkt_life (&opt, TKT5LIFETIME);
 
-	retval = krb5_kt_resolve(Z_krb5_ctx, keytab_file, &kt);
-	if (retval) {
-	    syslog(LOG_ERR, "get_tgt: krb5_kt_resolve: %s",
-		   error_message(retval));
-	    krb5_free_principal(Z_krb5_ctx, principal);
-	    return 1;
-	}
+            retval = krb5_kt_resolve(Z_krb5_ctx, keytab_file, &kt);
+            if (retval) {
+                syslog(LOG_ERR, "get_tgt: krb5_kt_resolve: %s",
+                   error_message(retval));
+                krb5_free_principal(Z_krb5_ctx, principal);
+                return 1;
+            }
 
-	retval = krb5_get_init_creds_keytab (Z_krb5_ctx,
-					     &cred,
-					     principal,
-					     kt,
-					     0,
-					     NULL,
-					     &opt);
-	if (retval) {
-	    syslog(LOG_ERR, "get_tgt: krb5_get_init_creds_keytab: %s",
-		   error_message(retval));
-	    krb5_free_principal(Z_krb5_ctx, principal);
-	    krb5_kt_close(Z_krb5_ctx, kt);
-	    return 1;
-	}
+            retval = krb5_get_init_creds_keytab (Z_krb5_ctx,
+                                                 &cred,
+                                                 principal,
+                                                 kt,
+                                                 0,
+                                                 NULL,
+                                                 &opt);
+            if (retval) {
+                syslog(LOG_ERR, "get_tgt: krb5_get_init_creds_keytab: %s",
+                       error_message(retval));
+                krb5_free_principal(Z_krb5_ctx, principal);
+                krb5_kt_close(Z_krb5_ctx, kt);
+                return 1;
+            }
 
 #ifndef HAVE_KRB4
-	for (i = 0; enctypes[i]; i++) {
-	    retval = krb5_kt_get_entry(Z_krb5_ctx, kt, principal,
-				       0, enctypes[i], &kt_ent);
-	    if (!retval)
-		break;
-	}
-	if (!retval) {
+            for (i = 0; enctypes[i]; i++) {
+                retval = krb5_kt_get_entry(Z_krb5_ctx, kt, principal,
+                                           0, enctypes[i], &kt_ent);
+                if (!retval)
+                    break;
+            }
+            if (!retval) {
 #ifdef HAVE_KRB5_CRYPTO_INIT
-	    retval = krb5_copy_keyblock(Z_krb5_ctx, &kt_ent.keyblock,
-					&server_key);
+                retval = krb5_copy_keyblock(Z_krb5_ctx, &kt_ent.keyblock,
+                                            &server_key);
 #else
-	    retval = krb5_copy_keyblock(Z_krb5_ctx, &kt_ent.key, &server_key);
+                retval = krb5_copy_keyblock(Z_krb5_ctx, &kt_ent.key, &server_key);
 #endif
-	    if (retval) {
-		syslog(LOG_ERR, "get_tgt: krb5_copy_keyblock: %s",
-		       error_message(retval));
-		krb5_free_principal(Z_krb5_ctx, principal);
-		krb5_kt_close(Z_krb5_ctx, kt);
-		return 1;
-	    }
+                if (retval) {
+                    syslog(LOG_ERR, "get_tgt: krb5_copy_keyblock: %s",
+                           error_message(retval));
+                    krb5_free_principal(Z_krb5_ctx, principal);
+                    krb5_kt_close(Z_krb5_ctx, kt);
+                    return 1;
+                }
 
-	    got_des = 1;
-	}
-#endif /* HAVE_KRB4 */
-	krb5_free_principal(Z_krb5_ctx, principal);
-	krb5_kt_close(Z_krb5_ctx, kt);
+                got_des = 1;
+            }
+#endif
 
-	retval = krb5_cc_initialize (Z_krb5_ctx, Z_krb5_ccache, cred.client);
-	if (retval) {
-	    syslog(LOG_ERR, "get_tgt: krb5_cc_initialize: %s",
-		   error_message(retval));
-	    return 1;
-	}
+            krb5_free_principal(Z_krb5_ctx, principal);
+            krb5_kt_close(Z_krb5_ctx, kt);
 
-	retval = krb5_cc_store_cred (Z_krb5_ctx, Z_krb5_ccache, &cred);
-	if (retval) {
-	    syslog(LOG_ERR, "get_tgt: krb5_cc_store_cred: %s",
-		   error_message(retval));
-	    return 1;
-	}
+            retval = krb5_cc_initialize (Z_krb5_ctx, Z_krb5_ccache, cred.client);
+            if (retval) {
+                syslog(LOG_ERR, "get_tgt: krb5_cc_initialize: %s",
+                       error_message(retval));
+                return 1;
+            }
 
-	ticket5_time = NOW;
+            retval = krb5_cc_store_cred (Z_krb5_ctx, Z_krb5_ccache, &cred);
+            if (retval) {
+                syslog(LOG_ERR, "get_tgt: krb5_cc_store_cred: %s",
+                       error_message(retval));
+                return 1;
+            }
 
-	krb5_free_cred_contents (Z_krb5_ctx, &cred);
+            ticket5_time = NOW;
+
+            krb5_free_cred_contents (Z_krb5_ctx, &cred);
+        }
     }
 #endif
     return 0;
 }
-#endif /* HAVE_KRB4 */
+#endif
 
 /*
  * The braindump offer wasn't taken, so we retract it.
@@ -1216,21 +1223,23 @@ bdump_recv_loop(Server *server)
 	}
 
 #if HAVE_KRB5
-	if (bdump_ac) {
-	    krb5_data in, out;
-	    in.length = len;
-	    in.data = packet;
-	    memset(&out, 0, sizeof(krb5_data));
-	    retval = krb5_rd_priv(Z_krb5_ctx, bdump_ac, &in, &out, NULL);
-	    if (retval != ZERR_NONE) {
-	        syslog(LOG_ERR, "bdump_recv_loop: krb5_rd_priv failed: %s", error_message(retval));
-		free(packet);
-	        return retval;
-	    }
-	    memcpy(packet, out.data, out.length);
-	    len = out.length;
-	    krb5_free_data_contents(Z_krb5_ctx, &out);
-	}
+        if ((__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+             __Zephyr_authtype == ZAUTHTYPE_KRB45) &&
+            bdump_ac) {
+            krb5_data in, out;
+            in.length = len;
+            in.data = packet;
+            memset(&out, 0, sizeof(krb5_data));
+            retval = krb5_rd_priv(Z_krb5_ctx, bdump_ac, &in, &out, NULL);
+            if (retval != ZERR_NONE) {
+                syslog(LOG_ERR, "bdump_recv_loop: krb5_rd_priv failed: %s", error_message(retval));
+                free(packet);
+                return retval;
+            }
+            memcpy(packet, out.data, out.length);
+            len = out.length;
+            krb5_free_data_contents(Z_krb5_ctx, &out);
+        }
 #endif
 
 	retval = ZParseNotice(packet, len, &notice);
@@ -1281,76 +1290,83 @@ bdump_recv_loop(Server *server)
 		return retval;
 	    }
 #ifdef HAVE_KRB5
-	    client->session_keyblock = NULL;
-	    if (*notice.z_class_inst) {
-		/* check out this session key I found */
-		cp = notice.z_message + strlen(notice.z_message) + 1;
-		if (*cp == '0' && got_des) {
-		    /* ****ing netascii; this is an encrypted DES keyblock
-		       XXX this code should be conditionalized for server
-		       transitions   */
-		    retval = Z_krb5_init_keyblock(Z_krb5_ctx, ENCTYPE_DES_CBC_CRC,
-						  sizeof(cblock),
-						  &client->session_keyblock);
-		    if (retval) {
-			syslog(LOG_ERR, "bdump_recv_loop: failed to allocate DES keyblock: %s",
-			       error_message(retval));
-			free(packet);
-			return retval;
-		    }
-		    retval = ZReadAscii(cp, strlen(cp), cblock, sizeof(cblock));
-		    if (retval != ZERR_NONE) {
-			syslog(LOG_ERR,"bdump_recv_loop: bad cblock read: %s (%s)",
-			       error_message(retval), cp);
-		    } else {
-			retval = des_service_decrypt(cblock, Z_keydata(client->session_keyblock));
-			if (retval) {
-			    syslog(LOG_ERR, "bdump_recv_loop: failed to decyrpt DES session key: %s",
-				   error_message(retval));
-			    free(packet);
-			    return retval;
-			}
-		    }
-		} else if (*cp == 'Z') {
-		    /* Zcode! Long live the new flesh! */
-		    retval = ZReadZcode((unsigned char *)cp, buf, sizeof(buf), &blen);
-		    if (retval != ZERR_NONE) {
-			syslog(LOG_ERR,"bdump_recv_loop: bad keyblock read: %s (%s)",
-			       error_message(retval), cp);
-		    } else {
-			retval = Z_krb5_init_keyblock(Z_krb5_ctx,
-						    ntohl(*(krb5_enctype *)&buf[0]),
-						    ntohl(*(uint32_t *)&buf[4]),
-						    &client->session_keyblock);
-			if (retval) {
-			    syslog(LOG_ERR, "bdump_recv_loop: failed to allocate keyblock: %s",
-				   error_message(retval));
-			    free(packet);
-			    return retval;
-			}
-			memcpy(Z_keydata(client->session_keyblock), &buf[8],
-			       Z_keylen(client->session_keyblock));
-		    }
-		}
-	    }
-#else
-#ifdef HAVE_KRB4
-	    memset(client->session_key, 0, sizeof(C_Block));
-	    if (*notice.z_class_inst) {
-		/* a C_Block is there */
-		cp = notice.z_message + strlen(notice.z_message) + 1;
-		retval = ZReadAscii(cp, strlen(cp), cblock, sizeof(C_Block));
-		if (retval != ZERR_NONE) {
-		    syslog(LOG_ERR,"bdump_recv_loop: bad cblock read: %s (%s)",
-			   error_message(retval), cp);
-		} else {
-		    des_ecb_encrypt((des_cblock *)cblock,
-				    (des_cblock *)client->session_key,
-				    serv_ksched.s, DES_DECRYPT);
-		}
-	    }
-#endif /* HAVE_KRB4 */
+            if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+                __Zephyr_authtype == ZAUTHTYPE_KRB45) {
+                client->session_keyblock = NULL;
+                if (*notice.z_class_inst) {
+                    /* check out this session key I found */
+                    cp = notice.z_message + strlen(notice.z_message) + 1;
+                    if (*cp == '0' && got_des) {
+                        /* ****ing netascii; this is an encrypted DES keyblock
+                           XXX this code should be conditionalized for server
+                           transitions   */
+                        retval = Z_krb5_init_keyblock(Z_krb5_ctx, ENCTYPE_DES_CBC_CRC,
+                                                      sizeof(cblock),
+                                                      &client->session_keyblock);
+                        if (retval) {
+                            syslog(LOG_ERR, "bdump_recv_loop: failed to allocate DES keyblock: %s",
+                                   error_message(retval));
+                            free(packet);
+                            return retval;
+                        }
+                        retval = ZReadAscii(cp, strlen(cp), cblock, sizeof(cblock));
+                        if (retval != ZERR_NONE) {
+                            syslog(LOG_ERR,"bdump_recv_loop: bad cblock read: %s (%s)",
+                                   error_message(retval), cp);
+                        } else {
+                            retval = des_service_decrypt(cblock, Z_keydata(client->session_keyblock));
+                            if (retval) {
+                                syslog(LOG_ERR, "bdump_recv_loop: failed to decyrpt DES session key: %s",
+                                       error_message(retval));
+                                free(packet);
+                                return retval;
+                            }
+                        }
+                    } else if (*cp == 'Z') {
+                        /* Zcode! Long live the new flesh! */
+                        retval = ZReadZcode((unsigned char *)cp, buf, sizeof(buf), &blen);
+                        if (retval != ZERR_NONE) {
+                            syslog(LOG_ERR,"bdump_recv_loop: bad keyblock read: %s (%s)",
+                                   error_message(retval), cp);
+                        } else {
+                            retval = Z_krb5_init_keyblock(Z_krb5_ctx,
+                                                          ntohl(*(krb5_enctype *)&buf[0]),
+                                                          ntohl(*(uint32_t *)&buf[4]),
+                                                          &client->session_keyblock);
+                            if (retval) {
+                                syslog(LOG_ERR, "bdump_recv_loop: failed to allocate keyblock: %s",
+                                       error_message(retval));
+                                free(packet);
+                                return retval;
+                            }
+                            memcpy(Z_keydata(client->session_keyblock), &buf[8],
+                                   Z_keylen(client->session_keyblock));
+                        }
+                    }
+                }
+            }
 #endif
+#if defined(HAVE_KRB4) && defined(HAVE_KRB5)
+            else /*hurl*/
+#endif
+#ifdef HAVE_KRB4
+            if (__Zephyr_authtype == ZAUTHTYPE_KRB4) {
+                memset(client->session_key, 0, sizeof(C_Block));
+                if (*notice.z_class_inst) {
+                    /* a C_Block is there */
+                    cp = notice.z_message + strlen(notice.z_message) + 1;
+                    retval = ZReadAscii(cp, strlen(cp), cblock, sizeof(C_Block));
+                    if (retval != ZERR_NONE) {
+                        syslog(LOG_ERR,"bdump_recv_loop: bad cblock read: %s (%s)",
+                               error_message(retval), cp);
+                    } else {
+                        des_ecb_encrypt((des_cblock *)cblock,
+                                        (des_cblock *)client->session_key,
+                                        serv_ksched.s, DES_DECRYPT);
+                    }
+                }
+            }
+#endif /* HAVE_KRB4 */
 	} else if (strcmp(notice.z_opcode, CLIENT_SUBSCRIBE) == 0) {
 	    /* a subscription packet */
 	    if (!client) {

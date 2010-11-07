@@ -206,28 +206,6 @@ main(int argc,
 	}
     }
 
-#ifdef HAVE_KRB4
-    /* if there is no readable srvtab and we are not standalone, there
-       is no possible way we can succeed, so we exit */
-
-    if (access(srvtab_file, R_OK)
-#ifdef DEBUG
-	&& !zalone
-#endif /* DEBUG */
-	) {
-	fprintf(stderr, "NO ZEPHYR SRVTAB (%s) available; exiting\n",
-		srvtab_file);
-	exit(1);
-    }
-    /* Use local realm if not specified on command line. */
-    if (!*my_realm) {
-	if (krb_get_lrealm(my_realm, 1) != KSUCCESS) {
-	    fputs("Couldn't get local Kerberos realm; exiting.\n", stderr);
-	    exit(1);
-	}
-    }
-#endif /* HAVE_KRB4 */
-
 #ifndef DEBUG
     if (!nofork)
 	detach();
@@ -380,24 +358,54 @@ initialize(void)
 
     ZSetServerState(1);
     ZInitialize();		/* set up the library */
-#ifdef HAVE_KRB5
-    krb5_cc_resolve(Z_krb5_ctx, tkt5_file, &Z_krb5_ccache);
-#ifdef HAVE_KRB5_CC_SET_DEFAULT_NAME
-    krb5_cc_set_default_name(Z_krb5_ctx, tkt5_file);
-#else
-    {
-	/* Hack to make krb5_cc_default do something reasonable */
-	char *env=(char *)malloc(strlen(tkt5_file)+12);
-	if (!env) return(1);
-	sprintf(env, "KRB5CCNAME=%s", tkt5_file);
-	putenv(env);
+
+#ifdef HAVE_KRB4
+    if (__Zephyr_authtype == ZAUTHTYPE_KRB4 ||
+	__Zephyr_authtype == ZAUTHTYPE_KRB45) {
+	if (access(srvtab_file, R_OK)
+#ifdef DEBUG
+	    && !zalone
+#endif /* DEBUG */
+	    ) {
+	    syslog(LOG_ERR,"NO ZEPHYR SRVTAB (%s) available; exiting",
+		    srvtab_file);
+	    return 1;
+	}
+
+	/* Use local realm if not specified on command line. */
+	if (!*my_realm) {
+	    if (krb_get_lrealm(my_realm, 1) != KSUCCESS) {
+		syslog(LOG_ERR, "Couldn't get local Kerberos realm; exiting.");
+		return 1;
+	    }
+	}
     }
 #endif
+
+#ifdef HAVE_KRB5
+    if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
+	__Zephyr_authtype == ZAUTHTYPE_KRB45) {
+	krb5_cc_resolve(Z_krb5_ctx, tkt5_file, &Z_krb5_ccache);
+#ifdef HAVE_KRB5_CC_SET_DEFAULT_NAME
+	krb5_cc_set_default_name(Z_krb5_ctx, tkt5_file);
+#else
+	{
+	    /* Hack to make krb5_cc_default do something reasonable */
+	    char *env = (char *)malloc(strlen(tkt5_file) + 12);
+	    if (!env)
+		return 1;
+	    sprintf(env, "KRB5CCNAME=%s", tkt5_file);
+	    putenv(env);
+	}
+#endif
+    }
 #endif
 #if defined(HAVE_KRB4) || defined(HAVE_KRB5)
-    /* Override what Zinitialize set for ZGetRealm() */
-    if (*my_realm)
-      strcpy(__Zephyr_realm, my_realm);
+    if (__Zephyr_authtype != ZAUTHTYPE_NONE) {
+	/* Override what Zinitialize set for ZGetRealm() */
+	if (*my_realm)
+	    strcpy(__Zephyr_realm, my_realm);
+    }
 #endif
 
     /* set up err table */
@@ -529,7 +537,9 @@ bye(int sig)
     hostm_shutdown();		/* tell our hosts */
     kill_realm_pids();
 #ifdef HAVE_KRB4
-    dest_tkt();
+    if (__Zephyr_authtype == ZAUTHTYPE_KRB4 ||
+	__Zephyr_authtype == ZAUTHTYPE_KRB45)
+	dest_tkt();
 #endif
     syslog(LOG_NOTICE, "goodbye (sig %d)", sig);
     exit(0);
