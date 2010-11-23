@@ -51,10 +51,13 @@
 #define Z_KEYUSAGE_CLT_CKSUM  1027    /* client->server notice checksum */
 #define Z_KEYUSAGE_SRV_CKSUM  1029    /* server->client notice checksum */
 
-#define ZAUTHTYPE_NONE          0
-#define ZAUTHTYPE_KRB4          1
-#define ZAUTHTYPE_KRB5          2
-#define ZAUTHTYPE_KRB45         3
+typedef enum {
+    ZAUTHTYPE_UNCONFIGURED = -1,
+    ZAUTHTYPE_NONE = 0,
+    ZAUTHTYPE_KRB4 = 1,
+    ZAUTHTYPE_KRB5 = 2,
+    ZAUTHTYPE_KRB45 = 3
+} z_authtype;
 
 struct _Z_Hole {
     struct _Z_Hole	*next;
@@ -105,7 +108,7 @@ extern int __Zephyr_fd;
 extern int __Q_CompleteLength;
 extern struct sockaddr_in __HM_addr;
 extern char __Zephyr_realm[];
-extern int __Zephyr_authtype;
+extern z_authtype __Zephyr_authtype;
 
 typedef Code_t (*Z_SendProc) (ZNotice_t *, char *, int, int);
 

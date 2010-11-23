@@ -18,6 +18,7 @@ static const char rcsid_ZInitialize_c[] =
 #include <internal.h>
 
 #include <sys/socket.h>
+#include <ctypes.h>
 #ifdef HAVE_KRB4
 #include <krb_err.h>
 #endif
@@ -37,6 +38,14 @@ static const char rcsid_ZInitialize_c[] =
 
 static int z_get_host_realm_replacement(char *, char ***);
 #endif
+
+struct _Zconf {
+    z_authtype authtype;
+};
+
+typedef struct _Zconf zconf;
+
+static zconf *z_read_config(void);
 
 Code_t
 ZInitialize(void)
@@ -95,6 +104,16 @@ ZInitialize(void)
     /* Initialize the input queue */
     __Q_Tail = NULL;
     __Q_Head = NULL;
+
+    zconf = z_read_config();
+
+    if (zconf == NULL)
+        return ZERR_INTERNAL;
+
+    __zephyr_authtype = zconf.authtype;
+
+    if (__zephyr_authtype == ZAUTHTYPE_UNCONFIGURED)
+        return ZERR_INTERNAL;
 
 #ifdef HAVE_KRB5
     if (__Zephyr_authtype == ZAUTHTYPE_KRB5 ||
@@ -437,3 +456,131 @@ z_get_host_realm_replacement(char *inhost, char ***krealms) {
     return 0;
 }
 #endif
+
+typedef struct {
+    FILE *fp;
+    //    enum {START} state;
+} cfp;
+
+Code_t
+z_open_config(const char *filename, cfp **cf) {
+    FILE *fp;
+
+    fp = fopen(filename, "r");
+    if (fp == NULL)
+        return errno;
+
+    *cf = (cfp *)malloc(sizeof(**cf));
+    if (*cf == NULL)
+        return ENOMEM;
+
+    (*cf)->state = START;
+    (*cf)->fp = fp;
+}
+
+
+
+char *
+z_read_word(cfp *cf) {
+    int c;
+    char word[BUFSIZ];
+    int len = 0;
+    enum {START = 0, WORD = 1, COMMENT = 2} state = START;
+    enum _action {RETNULL, RETWORD, ACCUMULATE, NEXT} action;
+    enum {SPACE = 0, HASH = 1, LETTER = 2, NEWLINE = 3, END = 4} cls;
+    enum _action table[][] = {
+        /*            SPACE HASH LETTER NEWLINE END */
+        /* START */ {NEXT, 
+
+    for (;;) {
+        c = getc(cf->fp);
+        if (c == '\n')
+            cls = NEWLINE;
+        else if (c == EOF)
+            cls = END;
+        else if (c == '#')
+            cls = HASH;
+        else if (c < ' ')
+            cls = SPACE;
+        else
+            cls = LETTER;
+        switch(cls) {
+        case EOF:
+            switch(state) {
+            case START:
+            case COMMENT:
+                return NULL;
+            case WORD:
+                word[len] = 0;
+                return strdup(word);
+            }
+            break;
+        case '#':
+            state = COMMENT;
+            break;
+        case ' ':
+        case '\t':
+            switch(state) {
+            case START:
+                break;
+            }
+        }
+        switch(action) {
+        case RETNULL:
+            return NULL;
+        case RETWORD:
+            word[len] = 0;
+            len = 0;
+            return strdup(word);
+        case ACCUMULATE:
+            if (len < BUFSIZ)
+                word[len++] = c;
+            break;
+        case NEXT:
+            break;
+        }
+    }
+    
+}
+
+zconf *z_read_config(void) {
+    zconf *conf;
+    FILE *fp;
+    char *zcenv;
+     = START;
+    int c;
+    char word[BUFSIZ];
+    int wordlen = 0;
+
+    conf = (zconf *)malloc(sizeof(*zconf));
+
+    if (conf == NULL)
+        return NULL;
+
+    /* defaults */
+    conf->authtype = ZAUTHTYPE_NONE;
+
+    zcenv = getenv("ZEPHYRCONF");
+
+    fp = fopen(zcenv ? zcenv : SYSCONFDIR "/zephyr.conf", "r");
+
+    
+
+    
+    conf->authtype = 
+#ifdef HAVE_KRB5
+#ifndef HAVE_KRB4
+    ZAUTHTYPE_KRB5
+#else
+    ZAUTHTYPE_KRB45
+#endif
+#else
+#ifndef HAVE_KRB4
+    ZAUTHTYPE_NONE
+#else
+    ZAUTHTYPE_KRB4
+#endif
+#endif
+        ;
+
+}

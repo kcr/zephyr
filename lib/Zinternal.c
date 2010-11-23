@@ -41,22 +41,7 @@ int __subscriptions_num;
 int __subscriptions_next;
 int Z_discarded_packets = 0;
 
-/* XXX KLUDGE */
-int __Zephyr_authtype =
-#ifdef HAVE_KRB5
-#ifndef HAVE_KRB4
-    ZAUTHTYPE_KRB5
-#else
-    ZAUTHTYPE_KRB45
-#endif
-#else
-#ifndef HAVE_KRB4
-    ZAUTHTYPE_NONE
-#else
-    ZAUTHTYPE_KRB4
-#endif
-#endif
-    ;
+z_authtype __Zephyr_authtype = ZAUTHTYPE_UNCONFIGURED;
 
 #ifdef HAVE_KRB5
 /* This context is used throughout */
