@@ -24,7 +24,7 @@ int use_hesiod = 0;
 
 #define PIDDIR "/var/run/"
 
-int hmdebug, rebootflag, noflushflag, errflg, dieflag, inetd, oldpid, nofork;
+int hmdebug, rebootflag, noflushflag, errflg, oldpid, nofork;
 int no_server = 1, nservchang, nserv, nclt;
 int booting = 1, timeout_type, deactivated = 1;
 int bootflag = 1;
@@ -36,13 +36,11 @@ int numserv;
 char **serv_list = NULL;
 char prim_serv[NS_MAXDNAME], cur_serv[NS_MAXDNAME];
 char *zcluster;
-int deactivating = 0;
 int terminating = 0;
 struct hostent *hp;
 char hostname[NS_MAXDNAME], loopback[4];
 char PidFile[128];
 
-static RETSIGTYPE deactivate(int);
 static RETSIGTYPE terminate(int);
 static void choose_server(void);
 static void init_hm(void);
@@ -55,12 +53,6 @@ extern void server_manager(ZNotice_t *);
 extern void send_boot_notice(char *);
 extern void find_next_server(char *);
 extern int optind;
-
-static RETSIGTYPE
-deactivate(int ignored)
-{
-    deactivating = 1;
-}
 
 static RETSIGTYPE
 terminate(int ignored)
@@ -91,19 +83,9 @@ main(int argc,
 	  case 'd':
 	    hmdebug = 1;
 	    break;
-	  case 'h':
-	    /* Die on SIGHUP */
-	    dieflag = 1;
-	    break;
 	  case 'r':
 	    /* Reboot host -- send boot notice -- and exit */
 	    rebootflag= 1;
-	    break;
-	  case 'i':
-	    /* inetd operation: don't do bind ourselves, fd 0 is
-	       already connected to a socket. Implies -h */
-	    inetd = 1;
-	    dieflag = 1;
 	    break;
 	  case 'n':
 	    nofork = 1;
@@ -183,17 +165,6 @@ main(int argc,
 
 	if (terminating)
 	    die_gracefully();
-
-	if (deactivating) {
-	    deactivating = 0;
-	    if (dieflag) {
-		die_gracefully();
-	    } else {
-		choose_server();
-		send_flush_notice(HM_FLUSH);
-		deactivated = 1;
-	    }
-	}
 
 	timer_process();
 
@@ -394,18 +365,14 @@ init_hm(void)
      loopback[2] = 0;
      loopback[3] = 1;
 
-     if (inetd) {
-	 ZSetFD(0);		/* fd 0 is on the socket, thanks to inetd */
-     } else {
-	 /* Open client socket, for receiving client and server notices */
-	 sp = getservbyname(HM_SVCNAME, "udp");
-	 cli_port = (sp) ? sp->s_port : HM_SVC_FALLBACK;
+     /* Open client socket, for receiving client and server notices */
+     sp = getservbyname(HM_SVCNAME, "udp");
+     cli_port = (sp) ? sp->s_port : HM_SVC_FALLBACK;
 
-	 if ((ret = ZOpenPort(&cli_port)) != ZERR_NONE) {
-	     Zperr(ret);
-	     com_err("hm", ret, "opening port");
-	     exit(ret);
-	 }
+     if ((ret = ZOpenPort(&cli_port)) != ZERR_NONE) {
+         Zperr(ret);
+         com_err("hm", ret, "opening port");
+         exit(ret);
      }
      cli_sin = ZGetDestAddr();
 
@@ -414,7 +381,7 @@ init_hm(void)
      serv_sin.sin_port = (sp) ? sp->s_port : SERVER_SVC_FALLBACK;
 
 #ifndef DEBUG
-     if (!inetd && !nofork)
+     if (!nofork)
 	 detach();
 
      /* Write pid to file */
@@ -449,17 +416,15 @@ init_hm(void)
           send_boot_notice(HM_BOOT);
      else
           send_boot_notice(HM_ATTACH);
-     deactivated = 0;
 
 #ifdef _POSIX_VERSION
      sigemptyset(&sa.sa_mask);
      sa.sa_flags = 0;
-     sa.sa_handler = deactivate;
-     sigaction(SIGHUP, &sa, (struct sigaction *)0);
      sa.sa_handler = terminate;
+     sigaction(SIGHUP, &sa, (struct sigaction *)0);
      sigaction(SIGTERM, &sa, (struct sigaction *)0);
 #else
-     signal(SIGHUP, deactivate);
+     signal(SIGHUP, terminate);
      signal(SIGTERM, terminate);
 #endif
 }

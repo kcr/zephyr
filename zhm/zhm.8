@@ -16,11 +16,7 @@ zhm \- Zephyr HostManager
 ] [
 .BI -n
 ] [
-.BI -h
-] [
 .BI -r
-] [
-.BI -i
 ] [
 .BI -f
 ] [
@@ -48,30 +44,10 @@ The
 option causes zhm to not attempt to put itself in the background.
 .PP
 The
-.I -h
-option causes
-.I zhm
-to send a shutdown message and exit upon delivery of a SIGHUP signal.
-The normal action on SIGHUP is to send a flush notice to the zephyr server.
-.PP
-The
 .I -r
 option causes
 .I zhm
 to send a boot notice to the server and exit when the notice is acknowledged.
-.PP
-The
-.I -i
-option indicates that
-.I zhm
-is being started by
-.I inetd(8).
-When this option is specified,
-.I zhm
-assumes that file descriptor zero (0) is bound to the UDP datagram port
-designated for hostmanager use.  In this mode, SIGHUP is handled as if the
-.I -h
-option were specified.
 .PP
 The
 .I -f
