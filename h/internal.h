@@ -115,6 +115,8 @@ Code_t Z_FormatRawHeader (ZNotice_t *, char*, int,
 			      int*, char **, char **);
 Code_t Z_ReadEnqueue (void);
 Code_t Z_ReadWait (void);
+Code_t Z_GetUDP(ZPacket_t *packet, int *len);
+Code_t Z_SendUDP(char *packet, int len);
 Code_t Z_SendLocation (char*, char*, Z_AuthProc, char*);
 Code_t Z_SendFragmentedNotice (ZNotice_t *notice, int len,
 				   Z_AuthProc cert_func,

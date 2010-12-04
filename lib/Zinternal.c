@@ -259,6 +259,72 @@ Z_SearchQueue(ZUnique_Id_t *uid,
     return (NULL);
 }
 
+static Code_t
+Z__ReadPacket(ZPacket_t *packet, int *packet_len,
+              struct sockaddr_in *from, unsigned int *from_len,
+              ZNotice_t *notice) {
+    Code_t retval;
+    ZNotice_t tmpnotice;
+    ZPacket_t pkt;
+    int len, zvlen;
+    struct sockaddr_in olddest;
+
+    *packet_len = recvfrom(ZGetFD(), packet, sizeof(*packet), 0,
+                           (struct sockaddr *)from, from_len);
+
+    if (*packet_len < 0)
+	return errno;
+
+    if (!*packet_len)
+	return ZERR_EOF;
+
+    /* Ignore obviously non-Zephyr packets. */
+    zvlen = sizeof(ZVERSIONHDR) - 1;
+    if (*packet_len < zvlen || memcmp(packet, ZVERSIONHDR, zvlen) != 0) {
+	Z_discarded_packets++;
+        *packet_len = 0;
+	return ZERR_NONE;
+    }
+
+    /* Parse the notice */
+    retval = ZParseNotice(*packet, *packet_len, notice);
+    if (retval != ZERR_NONE)
+	return retval;
+
+    /*
+     * If we're not a server and the notice is of an appropriate kind,
+     * send back a CLIENTACK to whoever sent it to say we got it.
+     */
+    if (!__Zephyr_server) {
+	if (notice->z_kind != HMACK && notice->z_kind != SERVACK &&
+	    notice->z_kind != SERVNAK && notice->z_kind != CLIENTACK) {
+	    tmpnotice = *notice;
+	    tmpnotice.z_kind = CLIENTACK;
+	    tmpnotice.z_message_len = 0;
+	    olddest = __HM_addr;
+	    __HM_addr = *from;
+	    retval = ZFormatSmallRawNotice(&tmpnotice, pkt, &len);
+	    if (retval == ZERR_NONE)
+		retval = ZSendPacket(pkt, len, 0);
+	    __HM_addr = olddest;
+	    if (retval != ZERR_NONE)
+		return retval;
+	}
+	if (find_or_insert_uid(&notice->z_uid, notice->z_kind)) {
+            *packet_len = 0;
+	    return ZERR_NONE;
+        }
+    }
+
+    return ZERR_NONE;
+}
+
+Code_t
+Z_GetUDP(ZPacket_t *packet, int *len) {
+    ZNotice_t notice;
+    return Z__ReadPacket(packet, len, NULL, NULL, &notice);
+}
+
 /*
  * Now we delve into really convoluted queue handling and
  * fragmentation reassembly algorithms and other stuff you probably
@@ -274,16 +340,16 @@ Z_ReadWait(void)
     register struct _Z_InputQ *qptr;
     ZNotice_t notice;
     ZPacket_t packet;
-    struct sockaddr_in olddest, from;
+    struct sockaddr_in from;
     unsigned int from_len;
-    int packet_len, zvlen, part, partof;
+    int packet_len, part, partof;
     char *slash;
     Code_t retval;
     fd_set fds;
     struct timeval tv;
 
     if (ZGetFD() < 0)
-	return (ZERR_NOPORT);
+	return ZERR_NOPORT;
 
     FD_ZERO(&fds);
     FD_SET(ZGetFD(), &fds);
@@ -291,62 +357,19 @@ Z_ReadWait(void)
     tv.tv_usec = 0;
 
     if (select(ZGetFD() + 1, &fds, NULL, NULL, &tv) < 0)
-      return (errno);
+      return errno;
     if (!FD_ISSET(ZGetFD(), &fds))
       return ETIMEDOUT;
 
-    from_len = sizeof(struct sockaddr_in);
+    from_len = sizeof(from);
 
-    packet_len = recvfrom(ZGetFD(), packet, sizeof(packet), 0,
-			  (struct sockaddr *)&from, &from_len);
+    retval = Z__ReadPacket(&packet, &packet_len, &from, &from_len, &notice);
+    if (retval != ZERR_NONE || packet_len == 0)
+        return retval;
 
-    if (packet_len < 0)
-	return (errno);
-
-    if (!packet_len)
-	return (ZERR_EOF);
-
-    /* Ignore obviously non-Zephyr packets. */
-    zvlen = sizeof(ZVERSIONHDR) - 1;
-    if (packet_len < zvlen || memcmp(packet, ZVERSIONHDR, zvlen) != 0) {
-	Z_discarded_packets++;
-	return (ZERR_NONE);
-    }
-
-    /* Parse the notice */
-    if ((retval = ZParseNotice(packet, packet_len, &notice)) != ZERR_NONE)
-	return (retval);
-
-    /*
-     * If we're not a server and the notice is of an appropriate kind,
-     * send back a CLIENTACK to whoever sent it to say we got it.
-     */
-    if (!__Zephyr_server) {
-	if (notice.z_kind != HMACK && notice.z_kind != SERVACK &&
-	    notice.z_kind != SERVNAK && notice.z_kind != CLIENTACK) {
-	    ZNotice_t tmpnotice;
-	    ZPacket_t pkt;
-	    int len;
-
-	    tmpnotice = notice;
-	    tmpnotice.z_kind = CLIENTACK;
-	    tmpnotice.z_message_len = 0;
-	    olddest = __HM_addr;
-	    __HM_addr = from;
-	    retval = ZFormatSmallRawNotice(&tmpnotice, pkt, &len);
-	    if (retval == ZERR_NONE)
-		retval = ZSendPacket(pkt, len, 0);
-	    __HM_addr = olddest;
-	    if (retval != ZERR_NONE)
-		return retval;
-	}
-	if (find_or_insert_uid(&notice.z_uid, notice.z_kind))
-	    return(ZERR_NONE);
-
-	/* Check authentication on the notice. */
+    /* Check authentication on the notice. */
+    if (!__Zephyr_server)
 	notice.z_checked_auth = ZCheckAuthentication(&notice, &from);
-    }
-
 
     /*
      * Parse apart the z_multinotice field - if the field is blank for
