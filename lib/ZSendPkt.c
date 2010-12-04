@@ -26,38 +26,52 @@ ZSendPacket(char *packet,
 	    int waitforack)
 {
     Code_t retval;
-    struct sockaddr_in dest;
     ZNotice_t notice, acknotice;
-	
-    if (!packet || len < 0)
-	return (ZERR_ILLVAL);
 
-    if (len > Z_MAXPKTLEN)
-	return (ZERR_PKTLEN);
-    
-    if (ZGetFD() < 0)
-	if ((retval = ZOpenPort((u_short *)0)) != ZERR_NONE)
-	    return (retval);
-
-    dest = ZGetDestAddr();
-	
-    if (sendto(ZGetFD(), packet, len, 0, (struct sockaddr *)&dest,
-	       sizeof(dest)) < 0)
-	return (errno);
+    retval = Z_SendUDP(packet, len);
+    if (retval != ZERR_NONE)
+        return ZERR_NONE;
 
     if (!waitforack)
-	return (ZERR_NONE);
+	return ZERR_NONE;
 
-    if ((retval = ZParseNotice(packet, len, &notice)) != ZERR_NONE)
-	return (retval);
-    
+    retval = ZParseNotice(packet, len, &notice);
+    if (retval != ZERR_NONE)
+	return retval;
+
     retval = Z_WaitForNotice(&acknotice, wait_for_hmack, &notice.z_uid,
 			     HM_TIMEOUT);
     if (retval == ETIMEDOUT)
-      return ZERR_HMDEAD;
+        return ZERR_HMDEAD;
     if (retval == ZERR_NONE)
-      ZFreeNotice (&acknotice);
+        ZFreeNotice (&acknotice);
+
     return retval;
+}
+
+Code_t
+Z_SendUDP(char *packet, int len) {
+    struct sockaddr_in dest;
+    Code_t retval = ZERR_NONE;
+
+    if (!packet || len < 0)
+	return ZERR_ILLVAL;
+
+    if (len > Z_MAXPKTLEN)
+	return ZERR_PKTLEN;
+
+    if (ZGetFD() < 0)
+        retval = ZOpenPort((u_short *)0);
+    if (retval != ZERR_NONE)
+        return (retval);
+
+    dest = ZGetDestAddr();
+
+    if (sendto(ZGetFD(), packet, len, 0, (struct sockaddr *)&dest,
+	       sizeof(dest)) < 0)
+	return errno;
+
+    return ZERR_NONE;
 }
 
 static int
