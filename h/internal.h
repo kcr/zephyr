@@ -103,6 +103,7 @@ extern char __Zephyr_realm[];
 
 typedef Code_t (*Z_SendProc) (ZNotice_t *, char *, int, int);
 
+Code_t Z_SetFD(int);
 struct _Z_InputQ *Z_GetFirstComplete (void);
 struct _Z_InputQ *Z_GetNextComplete (struct _Z_InputQ *);
 Code_t Z_XmitFragment (ZNotice_t*, char *,int,int);
