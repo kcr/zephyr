@@ -16,8 +16,14 @@ static const char rcsid_ZSetFD_c[] = "$Id$";
 
 #include <internal.h>
 
-Code_t
+Code_t /* XXX deprecated, not in the zephyr/zephyr.h anymore */
 ZSetFD(int fd)
+{
+    return Z_SetFD(fd);
+}
+
+Code_t
+Z_SetFD(int fd)
 {
 	(void) ZClosePort();
 

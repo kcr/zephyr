@@ -407,7 +407,7 @@ initialize(void)
     init_zsrv_err_tbl();
 #endif
 
-    ZSetFD(srv_socket);		/* set up the socket as the input fildes */
+    Z_SetFD(srv_socket); /* set up the socket as the input file descriptor */
 
     /* set up default strings */
 

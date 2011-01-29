@@ -186,7 +186,6 @@ Code_t ZRequestLocations(char *, ZAsyncLocateData_t *,
 Code_t ZhmStat(struct in_addr *, ZNotice_t *);
 Code_t ZInitialize(void);
 Code_t ZSetServerState(int);
-Code_t ZSetFD(int);
 Code_t ZFormatSmallRawNotice(ZNotice_t*, ZPacket_t, int*);
 int ZCompareUID(ZUnique_Id_t*, ZUnique_Id_t*);
 Code_t ZSrvSendRawList(ZNotice_t*, char*[], int,
