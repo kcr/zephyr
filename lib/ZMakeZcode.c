@@ -18,6 +18,17 @@ static const char rcsid_ZMakeZcode_c[] = "$Id$";
 #endif
 
 Code_t
+ZMakeZcode16(char *ptr,
+	     int len,
+	     unsigned int val)
+{
+    unsigned char buf[2];
+    buf[0] = (val >>  8) & 0xff;
+    buf[1] =  val        & 0xff;
+    return ZMakeZcode(ptr, len, buf, sizeof(buf));
+}
+
+Code_t
 ZMakeZcode32(char *ptr,
 	     int len,
 	     unsigned long val)

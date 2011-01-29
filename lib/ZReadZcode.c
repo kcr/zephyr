@@ -48,6 +48,45 @@ ZReadZcode(const unsigned char *ptr,
 }
 
 Code_t
+ZReadZcode32(const unsigned char *ptr,
+             unsigned long *value_ptr)
+{
+    unsigned char buf[4];
+    Code_t retval;
+    int outlen;
+
+    retval = ZReadZcode(ptr, buf, 4, &outlen);
+    if (retval != ZERR_NONE)
+        return retval;
+
+    if (outlen != 4)
+        return ZERR_BADFIELD;
+
+    *value_ptr = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+
+    return ZERR_NONE;
+}
+
+Code_t
+ZReadZcode16(const unsigned char *ptr,
+             unsigned short *value_ptr)
+{
+    unsigned char buf[2];
+    Code_t retval;
+    int outlen;
+
+    retval = ZReadZcode(ptr, buf, 2, &outlen);
+    if (retval != ZERR_NONE)
+        return retval;
+
+    if (outlen != 2)
+        return ZERR_BADFIELD;
+
+    *value_ptr = (buf[0] << 8) | buf[1];
+    return ZERR_NONE;
+}
+
+Code_t
 ZReadZcodeAddr(const unsigned char *str,
                struct sockaddr_storage *addr)
 {
