@@ -25,7 +25,7 @@ static const char copyright[] =
 int __Zephyr_fd = -1;
 int __Zephyr_open;
 int __Zephyr_port = -1;
-struct in_addr __My_addr;
+struct in_addr __My_addr; /* XXX6 */
 int __Q_CompleteLength;
 int __Q_Size;
 struct _Z_InputQ *__Q_Head, *__Q_Tail;
@@ -1288,7 +1288,8 @@ Z_SendFragmentedNotice(ZNotice_t *notice,
 }
 
 /*ARGSUSED*/
-Code_t Z_XmitFragment(ZNotice_t *notice,
+Code_t
+Z_XmitFragment(ZNotice_t *notice,
 		      char *buf,
 		      int len,
 		      int wait)
