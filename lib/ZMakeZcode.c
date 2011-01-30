@@ -27,7 +27,7 @@ ZMakeZcode32(char *ptr,
     buf[1] = (val >> 16) & 0xff;
     buf[2] = (val >>  8) & 0xff;
     buf[3] =  val        & 0xff;
-    return ZMakeZcode(ptr, len, buf, 4);
+    return ZMakeZcode(ptr, len, buf, sizeof(buf));
 }
 
 Code_t
