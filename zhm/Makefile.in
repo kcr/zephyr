@@ -28,7 +28,7 @@ ALL_CFLAGS=${CFLAGS} -I${top_srcdir}/h -I${BUILDTOP}/h ${CPPFLAGS}
 LDFLAGS=@LDFLAGS@
 HESIOD_LIBS=@HESIOD_LIBS@
 
-OBJS=	timer.o queue.o zhm.o zhm_client.o zhm_server.o
+OBJS=	timer.o queue.o zhm.o zhm_client.o zhm_server.o proxy.o
 
 all: zhm
 

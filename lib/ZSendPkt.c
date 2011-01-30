@@ -17,6 +17,7 @@ static const char rcsid_ZSendPacket_c[] =
 
 #include <internal.h>
 #include <sys/socket.h>
+#include <sys/uio.h>
 
 static int wait_for_hmack(ZNotice_t *, void *);
 
@@ -28,7 +29,11 @@ ZSendPacket(char *packet,
     Code_t retval;
     ZNotice_t notice, acknotice;
 
-    retval = Z_SendUDP(packet, len);
+    if (__Zephyr_tcp_fd == -1)
+        retval = Z_SendUDP(packet, len);
+    else
+        retval = Z_SendTCP(packet, len);
+
     if (retval != ZERR_NONE)
         return ZERR_NONE;
 
@@ -79,4 +84,54 @@ wait_for_hmack(ZNotice_t *notice,
 	       void *uid)
 {
     return (notice->z_kind == HMACK && ZCompareUID(&notice->z_uid, (ZUnique_Id_t *)uid));
+}
+
+Code_t
+Z_GetTCP(ZPacket_t *packet, int *len)
+{
+    unsigned short length;
+    int buflen = *len;
+    int ret;
+
+    ret = read(__Zephyr_tcp_fd, &length, sizeof(length));
+    if (ret < 0)
+        return errno;
+    if (ret < sizeof(length))
+        return ZERR_INTERNAL;
+
+    *len = ntohs(length);
+
+    if (*len > buflen)
+        return ZERR_INTERNAL;
+
+    ret = read(__Zephyr_tcp_fd, packet, *len);
+    if (ret < 0)
+        return errno;
+    if (ret < length)
+        return ZERR_INTERNAL;
+
+    return ZERR_NONE;
+}
+
+Code_t
+Z_SendTCP(char *packet, int len)
+{
+    u_short length;
+    int ret;
+    struct iovec iov[2];
+    int written = 0;
+
+    length = htons((unsigned short) len);
+
+    iov[0].iov_base = (void *)&length;
+    iov[0].iov_len = 2;
+    iov[1].iov_base = packet;
+    iov[1].iov_len = len;
+
+    ret = writev(__Zephyr_tcp_fd, iov, 2);
+    if (ret < 0)
+        return errno;
+    if (ret < (len + 2))
+        return ZERR_INTERNAL;
+    return ZERR_NONE;
 }

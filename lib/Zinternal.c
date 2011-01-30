@@ -24,6 +24,8 @@ static const char copyright[] =
 
 int __Zephyr_fd = -1;
 int __Zephyr_open;
+int __Zephyr_tcp_fd = -1;
+int __Zephyr_tcp_open;
 int __Zephyr_port = -1;
 struct in_addr __My_addr; /* XXX6 */
 int __Q_CompleteLength;
@@ -260,9 +262,9 @@ Z_SearchQueue(ZUnique_Id_t *uid,
 }
 
 static Code_t
-Z__ReadPacket(ZPacket_t *packet, int *packet_len,
-              struct sockaddr_in *from, unsigned int *from_len,
-              ZNotice_t *notice) {
+Z__ReadPacketUDP(ZPacket_t *packet, int *packet_len,
+                 struct sockaddr_in *from, unsigned int *from_len,
+                 ZNotice_t *notice) {
     Code_t retval;
     ZNotice_t tmpnotice;
     ZPacket_t pkt;
@@ -322,7 +324,57 @@ Z__ReadPacket(ZPacket_t *packet, int *packet_len,
 Code_t
 Z_GetUDP(ZPacket_t *packet, int *len) {
     ZNotice_t notice;
-    return Z__ReadPacket(packet, len, NULL, NULL, &notice);
+    return Z__ReadPacketUDP(packet, len, NULL, NULL, &notice);
+}
+
+static Code_t
+Z__ReadPacketTCP(ZPacket_t *packet, int *packet_len,
+                 struct sockaddr_in *from, unsigned int *from_len,
+                 ZNotice_t *notice) {
+    Code_t retval;
+    ZNotice_t tmpnotice;
+    ZPacket_t pkt;
+    int len, zvlen;
+    struct sockaddr_in olddest;
+
+    Z_GetTCP(packet, packet_len);
+
+    /*XXX6*/
+    if (from) {
+        from->sin_family = AF_INET;
+        from->sin_addr.s_addr = INADDR_ANY;
+    }
+
+    if (*packet_len < 0)
+	return errno;
+
+    if (!*packet_len)
+	return ZERR_EOF;
+
+    /* Ignore obviously non-Zephyr packets. */
+    zvlen = sizeof(ZVERSIONHDR) - 1;
+    if (*packet_len < zvlen || memcmp(packet, ZVERSIONHDR, zvlen) != 0) {
+	Z_discarded_packets++;
+        *packet_len = 0;
+	return ZERR_NONE;
+    }
+
+    /* Parse the notice */
+    retval = ZParseNotice(*packet, *packet_len, notice);
+    if (retval != ZERR_NONE)
+	return retval;
+
+    return ZERR_NONE;
+}
+
+static Code_t
+Z__ReadPacket(ZPacket_t *packet, int *packet_len,
+              struct sockaddr_in *from, unsigned int *from_len,
+              ZNotice_t *notice) {
+    if (__Zephyr_tcp_fd != -1)
+        return Z__ReadPacketTCP(packet, packet_len, from, from_len, notice);
+    else
+        return Z__ReadPacketUDP(packet, packet_len, from, from_len, notice);
 }
 
 /*
@@ -1008,7 +1060,7 @@ Z_FormatRawHeader(ZNotice_t *notice,
 
     if (!(notice->z_sender_sockaddr.sa.sa_family == AF_INET ||
 	  notice->z_sender_sockaddr.sa.sa_family == AF_INET6))
-	notice->z_sender_sockaddr.sa.sa_family = AF_INET; /* \/\/hatever *//*XXX*/
+	notice->z_sender_sockaddr.sa.sa_family = AF_INET; /* \/\/hatever *//*XXX6*/
 
     if (!notice->z_class)
 	    notice->z_class = "";
@@ -1287,6 +1339,15 @@ Z_SendFragmentedNotice(ZNotice_t *notice,
     }
 
     return (ZERR_NONE);
+}
+
+Code_t
+Z_TCPXmitFragment(ZNotice_t *notice,
+                         char *buf,
+                         int len,
+                         int wait)
+{
+    return(Z_SendTCP(buf, len));
 }
 
 /*ARGSUSED*/

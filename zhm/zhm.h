@@ -75,4 +75,5 @@ extern char **environ;
 #define adjust_size(size)	size -= (uintptr_t) &environ
 #endif
 
+void zproxy(int fd, struct sockaddr *addr, socklen_t addr_len);
 #endif

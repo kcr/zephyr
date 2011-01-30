@@ -97,6 +97,8 @@ extern int __subscriptions_next;
 extern int __Zephyr_port;		/* Port number */
 extern struct in_addr __My_addr;
 extern int __Zephyr_fd;
+extern int __Zephyr_tcp_fd;
+extern int __Zephyr_tcp_open;
 extern int __Q_CompleteLength;
 extern struct sockaddr_in __HM_addr;
 extern char __Zephyr_realm[];
@@ -107,6 +109,7 @@ Code_t Z_SetFD(int);
 struct _Z_InputQ *Z_GetFirstComplete (void);
 struct _Z_InputQ *Z_GetNextComplete (struct _Z_InputQ *);
 Code_t Z_XmitFragment (ZNotice_t*, char *,int,int);
+Code_t Z_TCPXmitFragment (ZNotice_t *, char *, int, int);
 void Z_RemQueue (struct _Z_InputQ *);
 Code_t Z_AddNoticeToEntry (struct _Z_InputQ*, ZNotice_t*, int);
 Code_t Z_FormatAuthHeader (ZNotice_t *, char *, int, int *, Z_AuthProc);
@@ -117,6 +120,9 @@ Code_t Z_ReadEnqueue (void);
 Code_t Z_ReadWait (void);
 Code_t Z_GetUDP(ZPacket_t *packet, int *len);
 Code_t Z_SendUDP(char *packet, int len);
+Code_t Z_GetTCP(ZPacket_t *packet, int *len);
+Code_t Z_SendTCP(char *packet, int len);
+Code_t Z_SetTCPFD(int fd);
 Code_t Z_SendLocation (char*, char*, Z_AuthProc, char*);
 Code_t Z_SendFragmentedNotice (ZNotice_t *notice, int len,
 				   Z_AuthProc cert_func,

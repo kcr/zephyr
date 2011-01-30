@@ -17,6 +17,8 @@ static const char rcsid_ZInitialize_c[] =
 
 #include <internal.h>
 
+#include <assert.h>
+
 #include <sys/socket.h>
 #ifdef HAVE_KRB4
 #include <krb_err.h>
@@ -46,6 +48,8 @@ int Zauthtype = 4;
 int Zauthtype = 0;
 #endif
 
+static Code_t Z_InitializeProxy(char *zephyr_proxy);
+
 Code_t
 ZInitialize(void)
 {
@@ -66,6 +70,7 @@ ZInitialize(void)
     char d1[ANAME_SZ], d2[INST_SZ];
 #endif
 #endif
+    char *zephyr_proxy_host = getenv("ZEPHYR_PROXY");
 
     /* On OS X you don't need to initialize the Kerberos error tables
        as long as you link with -framework Kerberos */
@@ -180,7 +185,14 @@ ZInitialize(void)
 #endif
 
     __My_addr.s_addr = INADDR_NONE;
-    if (servaddr.s_addr != INADDR_NONE) {
+
+    if (zephyr_proxy_host != NULL) {
+        code = Z_InitializeProxy(zephyr_proxy_host);
+        if (code != ZERR_NONE)
+            return code;
+    }
+
+    if (__My_addr.s_addr == INADDR_NONE && servaddr.s_addr != INADDR_NONE) {
 	/* Try to get the local interface address by connecting a UDP
 	 * socket to the server address and getting the local address.
 	 * Some broken operating systems (e.g. Solaris 2.0-2.5) yield
@@ -225,7 +237,10 @@ const char * ZGetRealm (void) {
 }
 
 int ZGetFD (void) {
-    return __Zephyr_fd;
+    if (__Zephyr_tcp_fd != -1)
+        return __Zephyr_tcp_fd;
+    else
+        return __Zephyr_fd;
 }
 
 int ZQLength (void) {
@@ -434,3 +449,53 @@ z_get_host_realm_replacement(char *inhost, char ***krealms) {
     return 0;
 }
 #endif
+
+Code_t Z_InitializeProxy(char *zephyr_proxy)
+{
+    int fd, ret;
+    struct addrinfo hints;
+    struct addrinfo *result, *rp;
+    ZNotice_t z;
+    struct sockaddr_storage ss;
+    unsigned short port;
+    unsigned char *ptr;
+
+    memset(&hints, 0, sizeof(hints));
+
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_DGRAM;
+    hints.ai_flags = 0;
+    hints.ai_protocol = 0;
+
+    ret = getaddrinfo(zephyr_proxy, HM_SVCNAME, &hints, &result);
+    if (ret != 0)
+        return ZERR_HMPORT;
+
+    for (rp = result; rp != NULL; rp = rp->ai_next) {
+        fd = socket(rp->ai_family, SOCK_STREAM /*sigh*/, 0 /*rp->ai_protocol*/);
+        if (fd < 0)
+            continue;
+
+        ret = connect(fd, rp->ai_addr, rp->ai_addrlen);
+        if (ret == 0)
+            break;
+
+        close(fd);
+    }
+
+    if (fd < 0 || ret < 0)
+        return errno;
+
+    __Zephyr_tcp_fd = fd;
+
+    /* receive a packet; having __Zephyr_tcp_fd set should cause the tcp
+     receive apparatus to go into action, and the first message down the pipe
+     should have our address information*/
+    ZReceiveNotice(&z, NULL);
+
+    assert(z.z_sender_sockaddr.sa.sa_family == AF_INET); /*XXX6*/
+    __My_addr = z.z_sender_sockaddr.ip4.sin_addr;
+    __Zephyr_port = z.z_port;
+
+    return ZERR_NONE;
+}
