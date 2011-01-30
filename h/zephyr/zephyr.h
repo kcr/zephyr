@@ -167,7 +167,8 @@ Code_t ZParseNotice(char*, int, ZNotice_t *);
 Code_t ZReadAscii(char*, int, unsigned char*, int);
 Code_t ZReadAscii32(char *, int, unsigned long *);
 Code_t ZReadAscii16(char *, int, unsigned short *);
-Code_t ZReadZcode(unsigned char*, unsigned char*, int, int *);
+Code_t ZReadZcode(const unsigned char*, unsigned char*, int, int *);
+Code_t ZReadZcodeAddr(const unsigned char *str, struct sockaddr_storage *addr);
 Code_t ZSendPacket(char*, int, int);
 Code_t ZSendList(ZNotice_t*, char *[], int, Z_AuthProc);
 Code_t ZSrvSendList(ZNotice_t*, char*[], int, Z_AuthProc,
