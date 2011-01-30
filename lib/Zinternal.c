@@ -1004,6 +1004,7 @@ Z_FormatRawHeader(ZNotice_t *notice,
     int i;
     int addrlen = 0;
     unsigned char *addraddr = NULL;
+    Code_t ret;
 
     if (!(notice->z_sender_sockaddr.sa.sa_family == AF_INET ||
 	  notice->z_sender_sockaddr.sa.sa_family == AF_INET6))
@@ -1106,11 +1107,12 @@ Z_FormatRawHeader(ZNotice_t *notice,
 	addraddr = (unsigned char *)&notice->z_sender_sockaddr.ip4.sin_addr;
 	if (ZMakeAscii(ptr, end - ptr, addraddr, addrlen) == ZERR_FIELDLEN)
 	    return ZERR_HEADERLEN;
-    } else if (notice->z_sender_sockaddr.sa.sa_family == AF_INET6) {
-	addrlen = sizeof(notice->z_sender_sockaddr.ip6.sin6_addr);
-	addraddr = (unsigned char *)&notice->z_sender_sockaddr.ip6.sin6_addr;
-	if (ZMakeZcode(ptr, end - ptr, addraddr, addrlen) == ZERR_FIELDLEN)
-	    return ZERR_HEADERLEN;
+    } else {
+        ret = ZMakeZcodeAddr(ptr, end - ptr, (struct sockaddr *)&notice->z_sender_sockaddr);
+        if (ret == ZERR_FIELDLEN)
+            return ZERR_HEADERLEN;
+        if (ret != 0)
+            return ret;
     }
     ptr += strlen(ptr) + 1;
 
