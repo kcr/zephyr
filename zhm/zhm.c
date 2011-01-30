@@ -29,6 +29,7 @@ int no_server = 1, nservchang, nserv, nclt;
 int booting = 1, timeout_type, deactivated = 1;
 int bootflag = 1;
 int started = 0;
+int proxy = 0, proxyfd = -1;
 long starttime;
 u_short cli_port;
 struct sockaddr_in cli_sin, serv_sin, from;
@@ -78,8 +79,11 @@ main(int argc,
 	exit(-1);
     }
     prim_serv[0] = '\0';
-    while ((opt = getopt(argc, argv, "drhinfN")) != EOF)
+    while ((opt = getopt(argc, argv, "drhinfNp")) != EOF)
 	switch(opt) {
+          case 'p':
+            proxy = 1;
+            break;
 	  case 'd':
 	    hmdebug = 1;
 	    break;
@@ -157,7 +161,9 @@ main(int argc,
 	fd = ZGetFD();
 	FD_ZERO(&readers);
 	FD_SET(fd, &readers);
-	count = select(fd + 1, &readers, NULL, NULL, timer_timeout(&tv));
+        if (proxyfd > 0)
+            FD_SET(proxyfd, &readers);
+	count = select(MAX(fd, proxyfd) + 1, &readers, NULL, NULL, timer_timeout(&tv));
 	if (count == -1 && errno != EINTR) {
 	    syslog(LOG_CRIT, "select() failed: %m");
 	    die_gracefully();
@@ -168,7 +174,7 @@ main(int argc,
 
 	timer_process();
 
-	if (count > 0) {
+	if (FD_ISSET(fd, &readers)) {
 	    ret = ZReceivePacket(packet, &pak_len, &from);
 	    if ((ret != ZERR_NONE) && (ret != EINTR)){
 		Zperr(ret);
@@ -222,6 +228,17 @@ main(int argc,
 		}
 	    }
 	}
+        if (proxyfd > 0 && FD_ISSET(proxyfd, &readers)) {
+            int clientfd;
+            struct sockaddr_storage clientaddr;
+            socklen_t clientaddr_len = sizeof(clientaddr);
+
+            clientfd = accept(proxyfd, (struct sockaddr *)&clientaddr, &clientaddr_len);
+            if (clientfd < 0)
+                syslog(LOG_ERR, "accept: %m");
+            else
+                zproxy(clientfd, (struct sockaddr *)&clientaddr, clientaddr_len);
+        }
     }
 }
 
@@ -342,9 +359,11 @@ init_hm(void)
 #ifdef _POSIX_VERSION
      struct sigaction sa;
 #endif
+     struct sockaddr_in paddr;
+     struct sockaddr_storage servaddr;
 
      starttime = time((time_t *)0);
-     OPENLOG("hm", LOG_PID, LOG_DAEMON);
+     OPENLOG("zhm", LOG_PID, LOG_DAEMON);
 
      ZSetServerState(1);	/* Aargh!!! */
      if ((ret = ZInitialize()) != ZERR_NONE) {
@@ -379,6 +398,32 @@ init_hm(void)
      sp = getservbyname(SERVER_SVCNAME, "udp");
      memset(&serv_sin, 0, sizeof(struct sockaddr_in));
      serv_sin.sin_port = (sp) ? sp->s_port : SERVER_SVC_FALLBACK;
+
+     if (proxy) {
+         ret = socket(AF_INET, SOCK_STREAM, 0);
+         if (ret < 0) {
+             syslog(LOG_ERR, "proxy server socket: socket: %m");
+         } else {
+             proxyfd = ret;
+             memset(&servaddr, 0, sizeof(servaddr));
+             paddr.sin_family = AF_INET;
+             paddr.sin_addr.s_addr = INADDR_ANY;
+             paddr.sin_port = cli_port; /* the client port, except tcp, yes,
+                                           bad people */
+             ret = bind(proxyfd, (struct sockaddr *)&paddr, sizeof(paddr));
+             if (ret < 0)
+                 syslog(LOG_ERR, "proxy server socket: bind: %m");
+             if (ret >= 0) {
+                 ret = listen(proxyfd, 128);
+                 if (ret < 0)
+                     syslog(LOG_ERR, "proxy server socket: listen: %m");
+             }
+             if (ret < 0) {
+                 close(proxyfd);
+                 proxyfd = -1;
+             }
+         }
+     }
 
 #ifndef DEBUG
      if (!nofork)
@@ -427,6 +472,7 @@ init_hm(void)
      signal(SIGHUP, terminate);
      signal(SIGTERM, terminate);
 #endif
+     signal(SIGCHLD, SIG_IGN); /*XXX POSIX 2001, bitches */
 }
 
 static void

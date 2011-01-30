@@ -30,5 +30,17 @@ Z_SetFD(int fd)
 	__Zephyr_fd = fd;
 	__Zephyr_open = 0;
 	
-	return (ZERR_NONE);
+	return ZERR_NONE;
+}
+
+Code_t
+Z_SetTCPFD(int fd)
+{
+    if (__Zephyr_tcp_open)
+        close(__Zephyr_tcp_fd);
+
+    __Zephyr_tcp_fd = fd;
+    __Zephyr_tcp_open = 0;
+
+    return ZERR_NONE;
 }
