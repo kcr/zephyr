@@ -196,6 +196,7 @@ Code_t ZMakeAscii32(char *, int, unsigned long);
 Code_t ZMakeAscii16(char *, int, unsigned int);
 Code_t ZMakeZcode(char*, int, unsigned char*, int);
 Code_t ZMakeZcode32(char *, int, unsigned long);
+Code_t ZMakeZcodeAddr(char *ptr, int len, struct sockaddr *addr);
 Code_t ZReceivePacket(ZPacket_t, int*, struct sockaddr_in*);
 Code_t ZCheckAuthentication(ZNotice_t*, struct sockaddr_in*);
 Code_t ZCheckZcodeAuthentication(ZNotice_t*, struct sockaddr_in*);
