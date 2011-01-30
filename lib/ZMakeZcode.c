@@ -78,3 +78,21 @@ ZMakeZcode(register char *ptr,
     *ptr = '\0';
     return ZERR_NONE;
 }
+
+Code_t
+ZMakeZcodeAddr(char *ptr, int len, struct sockaddr *addr)
+{
+    int addrlen;
+    unsigned char *addraddr;
+
+    if (addr->sa_family == AF_INET) {
+	addrlen = sizeof(((struct sockaddr_in *)addr)->sin_addr);
+	addraddr = (unsigned char *)&((struct sockaddr_in *)addr)->sin_addr;
+    } else if (addr->sa_family == AF_INET6) {
+	addrlen = sizeof(((struct sockaddr_in6 *)addr)->sin6_addr);
+	addraddr = (unsigned char *)&((struct sockaddr_in6 *)addr)->sin6_addr;
+    } else {
+        return EAFNOSUPPORT;
+    }
+    return ZMakeZcode(ptr, len, addraddr, addrlen);
+}
