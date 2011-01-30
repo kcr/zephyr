@@ -249,32 +249,24 @@ ZParseNotice(char *buffer,
 	    BAD_PACKET("unterminated address field");
 
 	if (*ptr == 'Z') {
-	    if (ZReadZcode((unsigned char *)ptr, addrbuf,
-			   sizeof(addrbuf), &len) == ZERR_BADFIELD)
+            if (ZReadZcodeAddr((unsigned char *)ptr,
+                               (struct sockaddr_storage *)&notice->z_sender_sockaddr)
+                != ZERR_NONE)
 		BAD_PACKET("parsing Zcode address");
-	} else {
-	    len = sizeof(notice->z_sender_sockaddr.ip4.sin_addr);
-	    if (ZReadAscii(ptr, end - ptr, (unsigned char *)addrbuf,
-			   len) == ZERR_BADFIELD)
-		BAD_PACKET("parsing NetASCII address");
-	}
+        } else {
+            len = sizeof(notice->z_sender_sockaddr.ip4.sin_addr);
+            if (ZReadAscii(ptr, end - ptr, (unsigned char *)addrbuf,
+                           len) == ZERR_BADFIELD)
+                BAD_PACKET("parsing NetASCII address");
 
-	if (len == sizeof(notice->z_sender_sockaddr.ip6.sin6_addr)) {
-	    notice->z_sender_sockaddr.ip6.sin6_family = AF_INET6;
-	    memcpy(&notice->z_sender_sockaddr.ip6.sin6_addr, addrbuf, len);
-#ifdef HAVE_SOCKADDR_IN6_SIN6_LEN
-	    notice->z_sender_sockaddr.ip6.sin6_len = sizeof(notice->z_sender_sockaddr.ip6);
-#endif
-	} else if (len == sizeof(notice->z_sender_sockaddr.ip4.sin_addr)) {
-	    notice->z_sender_sockaddr.ip4.sin_family = AF_INET;
-	    memcpy(&notice->z_sender_sockaddr.ip4.sin_addr, addrbuf, len);
+            notice->z_sender_sockaddr.ip4.sin_family = AF_INET;
+            memcpy(&notice->z_sender_sockaddr.ip4.sin_addr, addrbuf, len);
 #ifdef HAVE_SOCKADDR_IN_SIN_LEN
-	    notice->z_sender_sockaddr.ip4.sin_len = sizeof(notice->z_sender_sockaddr.ip4);
+            notice->z_sender_sockaddr.ip4.sin_len = sizeof(notice->z_sender_sockaddr.ip4);
 #endif
-	} else
-	    BAD_PACKET("address claims to be neither IPv4 or IPv6");
+        }
 
-	numfields--;
+        numfields--;
 	ptr = next_field(ptr, end);
     } else {
 	memset(&notice->z_sender_sockaddr, 0,
