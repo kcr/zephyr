@@ -335,6 +335,7 @@ class libZephyr(object):
         "ZClosePort",
         "ZMakeAscii",
         "ZMakeZcode",
+        "ZMakeZcodeAddr",
         "ZGetDestAddr",
         "ZSetFD",
         "ZPending",
@@ -477,6 +478,12 @@ class libZephyr(object):
             c_int,              # len
             c_char_p,           # field; c_uchar_p?
             c_int,              # num
+            ]
+
+        self.ZMakeZcodeAddr.argtypes = [
+            c_char_p,		# ptr
+            c_int,		# len
+            POINTER(_U_z_sender_sockaddr), # addr (not quite the right type, but should work)
             ]
 
         # struct sockaddr_in ZGetDestAddr (void) {
