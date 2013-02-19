@@ -197,13 +197,13 @@ destroy_hosts(struct host_ace **list)
     }
 }
 
-char *
+static char *
 split_name(char *princ) {
     int i;
     int len = strlen(princ);
 
     for (i = 0; i < len && princ[i] != REALM_SEP; i++)
-        if (princ[i] == ESCAPE)
+        if (princ[i] == ESCAPE && (i + 1) < len)
             i++;
     if (i != len) { /* yay found an @ */
         princ[i] = 0;
@@ -254,6 +254,8 @@ destroy_user(struct user_ace **list) {
     struct user_ace *e;
     while ((e = *list)) {
         *list = e->next;
+        free(e->princ);
+        free(e->realm);
         free(e);
     }
 }
@@ -318,6 +320,7 @@ int acl_load(char *name)
     char buf[BUFSIZ];
     int ret = 0;
 
+    syslog(LOG_DEBUG, "acl_load(%s)", name);
     /* See if it's there already */
     for (i = 0; i < acl_cache_count; i++) {
 	if (!strcmp(acl_cache[i].filename, name))
@@ -347,6 +350,7 @@ int acl_load(char *name)
      * See if we need to reload the ACL
      */
     if (!acl_cache[i].loaded) {
+        syslog(LOG_DEBUG, "acl_load(%s) actually loading", name);
 	/* Gotta reload */
 	if ((f = fopen(name, "r")) == NULL) {
 	    syslog(LOG_ERR, "Error loading acl file %s: %m", name);
@@ -390,6 +394,7 @@ acl_cache_reset(void)
 {
     int	i;
 
+    syslog(LOG_DEBUG, "acl_cache_reset()");
     /* See if it's there already */
     for (i = 0; i < acl_cache_count; i++)
         destroy_acl(i);
@@ -470,6 +475,7 @@ int acl_check(char *acl, char *name, struct sockaddr_in *who) {
         return 0; /* oops */
 
     result = acl_check_internal(acl, pname, who);
+    syslog(LOG_DEBUG, "acl_check(%s, %s, ?) = %d", acl, name, result);
 
     free(pname);
 
