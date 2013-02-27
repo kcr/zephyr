@@ -181,7 +181,7 @@ check_user(struct user_ace *list, char *princ, char *realm) {
 }
 
 struct acl {
-    char *filename;	        /* Name of acl file */
+    String *filename;	        /* Name of acl file */
     int loaded;
     struct user_ace *acl;       /* Positive acl entries */
     struct user_ace *negacl;    /* Negative acl entries */
@@ -224,11 +224,13 @@ int acl_load(char *name)
     FILE *f;
     char buf[BUFSIZ];
     int ret = 0;
+    String *interned_name;
 
     syslog(LOG_DEBUG, "acl_load(%s)", name);
     /* See if it's there already */
+    interned_name = make_string(name, 0);
     for (i = 0; i < acl_cache_count; i++) {
-	if (!strcmp(acl_cache[i].filename, name))
+	if (acl_cache[i].filename == interned_name)
 	    goto got_it;
     }
 
@@ -244,9 +246,7 @@ int acl_load(char *name)
     }
 
     /* Set up the acl */
-    acl_cache[i].filename = strdup(name);
-    if (acl_cache[i].filename == NULL)
-        return -errno;
+    acl_cache[i].filename = interned_name;
     /* Force reload */
     acl_cache[i].loaded = 0;
 
