@@ -765,3 +765,9 @@ ZSetSessionDES(C_Block *key) {
 #endif
 }
 #endif
+
+Code_t
+authenticate_client(ZNotice_t *notice) {
+#ifdef HAVE_KRB5
+#endif
+}
