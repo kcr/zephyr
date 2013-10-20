@@ -126,14 +126,14 @@ def main():
                                 # but the lisp reader don't care
                                 output(
                                     ('tzcspew', 'sent'),
-                                    ('to', pair(quoted('instance'),
-                                                quoted('recipient'))))
+                                    ('to', pair(quoted(instance),
+                                                quoted(recipient))))
                             except zephyr.ZephyrError as e:
                                 log.exception('sending notice')
                                 output(
                                     ('tzcspew', 'not-sent'),
-                                    ('to', pair(quoted('instance'),
-                                                quoted('recipient'))))
+                                    ('to', pair(quoted(instance),
+                                                quoted(recipient))))
                                 continue
     except KeyboardInterrupt:
         pass
