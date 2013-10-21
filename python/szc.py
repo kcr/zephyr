@@ -49,7 +49,7 @@ def main():
         ('features', llista()),
         )
 
-    z.subscribe([('kcr-test', '*', '*')]) # defaults for now
+    z.subscribe([]) # defaults for now
 
     try:
         while True:
