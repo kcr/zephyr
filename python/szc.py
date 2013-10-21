@@ -206,7 +206,7 @@ class delisper(object):
             '"': ((str,), 'start'),
             None: (('APPEND',), 'string'),
             },
-        'string-backlash': {
+        'string-backslash': {
             None: (('APPEND',), 'string'),
             },
         'dot': { # drop a dot by itself
