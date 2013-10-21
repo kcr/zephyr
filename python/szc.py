@@ -44,7 +44,7 @@ def main():
         ('pid', str(os.getpid())),
         ('zephyrid', quoted(z.sender)),
         ('exposure', quoted('NONE')), #XXX
-        ('heartbeat', 't'), #XXX lie
+        ('heartbeat', 'nil'),
         ('time', quoted(time.ctime())),
         ('features', llista()),
         )
